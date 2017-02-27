@@ -1060,7 +1060,7 @@
 # Note :  To know more about the file resuorce and its attributes please refer to document page
 # 		  $ puppet describe file
 #
-# - Specifying the content as a string in file resource 
+# - String : Specifying the content as a string in file resource 
 #
 # # file {'/etc/issue':
 # #	path 	=> '/etc/issue',
@@ -1071,14 +1071,39 @@
 # #	content	=> 'This server is part of the puppet infrastructure',
 # # }
 #
-# - Specifies the content as a source from different file
+# - Source from file :  Specifies the content as a source from different file
 # This feature helps us to maintain files on puppet agents which is sourced from puppet master. 
 # Using this feature puppet will pick the content from a file which is defined inside the module  and help to coper over it to agents. 
-# Whenever the puppet agent runs happens, that time integrity of the file which is there in the agent will be matched with the master using MD5 checksum.
+# Whenever the puppet agent run happens, that time integrity of the file which is there in the agent will be matched with the master using MD5 checksum.
 # If the MD5 checksum doesnot match between agent and source file on master, then the source file will be copied over.
+# 
+# Example : Below is an example how in which you will copy the resolv.conf file
 #
+# # file { 'resolv.conf'
+# #		name	=> '/etc/resolv.conf',				--> defining the name identification for the file to manage
+# #		owner 	=> 'root',
+# #		group	=> 'root',
+# #		mode	=> '0644',
+# #		source 	=> puppet:///modules/sathsang_dns/resolv.conf',		--> File getting sourced
+# # }
 #
+# Note : while we are doing the sourcing of a file, below key things we need to note, given it with a sample tree structure of that file 
 #
+# # [root@puppetmaster environments]# tree /etc/puppetlabs/code/environments/production/modules/sathsang_dns/
+# # /etc/puppetlabs/code/environments/production/modules/sathsang_dns/
+# # └── files
+# #     └── resolv.conf
+# # 
+# # 1 directory, 1 file
+# # [root@puppetmaster environments]# 
 #
+# syntax : puppet:///[source]/<mountpoint>/<module>/<file_path>
+#
+# source 		: Default from where normally the catalog come from, normally this entry will be left blank
+# mountpoint	: This instruct puppet to search in the modulepath for the mountpoint
+# module		: This should be the name of the module in which need to look for the file
+# file_path		: This is the path of the file with in the module's "files" directory
+#
+# - symlinks : manage sym links to another file
 #
 # FINAL REMARK : READ EXTERNAL NODE CLASSIFIER (ENC)
