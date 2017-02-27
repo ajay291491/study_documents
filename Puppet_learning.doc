@@ -1,0 +1,1084 @@
+#--------------------------------------------------------------------------------------------------
+# Chapter 0 : Setting up infra for a heterogenius environemnet including Linux flavors and Solaris
+#--------------------------------------------------------------------------------------------------
+#
+# 1. Configure a DNS server which can cater the requirement for puppet infrastructure 
+#
+# 2. Install the master package as a monolithic installation via guided graphical method. 
+#
+# https://docs.puppet.com/pe/latest/install_basic.html
+#
+# 3. After the installation login to PE-console using the password set during installation.
+#
+# 4. Create class for client repos, so that you can perform the client installation via master
+#
+# https://puppetmaster.sathsang.lab.net/ ==> Nodes ==> classification ==> PE infrastructure ==> PE master ==> class ==> pe_repo:xxxxx
+#
+# 5. Login to client as root and run below command to add a node to your master infra 
+#
+# $ curl -k https://puppetmaster.sathsang.lab.net:8140/packages/current/install.bash |bash
+#
+# 6. Above step will configure the agent, will update the /opt/piuppetlabs/puppet/puppet.conf with server name and cert name (node name)
+#
+# 7. Now login to the master the check the certificate from agent came in 
+#
+# $ puppet cert --list 
+#
+# 8. Now sign the certificate 
+#
+# $ puppet cert sign <cert_name>
+#
+#---------------------------------------------------------------------------------------------------
+# Chapter 1 : Lifecycle of a puppet infra 
+#---------------------------------------------------------------------------------------------------
+#
+# * Puppet communication and reporting goes as below. *
+# 1. Node will send it facts to the master, which contains information about the node. 
+# 2. Once master recives the facter, it will atriculate what catalog should be applied to the node
+# 3. Then it send back the catalog information and puppet agent will help to configure the node in desired state
+# 4. Once the configurations are applied, puppet node will send back the reports to puppet master 
+# 5. Puppet master will combine all the reports and create a single view about the host
+#
+# Note : puppet provides a vast amount of modules which can be reused to provision application and desired configurations 
+#        You can download the puppet modules from puppet forge url
+#
+# Puppet Forge url : http://forge.puppetlabs.com
+#
+#---------------------------------------------------------------------------------------------------
+# Chapter 2 : Components of puppet 
+#---------------------------------------------------------------------------------------------------
+#
+# * Responsibilities of a puppet master
+# Puppet master supports various Linux distributions and it runs on a JVM for increased performamnce.
+#
+# 1. Puppet master is responsible for authenticate the puppet agent connections
+# 2. Signing the client certificates 
+# 3. Serving a compiled catalog to the client, which contains the summary about the client configuration
+# 4. Serving files 
+# 5. Processing posted reports and provide a better view about the node status. 
+# 6. Serve the puppet enterprise console we interface, which will give a detailed view about the infra
+#
+# Note : All puppet master configuration options are available at https://docs.puppet.com/puppet/latest/reference/configuration.html
+#
+# * Responsibilities of a puppet agent
+# Puppet agent runs on all managed nodes and it is responsible for 
+#
+# 1. Requesting configuration state from puppet master 
+# 2. Sending information about its current state (facter)
+# 3. Enforcing a retrieved configuration, which is called as catalog
+# 4. Synchoronize and puppet extension from the master 
+# 5. Retrive support files as needed from the master 
+# 6. Sending reports back to the master.
+#
+# Note : All communication between puppet master and agents are secured and authenticated via SSL.
+# 		 Puppet agents are mainly supported in most of the Linux distributions, Solaris, Aix, Windows and few network devices. 
+#
+# * How puppet agent pull its catalog from Master *
+# Puppet uses the pull mechanism from the client, Client sends its facter to master and master validate the facter and decide what configuration should apply to the client and sends it back. 
+# This mechanism is normally done in a resgular interval of "30 Minutes" and this value is defined with paramater "runinterval", if you want to reduce the pull interval then you need to tune the value. 
+# To tune the value you need to define the "runinterval" value in the "/etc/puppet/puppet.conf" file under the "[agent]" section as "runinterval=<value>"
+#
+# Syntax : Below command will help you to print the runinterval value for puppet node. 
+#
+# $ puppet config print runinterval
+#
+# Syntax : Below configuration method should be applied to tune the puppet runinterval 
+#
+# $ vi /etc/puppet/puppet.conf
+# [agent]
+# runinterval = 300
+#
+# * How to send adhoc pull request from puppet agent *
+# You can send adhoc pull request from puppet agent using command, syntax as follows. 
+#
+# $ puppet agent --test
+# 
+# Note : This command has various other options, for that you can refer to "$ pupppet doc" or man pages
+# 
+# * Puppet configuration file - /etc/puppetlabs/puppet/puppet.conf
+# Puppet configuration is mainly stored in "/etc/puppetlabs/puppet/puppet.conf" file, this holds the key configuration with respect to master or agent.
+# Any tuning to the default configuration has to be done in this file with respect to master and clients.
+#
+# There are mainly three different sections in the "puppet.conf" configuration file. 
+#
+# - [Main]			--> This section will be available in both master and agent roles and it mainly holds the details which is common. 
+#  						such as certname, server, user, group etc 
+#
+# Example : Below are the sample "main" section in the puppet.conf file normally applies to master and agent and used by all commands and services
+#
+# [main]
+# certname = puppetagentcentos.sathsang.lab.net			--> This is how the agent or node identified in the network, normally we use FQDN as certificate name 
+# server   = puppetmaster.sathsang.lab.net				--> To which puppet master an agent or node should communicate with
+#
+# Example : Below are the sample configuration which applies specifically to master
+#
+# user = pe-puppet
+# group = pe-puppet
+# archive_files = true
+# archive_file_server = puppetmaster.sathsang.lab.net
+# environment_timeout = 0
+# app_management = true
+# module_groups = base+pe_only
+# environmentpath = /etc/puppetlabs/code/environments
+# codedir = /etc/puppetlabs/code
+#
+# - [Master] 	--> This section is only specific to the puppet master and it holds main configuration about the configurations, reporting and puppetdb
+#
+# Example : Below is the sample configuration about the puppet master 
+#
+# [master]
+# node_terminus = classifier		--> where to find the information about the nodes. 
+# storeconfigs  = true 				--> this, whether to store client configurations including catalogues, facts and related data. Also enables import/export of resource in puppet language.
+# storeconfigs_backend = puppetdb	--> this configure the backend terminus which holds the configuration, by default uses puppetdb
+# reports = puppetdb				--> this configures the list of reports handlers
+#
+# - [Agent]		--> This section contains information about the puppet agents, most cases you do not need to define anything until you do not want to override the default the config.
+#
+# More details on puppet configuration, refer : https://docs.puppet.com/puppet/latest/configuration.html
+#
+# * Other important puppet configurations
+# vardir	-> Location where puppet stores the dynamically growing information
+# rundir	-> Location where puppet stores its pid files
+# ssldir	-> Location where ssl certificates are stored
+# ca_server	-> Server to use certificate authority requests
+# certname	-> certificate name to use when to communicate with the master
+# server	-> the name of the puppet master
+#
+# More details on puppet configuration, refer : https://docs.puppet.com/puppet/latest/configuration.html
+# * Puppet enterprise console 
+#
+# Puppet enterprise console is used to manage puppet infrastructure and its main jobs are below 
+# - Presenting an overview of the systems 
+# - Providing detailed information about each node 
+# - collecting and displaying statistics
+# - Providing an interface for node classification 
+# - Enabling report browsing and viewing 
+#
+#---------------------------------------------------------------------------------------------------
+# Chapter 3 : Puppet enterprise installation and review 
+#---------------------------------------------------------------------------------------------------
+#
+# Puppet enterprise installation is laready explained in chapter 0, so you can refer the same  and other concepts will be discussing below 
+# Once the installation completed, you can run below commands to verify the details of the installation on an agent.
+#
+# $ puppet --version 			-> This command will give you the version details of the installed agent
+# $ puppet agent --configprint confdir	-> This command will give you the details about the configuration directory on that node
+# $ puppet agent --configprint certname	-> This command will give you the details about the certificate name for that node
+# $ puppet agent --configprint server 	-> This command will give you the details about the server to which this node is communicating
+#
+# * Facter 
+#
+# . Puppet uses facter to identify the host systems, Facter is nothing but a key value pair (presented in hash and arrays) contains details about the system
+# . Facter act as an inventory system in puppet which contain the information intrinsic to the node such as IP, hostname, OS type etc..
+# . In the agent master communication method, agent sends facter to the master and then master will compile the catalogue based on the facts.
+# . Facts are always generated prior to the agent run, you cannot change facts during compilation and catalogue cannot use facts to make conditional decission during application.
+#
+# To get the details about facter you can run below command 
+#
+# $ facter 			-> This will display all the facts in the system 
+# $ facter <key_value>		-> This will display only the key value fact.
+#
+# [root@puppetagentcentos ~]# facter disks
+# {
+#  sda => {
+#    model => "VMware Virtual S",
+#    size => "20.00 GiB",
+#    size_bytes => 21474836480,
+#    vendor => "VMware,"
+#  },
+#  sr0 => {
+#    model => "VMware IDE CDR10",
+#    size => "4.03 GiB",
+#    size_bytes => 4329570304,
+#    vendor => "NECVMWar"
+#  }
+# }
+# [root@puppetagentcentos ~]# 
+#
+# * Resource
+#
+# Any component managed via puppet is called resource, you can run below command to fetch the resource details from the 'resource abstraction layer (RAL)
+# All finate number of resource available in the node can be listed via the 'puppet resource' command.
+#
+# $ puppet resource all
+# $ puppet resource <resource_type>
+#
+# Example : Below example will show the details about finding the details of an user resouce in puppet
+#
+# [root@puppetagentcentos ~]# puppet resource user root
+# user { 'root':
+#   ensure           => 'present',
+#   comment          => 'root',
+#   gid              => '0',
+#   home             => '/root',
+#   password         => '$6$GnJxcoKjuTOV.tZg$VusulbW/4qfO1znwNsjJlo3M9qUlOyNhZaAlgXdAj0LvNhwdsfsi6tRL8z7k/ovRBkipvm7p9YcSXLbMzSPKh0',
+#   password_max_age => '99999',
+#   password_min_age => '0',
+#   shell            => '/bin/bash',
+#   uid              => '0',
+#  }
+# [root@puppetagentcentos ~]# 
+#
+#
+#---------------------------------------------------------------------------------------------------
+# Chapter 4 : Github mini training & basics on puppet environments
+#---------------------------------------------------------------------------------------------------
+#
+# * What is Github
+# Github is an open source and free code repository which used mainly for collbaration between many team memebers for coding or such projects
+# This product is easy to use and it has various features such as, 
+# . We can download, inspect and modify the source code to Git
+# . All operations are performed locally and it offers a huge speed advantage as well
+# . Every commit and checkout are validated against its checksum to provide a cryptographic integrity
+# 
+# * What is the advanatge of github over subversion (What is the adavantage of distributed version control)
+# 
+# . Github is a distributed version control system which enables a complete clone of the repository to the contributor rather than checking out the current repo
+# . Every user essentiually has a full backup of the main server, so there is no single point of failure 
+# . Allows disconnect operations, even commit and diff can be done such as way and it gives significant amount of speed since there is not much dependancy with the network
+# . Git uses a pull method to sync the remote repo with local working directory
+# . Git uses a push method to update the remote repo with the commited changes 
+# 
+# * How to setup Github repo
+# To setup a Github repo you need to create an account in "https://github.com" and need to click on "add -> New repository"
+# Once you have setup the repo, you need to setup a client from where you will be working with the code or used.
+#
+# * How to setup Github client
+#
+# $ yum install git 													[ You need to have the git package instlled on the host ]
+# $ git --version														[ To check the version of the git installed ]
+# $ git config --global user.name <git_hub_username>					[ This will setup the github username where your code repository located ]
+# $ git config --global user.email <registered_email_id>				[ This email will be used for Githib notifications ]
+# $ git config --list													[ This will show the configuration we set on git ]
+# $ git init 															[ This will initialize a repository ]
+# $ git clone git@github.com:<git_user_name>/<git_repo_name>.git		[ This will clone the github repo your working node / puppet master ]
+# $ git remote -v 														[ This will show, to which hub you are connected to ]
+# $ git status															[ This will show if any changes due for commit ]
+#
+# Note : Above clone method is applicable for ssh key based communication method, if you are using https method then you need link the url which is in https format 
+#
+# * How to make a change and update to code repository locally from node
+# Once you have downloaded the code to node with the above steps then make the changes as required and follow below steps to commit the change
+#
+# $ git status 															[ This command will show you what all changes which pending to commit ] 
+# $ git add <file_name>													[ This is required if you are planning to upload a new file which is pending for commit  and not already in code repo ]
+# $ git commit -m "change description"									[ This will document the change will stage the code for push, but this will not submit the change ]
+# $ git log 															[ This will help us get a hostory of the changes on the repo ] 
+# $ git add remote add origin git@github.com:<git_user_name>/<git_repo_name>.git  [ This will add the remote repo to which you are going to make the change ]
+# $ git push -u origin master 											[ This command will finaly mark the changes to the repo and you will be able to see the change ]
+#
+# * How to change the code repo access from https to ssh 
+#
+# - First create rsa public key from the node [ $ ssh-keygen -t rsa ] 
+# - Update the public key to the repository under the "settings -> Deply keys"
+# - Allow read write access to commit your changes made on the git client 
+# - Then generate ssh url from "code -> clone or download" option 
+# - Then come to the node and set the remote and origin to the ssh based access 
+# $ git remote set-url origin  git@github.com:<git_user_name>/<git_repo_name>.git
+# $ git remote -v
+#
+# Note : In case you want to change it from ssh to http access you can perform the reverse method 
+#
+# * What is remote, origin, master terminologies in git 
+# Refer : https://help.github.com/articles/github-glossary/
+#
+# * Detail analysis about each git command required 
+# command	: $ git pull
+# desc 		: This will command will help you to sync the remote repository to local directory.
+# 			: This is an important step always to perform a pull request to sync the remote repo before you start working on them 
+# Example	: Below output will show you a pull request used to sync the remote to local directory 
+#
+# # root@puppetmaster sathsang_repo]# git pull origin master
+# # From github.com:ajay291491/puppet
+# #  * branch            master     -> FETCH_HEAD
+# # Already up-to-date.
+# # [root@puppetmaster sathsang_repo]# 
+#
+# command 	: $ git status 
+# desc		: This command will tell you the status about your working directory and it is good to run this command quite often before commit any changes
+# Example 	: Below example will show the git status just before the commit when we make changes to a file in the repository
+# 
+# # [root@puppetmaster sathsang_repo]# git status 
+# #  On branch master
+# #  Changed but not updated:
+# #    (use "git add <file>..." to update what will be committed)
+# #    (use "git checkout -- <file>..." to discard changes in working directory)
+# #
+# #	 modified:   README.md
+# #
+# #  no changes added to commit (use "git add" and/or "git commit -a")
+# # [root@puppetmaster sathsang_repo]# 
+#
+# command	: $ git add 
+# desc 		: This will help to stage a code to be commited 
+# 			: You can add files or directories one at a time or many at a time
+# Example	: Below example will show adding a test script into the repo
+#
+# # [root@puppetmaster sathsang_repo]# git add test.pl 
+# # [root@puppetmaster sathsang_repo]# git status 
+# # On branch master
+# # Changes to be committed:
+# #   (use "git reset HEAD <file>..." to unstage)
+# #
+# #	modified:   test.pl
+# #
+# # Changed but not updated:
+# #   (use "git add <file>..." to update what will be committed)
+# #   (use "git checkout -- <file>..." to discard changes in working directory)
+# #
+# #	modified:   README.md
+# # [root@puppetmaster sathsang_repo]# 
+#
+# command	: $ git commit -m "description of the change"
+# desc		: This will help to verify and commit the changes into your local repository
+# Example 	: Below example will show how a git commit works 
+#
+# # [root@puppetmaster sathsang_repo]# git commit test.pl -m "updated the script with new comments"
+# # [master 176106d] updated the script with new comments
+# #  1 files changed, 1 insertions(+), 1 deletions(-)
+# # [root@puppetmaster sathsang_repo
+#
+# command	: $ git log 
+# desc 		: This command will help you to verify the commit or changes done on the repository 
+# Example	: Below example will show you the details about the git log
+#
+# # [root@puppetmaster sathsang_repo]# git log | head -5
+# # commit 176106d9f11f1383acac90d1323ea02a6247c768
+# # Author: ajay291491 <ajay291491@gmail.com>
+# # Date:   Thu Dec 8 14:21:41 2016 +0800
+# #
+# #     updated the script with new comments
+# # [root@puppetmaster sathsang_repo]# 
+#
+# command	: $ git push 
+# desc		: This command will help you transfer the changes to the remote repository 
+# Example	: Below command will show you show you how a git push works 
+#
+# # [root@puppetmaster sathsang_repo]# git push 
+# # Counting objects: 5, done.
+# # Compressing objects: 100% (3/3), done.
+# # Writing objects: 100% (3/3), 351 bytes, done.
+# # Total 3 (delta 0), reused 0 (delta 0)
+# # To git@github.com:ajay291491/puppet.git
+# #    90f6688..176106d  master -> master
+# # [root@puppetmaster sathsang_repo]#
+#
+# command 	: $ git diff
+# desc 		: This command will help to interpret the the difference between two commits, it check the file with the last commit and current changes
+# Example 	: Below command will show the details about  git diff on one of the file 
+#
+# # [root@puppetmaster sathsang_repo]# git diff README.md 
+# # diff --git a/README.md b/README.md
+# # index 252e266..98272e6 100644
+# # --- a/README.md
+# # +++ b/README.md
+# # @@ -7,4 +7,5 @@ update 2 : Another update
+# #  update 3 : 08-Dec-02016
+# #  update 4 : This is a test update for pull request
+# #  >>>>>>> 83b700d2d3017ddd06c0682309b1fa0bb3758787
+# # +update 5 : Git diff test !!!
+# #  sathsang_repo
+# # [root@puppetmaster sathsang_repo]# 
+#
+# * To know more about git hub please refer below url
+# http://git-scm.com/book
+# http://try.github.com/
+#
+# * Normal workflow for a contributor when working with thr git project 
+# . Pull the repo so that it can get synced with the repo prior to make any changes 
+# $ git pull
+# . Then make the changes using the your editor 
+# . Then add the file, so that it can be refered for commit operation 
+# $ git add <file_name>
+# . Run git status and make sure the changes are ready for commit 
+# $ git status 
+# . Run git commit to make the changes locally saved on the repo
+# $ git commit -m "description of the change"
+# . Run git push to update the remote repo 
+# $ git push 
+# . Check the difference of the code is as expected, which compare between last two commits 
+# $ git diff <file_name>
+#
+#---------------------------------------------------------------------------------------------------
+# Chapter 5 : Basic puppet concepts (page 85)
+#---------------------------------------------------------------------------------------------------
+#
+# * What is puppet and why it is important
+# Puppet is a configuration management tool which helps you to maintain your servers in a desired state across infrastructure. 
+# Puppet is important because it is required to maintain configuration across the infrastructure and it is much needed when your infrastructure grows. 
+# 
+# * Why puppet is simple to manage 
+# Puppet follows a declarative method to define the resource and its type, so that you need to just declare the desired state and type of the resource.
+# Once you define the state, puppet will take care of maintaining that configuration, even for various operating platform with the same definition.
+#
+# Example : Below code will show you the declarative nature of puppet 
+#
+# # file { '/etc/motd':
+# #       ensure => "present",
+# #        owner => "root",
+# #        group => "root",
+# #        mode => "644",
+# # }
+#
+# * What is idempotency in puppet
+# Regardless of any number of puppet runs, puppet will make changes to the configuration or attribute only if the resource is out of sync from the origin definition.
+# 
+# * Resource 
+# Resource are the basic building blocks of your configuration and they can be combined together to make larger components. 
+# Together resource can model the expected state of a system, resource are defined with its attributes to maintain the state. 
+# There are various types of resuorce available with puppet and few of them are defined below. 
+#
+# * Various type of resources
+#
+# File	 	: This resource is expected to manage the state of the file such as, existance, permission, ownership, content etc. 
+# Example 	: Below example show how to define a /etc/resolv.conf file as a puppet resource 
+#
+# # file {'/etc/resolv.conf':
+# #			ensure	=>	"present",
+# #			owner	=>	"root",
+# #			group	=>	"root",
+# #			mode	=>	"644",
+# #			content	=>	"search	sathsang.lab.net
+# #						 nameserver 192.168.1.15",
+# # }
+#
+# Package : This resource is expected to manage packages.
+# Example : Below examples will show you how to manage the package resources for either to be present and also to make sure it is absent
+#
+# # package {'samba':
+# #		ensure	=> "present",
+# # }
+#
+# # package {'tcpdump':
+# #		ensure	=> "absent"'
+# #	}
+#
+# User 		: This resource is is used to manage an user, there are various attribute along with the user resource. 
+# Example	: Below example shows how to define a user resource 
+#
+# # user {'ajay':
+# #		ensure	=> "present",
+# #		groups 	=>	['sysadmin', 'ciowarriors']',
+# #		managehome	=> "true",
+# #	}
+#
+# Group 	: This resource can be used to manage groups
+# Example 	: Below example shows the details about defining a group resource 
+# 
+# # group {'ciowarriors':
+# # 		ensure 	=> "present",
+# # }
+#
+# * Resource abstraction layer 
+# Resource abstraction layer provides a consistant resource model across various supported models such as Windows, Linux, Solaris and Aix. 
+# To do that it follows a model or pattern as below 
+#
+# . All similar resource are classified or grouped as resource types, below are the most common samples of resource types 
+# . Resource type act as a interface layer which describes, what attribute we can configure for each resource 
+#
+# - File 	(Any file type resource can be defined under this catagory and which will be managed across various platform)
+# - Package (Any package kind of resource can be defined under this resource type and same definition can be applied across various platforms)
+# - Service (Any service type of respurce can be defined under this resource type and same definition can be applied across various pltform)
+# - User	(Any user type resource can be defined under this resource type and same definition can be applied across various platform)
+#
+# . Every resource type will have many underlying providers, which does the job in various platforms 
+# . Providers are the implementation layer which translate the definitions into meaningful operating system instruction. 
+# 
+# - File 	-> POSIX, Windows, etc ..
+# - Package -> yum, apt, gems, apt-get, rpm, msi, windows, etc ..
+# - Service -> Redhat, SMF(solaris), Launchd, Debian, Windows, etc ..
+# - User	-> Useradd, Ldap, Netinfo, etc ..
+#
+# Example : Below is a sample list of puppet resource and provider layer directory structure 
+#
+# # [root@puppetmaster ~]# ls   /opt/puppetlabs/puppet/lib/ruby/vendor_ruby/puppet/provider
+# # aixobject.rb  command.rb  cron     file   interface         mailalias  mount         nameservice        package        scheduled_task  service             user     zfs
+# # augeas        computer    exec     group  ldap.rb           maillist   mount.rb      nameservice.rb     package.rb     selboolean      ssh_authorized_key  vlan     zone
+# # cisco.rb      confine.rb  exec.rb  host   macauthorization  mcx        naginator.rb  network_device.rb  parsedfile.rb  selmodule       sshkey              yumrepo  zpool
+# # [root@puppetmaster ~]# ls   /opt/puppetlabs/puppet/lib/ruby/vendor_ruby/puppet/provider/{package,user,file}
+# # /opt/puppetlabs/puppet/lib/ruby/vendor_ruby/puppet/provider/file:
+# # posix.rb  windows.rb
+# # 
+# # /opt/puppetlabs/puppet/lib/ruby/vendor_ruby/puppet/provider/package:
+# # aix.rb     aptitude.rb  blastwave.rb  fink.rb     hpux.rb      openbsd.rb  pip3.rb    pkgin.rb  pkgutil.rb  portupgrade.rb  rug.rb          tdnf.rb     windows     zypper.rb
+# # appdmg.rb  apt.rb       dnf.rb        freebsd.rb  macports.rb  opkg.rb     pip.rb     pkgng.rb  portage.rb  puppet_gem.rb   sunfreeware.rb  up2date.rb  windows.rb
+# # apple.rb   aptrpm.rb    dpkg.rb       gem.rb      nim.rb       pacman.rb   pkgdmg.rb  pkg.rb    ports.rb    rpm.rb          sun.rb          urpmi.rb    yum.rb
+# # 
+# # /opt/puppetlabs/puppet/lib/ruby/vendor_ruby/puppet/provider/user:
+# # aix.rb  directoryservice.rb  hpux.rb  ldap.rb  openbsd.rb  pw.rb  useradd.rb  user_role_add.rb  windows_adsi.rb
+# # [root@puppetmaster ~]# 
+#
+#---------------------------------------------------------------------------------------------------
+# Chapter 6 : Modules and classes
+#---------------------------------------------------------------------------------------------------
+#
+# * What is puppet class 
+# Puppet class is a collection of resource which are combined together to manage some perticular product or application, below are the key things we need to remember about a class. 
+#
+# . Class can be a combination of various resource types such as , package, file, service, user etc and altogether makes a class
+# . Class defnitions are maintained under manifests (/etc/puppetlabs/code/environments/{name_of_env}/modules/{product}/manifests/}
+# . Good strategy while making classes are keep it smaller and logically group them with various resource types which can understand easily
+# . While defining a class hash, last trailing comma is not really required, but good to keep it as a best practice for coding
+#
+# Example : Below is a class defnition to maintain the openssh application including its package, files and service which is needed for the application to work as whole
+#
+# # class {"openssh":
+# #
+# #		package {"openssh":
+# #			ensure => "present",
+# #		}
+# #
+# # 	file {"/etc/ssh/sshd_config":
+# #			ensure 	=> "present",
+# #			owner	=> "root",
+# #			group	=> "root",
+# #			mode	=> "0644",
+# #			require	=> Package['openssh'],
+# #			source	=> "puppet://modules/ssh/sshd_config",
+# #		}	
+# #
+# # 	service {"sshd":
+# #			ensure	=> "running",
+# #			enable	=> "true",
+# #			require	=> File['/etc/ssh/sshd_config'],
+# #		}
+# #
+# #	}
+#
+# * What is puppet module
+# Puppet modules are directories that contains configuration that are designed to encapsulate all of the componenets related to given configuration in a single directory hierarchy.
+# They have pre-defined structure that enables the following key features for puppet. 
+# We can otherways say modules are a combination of classes which are defined with various resource types and atrribute for a perticular order and purpose.
+#
+# . auto-loading of classes
+# . file-serving for templates and files 
+# . auto-delivery of custom puppet extensions 
+# . easy sharing with others 
+#
+# Below are the few points which we need to notice while defining a module 
+#
+# . Modules should be self-contained and should have well defined integration points for other modules to use.
+# . Each module should be able to manage everything which is expected to work that program or application.
+# . Importantly it should not manage anything which is outside its scope 
+#
+# * Auto-loading of classes
+# In puppet modules enables auto-discovery of classes,Normally classes are stored under the 'manifest' directory of your 'module'. 
+# But to find the class under manifest, puppet should know where to find the modules, modules are stored normally under the module path of your environment or under 'base module path'.
+# Classes are placed in a predictable structure under the module directory. 
+#
+# Example : Below example show where puppet looks to locate the modules 
+#
+# # [root@training ~]# puppet master --configprint basemodulepath
+# # /etc/puppetlabs/code/modules:/opt/puppetlabs/puppet/modules				# Core modules are located in both /etc and /opt directory
+# # [root@training ~]#
+# #
+# # [root@training ~]# puppet master --configprint environmentpath
+# # /etc/puppetlabs/code/environments										# If you want to place a module within your environment you can place under its module directory.
+# # [root@training ~]#
+#
+# Example : Below example shows us how classes are defined under a predictable structure within the module directory 
+#
+# # [root@training ~]# tree /etc/puppetlabs/code/environments/production/modules/ssh/
+# # ...
+# # ├── manifests
+# # ├── init.pp		## class ssh { ... }
+# # └── server.pp	## class ssh::server { ... }
+# #
+#
+# Note : You should avoid a practice to 'import' manifest or node definitions since it is a obsoleted method and which lead to inflexible code and unnessary requirement to restart process.
+#
+# * What is Namespace in autoloading of clases
+# classes and defined type names can be broken into segments called namespace. Namespaces tell the autoloader where to find the classes or defined type in your module.
+#
+# - First segment in the namespace define the name of the module
+# - Final segment in the namespace define the file name 
+# - Intermediate segment indicate the subdirectories of the mainfests directory
+#
+# namespace segments are separated by the namespace separator ( :: ), this double colon represent slash ( / ) in the normal filesystem paths
+#
+# Syntax : class module_name::sub_dir_path::filename 
+#
+# Example : Below example show how to define a class with namespace in various types
+# 
+# # class apache { ... }				-> This loads class <MODULE_DIR_NAME>/apache/manifest/init.pp
+# # class apche::mod { .. }				-> This loads class <MODULE_DIR_NAME>/apache/manifest/mod.pp
+# # class apache::mod::passenger { .. } -> This loads class  <MODULE_DIR_NAME>/apache/manifest/mod/passenger.pp
+# # define apache::vhost { .. }			-> This defines <MODULE_DIR_NAME>/manifest/apache/vhost.pp
+#
+# * How to build a simple module and test it
+# 
+# $ mkdir -p /etc/puppetlabs/code/environment/{environment_name}/modules/{module_name}//manifest/
+# $ cd /etc/puppetlabs/code/environment/{environment_name}/manifest/
+# $ vim init.pp
+#
+# # user { 'labuser':
+# #   ensure   => present,
+# #   password => 'labuser',
+# #   groups   => ['root'],
+# # }
+#
+# $ puppet parser validate /etc/puppetlabs/code/environment/{environment_name}/manifest/init.pp
+#
+# Note : pupper parser validate command will check for any syntax errors, then it will report it while validating the file.
+# 		 Incase any issues with the syntax it will report an error, if nothing returned then it means your module is good.
+#
+# * What is define and declare a class
+# Both define and declare a class are explained below 
+#
+# Define - Define a class means to write as class with its conent and bahavior. Defining a class does not means it is getting used, but it is available to declare or use.
+#
+# Example : Below example shows how to define a class 
+#
+# class dns_config {
+# 	
+# 	file {'/etc/resolv.conf':
+# 		ensure	=> file,
+# 		owner	=> 'root',
+# 		group 	=> 'root',
+# 		content	=> "nameserver 	192.168.1.21",
+# 	}
+# }
+#
+# Declare - Declare a class means using or include or instantiate a defined class wherever required. 
+#
+# Synatx  : include class_name
+# Example : include dns_config		-> This will enforce puppet to use the class name dns_config
+#
+# Note : Class name definitions are only evaluated and enforced once it is declared.
+#
+# * classes are singlton
+# Classes are unique and will be used only once in a node, even if you have call the same class multiple times it does not make any difference. 
+#
+# Example : Below node definition will tell us about how class can be defined and duplicate has any value or not 
+#
+# node 'puppetagentsolaris' {
+# 	include dns_config
+# 	include dns_config			-> This definition do not have any value since 'dns_config' already declared once 
+# }
+#
+# * Puppet apply - understanding this executable
+# Puppet apply can be used to compile puppet manifest into resource catalog without even requiring a master agent mechanism. 
+# This utility can be used in developement environment to apply and test the manifest without requiring a master. 
+# Using puppet apply we can apply any locally available manifest and convert them into resource catalog. 
+# Puppet apply will be a one time application and if any configuation managed via master/agent, then it will be overwritten by next agent run. 
+#
+# Example : Below example will show how puppet apply works locally on a node
+#
+# #
+# # [root@puppetagentcentos ~]# more /etc/puppetlabs/code/environments/production/modules/system_users/manifests/init.pp
+# # user { 'labuser':
+# #   ensure   => present,
+# #   password => 'labuser',
+# #   groups   => ['root'],
+# # }
+# # [root@puppetagentcentos ~]# 
+# # [root@puppetagentcentos ~]# puppet apply /etc/puppetlabs/code/environments/production/modules/system_users/manifests/init.pp
+# # Notice: Compiled catalog for puppetagentcentos.sathsang.lab.net in environment production in 0.07 seconds
+# # Notice: Applied catalog in 0.07 seconds
+# # [root@puppetagentcentos ~]# 
+# # [root@puppetagentcentos ~]# getent passwd labuser
+# # labuser:x:1001:1001::/home/labuser:/bin/bash
+# # [root@puppetagentcentos ~]# 
+# # [root@puppetagentcentos ~]# groups labuser
+# # labuser : labuser root
+# # [root@puppetagentcentos ~]# 
+# #
+#
+# * Puppet apply - Applying a smoke test using "--noop"
+# In case you want to test your manifest code whether it is working as expected then you go for 'puppet apply' with '--noop' option. 
+# This is similar to a smoke test and will not make any configuration changes, this will simply validate the given manifest with out making any changes. 
+#
+# Example : Applying smoke test using puppet apply
+#
+# #
+# # root@solarislab:~# more /etc/puppetlabs/code/environments/production/modules/system_users/manifests/init.pp
+# # user { 'labuser':
+# #   ensure   => present,
+# #   password => 'labuser',
+# #   groups   => ['root'],
+# #  }
+# #
+# # root@solarislab:~# puppet apply --noop /etc/puppetlabs/code/environments/production/modules/system_users/manifests/init.pp
+# # Notice: Compiled catalog for solarislab.sathsang.lab.net in environment production in 0.11 seconds
+# # Notice: /Stage[main]/Main/User[labuser]/ensure: current_value absent, should be present (noop)
+# # Notice: Class[Main]: Would have triggered 'refresh' from 1 events
+# # Notice: Stage[main]: Would have triggered 'refresh' from 1 events
+# # Notice: Finished catalog run in 0.03 seconds
+# # root@solarislab:~# getent passwd labuser
+# # root@solarislab:~# 
+# #
+#
+# * Puppet describe - A man page to help you while writing the puppet manifests
+# When you need help regarding various resource type available and also want to know about the options and providers for those resource type you can always refer puppet describe. 
+# Puppet describe a command line man page which given you a good help while writing the manifest and also while reviewing it. 
+#
+# Syntax : Most common syntax available with puppet describe are mentioned below
+#
+# $ puppet describe --list 
+# $ puppet describe <resource_type>
+# $ puppet describe <resource_type> --providers 
+# $ puppet describe <describe> -s -m
+#
+# Example : Few samples for puppet describe given below 
+#
+# $ puppet describe --list 				-> This will list all the resource type which can be managed via puppet.
+# $ puppet describe file				-> This provide the complete man page details about the resource type file.
+# $ puppet describe zpool --providers	-> This will give you the provider details about the zpool resource type.
+# $ puppet describe package -s -m 		-> This will give you the details about the parameters available with the package. 
+#
+#---------------------------------------------------------------------------------------------------
+# Chapter 7 : Classification
+#---------------------------------------------------------------------------------------------------
+#
+# * Environments - understanding the concept
+# An environment is just a directory structure which follows few rules and conventions. 
+# It's path is determined by the variable 'environmentpath' which is defined in the '/etc/puppetlabs/puppet/puppet.conf' file.
+# Most default location of the environment is '/etc/puppetlabs/code/environment/<dir_with_env_name>'. 
+# To see the environment path, please run below command 
+#
+# $ puppet config print environmentpath
+#
+# Every environment directory structure will act as an isolated enviornment which can serve puppet agent nodes separately. 
+# Every environment will have their own 'main manifest' or 'site manifest' and an additional module path along with the system wide 'base module path'.
+# Normally manifest and module locations are mentioned as below. 
+#
+# Manifest path -> $environmentpath/<environment_name>/manifest/
+# Module path   -> $environmentpath/<environment_name>/modules/
+#
+# * Main Manifest setting
+# 'puppet language' files are always called 'manifest' and it will be ending with an extension of ".pp". 
+#
+# . Puppet always start compiling with the single manifest which is called 'site manifest', this may be a single file or a collection of ".pp" files in the same module directory.
+# . Any classes declared in the 'main manifest' can be auto-loaded from the site manifest whcih is defined in the manifest directory within the module directory.
+# . Main manifest will be always the starting point for the catalog compilation.
+# . Main manifest is the standard manifest file for the puppet master
+# . This will be compiled anytime when an agents connects and request for its catalog
+# . This can contain node definitions, resources and classes that can be applied to all nodes equally
+# . Puppet enterprise uses main manifest to configure its file backups 
+# . Envioronment manifest in path "$environmentpath/$environment/manifest"
+# . Manifest files are evaluated in a directory globbing order 
+#
+# Path : Below are the path of both main and site manifest files 
+#
+# Main Manifest : $environmentpath/$environment/manifest/*.pp
+# Site Manifest : $environmentpath/$environment/<module_name/manifest/*.pp
+#
+# Note : Main manifest will be the files with in the main manifest directory of the environment and site manifest will be under the manifest directory of the modules. 
+#
+# Example : below example will show some sample main manifest entry and its site manifest under the modules
+#
+# # [root@puppetmaster ~]# more /etc/puppetlabs/code/environments/production/manifests/site.pp | tail -13
+# #
+# # file { '/etc/motd':
+# #       ensure => "present",
+# #       owner => "root",
+# #       group => "root",
+# #      mode => "644",
+# #       content => "
+# #		    * You are entering into Puppet Lab Infrastructure *
+# #                    
+# #		             * Welcome to sathsang.lab.net *
+# #
+# # ",
+# # }
+# 
+# * Node definition
+# This means how to define a node in puppet and its required classes, there are various concepts we need to look at when we are working on a node definition.
+# Details of various concept in node definition is explained below. 
+# 
+# . Puppet node definition looks similar to the class definition 
+# . Usally node names are definied with the agent certificate name, which is usually the host FQDN.
+# . Only one node definition is ever declared for a single node
+# . Anything which mentioned under the node definition will be assigned to agent when it request for a catalog from master.
+#
+# Synax : node 'node_name' {
+# 					include class_name
+# 				}
+#
+# Example : Below example shows a sample node definition  to assign a class 'rear'
+#
+# # node 'puppetagentcentos.sathsang.lab.net' {
+# #		include rear
+# #		}
+# #
+#
+# * How to define multiple classes for a node
+# While defining a node, you cna mention what calsses it is going to have one by one. So that when the clients request for a catalog each and every class defined under the catalog will get assigned. 
+# Below is the sample example for a assigning multiple classes in a node 
+#
+# Example : Below example will show us about, assigning multiple classes on a node definition, each class will get assigned to the node when it calls for catalog
+#
+# # node 'puppetagentsolaris.sathsang.lab.net' {
+# #		include rear
+# #		include ssh
+# #		include apache
+# #		include mysql
+# #		include web_app
+# #	}	
+# #
+#
+# * How to define multiple nodes in a same definition
+# When you want to assign multiple nodes with a same node definition, then you can either use comma seperated definition or you can use a regular expression to match a node. 
+#
+# - Assigment using comma seperated value 
+# You can use commas while defining multiple nodes which needs a similar node definitions, see below example 
+#
+# Example : Below example shows two nodes sharing the same node definition and these defined classes will be assigned to each node when they request for catalog
+#
+# # node 'puppetagentsolaris.sathsang.lab.net', 'puppetagentcentos.sathsang.lab.net' {
+# #		include motd
+# #		include ssh
+# #		include rear
+# # }
+# 
+# - Assignment using regular expression 
+# You can make assignment using a regular expression which can make sense to node definition
+# 
+# Example : See below example, which shows regular expression to define multiple nodes and its classes within the definition 
+#
+# # node /^puppetagent[centos|fedora|solaris].sathsang.\w{3}.net$/ {
+# #		include motd
+# #		include ssh
+# #		include rear
+# # }
+# 
+# When you are defining nodes via regular expressions you need to keep below points in mind 
+#
+# . regular expressions will be evaluated and assigned if there is no static node definitions available 
+# . First match will be considared and will assign accordingly, regardless how many times it is defined
+#
+# * Default node 
+# When a node is requesting for catalog and compile master is unable to determine any node definition for that node, then dafault node definition will come into picture. 
+# You can specify 'default' keyword to represent this node definition. 
+# Default node definuition some times uses when there is one catagory of the node definition is require for the entire system in the network 
+#
+# Synax : node default {
+# 				notify {"${::fqdn} has no node definition":}
+# 		  }
+# 
+# * Classes are re-usable 
+# As mentioned earlier classes are a cominbation of the resource and their definition, while talking about the puppet classes there are few advanatages 
+#
+# . Classes are composible node configuration, same classes can be recombined with various nodes definition 
+# . Using composible classes will reduce the effort of writing configurations everytime from the ground up.
+# . Using composible classes will help to limit the human error up to a major extend. 
+#
+# * Site.pp classification via PE Console (web)
+# Like wise you are adding a node definition in a site.pp, you can add nodes, assign classes and assign rules via PE web console. 
+# To do that, you need to create a "group" under "classification" then add "nodes" into the group and then update required classes under "class".
+# If you want to set some rules, then you can set that too. This total assignment will be equal to defining a node definition in site.pp and then including classes for the same. 
+#
+# Example : Below is the one of the example for which we created node definition in the PE console 
+#
+# node 'puppetagentcentos.sathsang.lab.net' {
+# 		include rear
+# }
+#
+#---------------------------------------------------------------------------------------------------
+# Chapter 8 : Resources (a detailed look)
+#---------------------------------------------------------------------------------------------------
+#
+# * Why resources are so important
+# When you try to manage something with puppet, then it is important that what 'resource type' can manage the resource which you are looking for. 
+# For that you can get the help from puppet command line documentation or can look at the puppet forge or puppet doc
+#
+# - urls for forge and puppet
+# Forge - http://forge.puppet.com
+# doc   - http://doc.puppet.com
+# 
+# - How to look at the resource type documentation via command line 
+#
+# Syntax   : $ puppet describe --list     -> This command will give you the details of all the resource type installed on the system
+#
+# Example  : Below example show us a sample output of "puppet describe --list"
+#
+# # 
+# # $ puppet describe --list 
+# # These are the types known to puppet:
+# # anchor          - A simple resource type intended to be used as ...
+# # augeas          - Apply a change or an array of changes to the  ...
+# # computer        - Computer object management using DirectorySer ...
+# # cron            - Installs and manages cron jobs
+# # exec            - Executes external commands
+# # file            - Manages files, including their content, owner ...
+# # file_line       - Ensures that a given line is contained within ...
+# # {more ..}
+# #
+#
+# - How to look at the details specific to a single resource 
+#
+# Syntax : $ puppet describe <resource_type> [-s]  # here -s means only a summary output, else it will be a detailed output
+#
+# Example : Below command will give you the details about 'mount' resource type, here we used "-s" to only print summary else it will be detailed output
+#
+# # 
+# # [root@puppetmaster ~]# puppet describe mount -s
+# # 
+# # mount
+# # =====
+# # Manages mounted filesystems, including putting mount
+# # information into the mount table. The actual behavior depends
+# # on the value of the 'ensure' parameter.
+# # **Refresh:** `mount` resources can respond to refresh events (via
+# # `notify`, `subscribe`, or the `~>` arrow). If a `mount` receives an event
+# # from another resource **and** its `ensure` attribute is set to `mounted`,
+# # Puppet will try to unmount then remount that filesystem.
+# # **Autorequires:** If Puppet is managing any parents of a mount resource ---
+# # that is, other mount points higher up in the filesystem --- the child
+# # mount will autorequire them.
+# # **Autobefores:**  If Puppet is managing any child file paths of a mount
+# # point, the mount resource will autobefore them.
+# #
+# #
+# # Parameters
+# # ----------
+# #     atboot, blockdevice, device, dump, ensure, fstype, name, options, pass,
+# #     remounts, target
+# #
+# # Providers
+# # ---------
+# #     parsed
+# # [root@puppetmaster ~]# 
+# #
+#
+# Note : For documentation help, we can also use puppet doc 
+#
+# * Origin of resource type
+# Resource type can be classified according to their availability and usage, few things to note about the resource type are below. 
+#
+# - Core resource types - files, packages, service, user, yumrepo
+# - Resource type comes from modules - file_line, ini_settings, java_ks, mysql_database, reboot 
+#
+# - Resource type run on all platforms - user, file, package
+# - Resource type run on platform specific - yumrepo, zfs, registry_value 
+#
+# - component speficific when certail subsystem available - augeas, selboolean, sshkey
+#
+# * Resource Limitation 
+# Providers are exposed by the the limitation of the operating system, that means if a feature which can be supported by an operating system will only can make available by the provider of the resource.
+#
+#
+# * Meta resource types 
+# There are few resource in puppet, which do not manage any system resources, but they provide some additional features and for puppet. 
+# Few such resources are 'notify' , 'schedule', 'resources'. We will take a detail look on each resources here 
+#
+# - notify
+# This resource basically provide a output message on the client system 
+# 
+# . Notify message will be displayed inline for intereactive puppet runs 
+# . Included in log reports for puppet daemon runs
+#
+# Example : This is how we can define notify resource in a simple way 
+#
+# #
+# # node default {
+# #
+# #  notify { "This host is not assigned to any node definition, you must need to review the node definition on master": }
+# # }
+# #
+# 
+# Example : This is how we can define much more complex notify message with the help of parameter 'message'
+#
+# #
+# # notify { 'node_def_message':
+# # 	message => "This is a common policy which cater to both centos and feroda agent on sathsang.lab.net domain",
+# #	}
+# #
+#
+# Note : if you want to learn more about the 'notify' resource then refer $ puppet describe notify
+#
+# - schedule 
+# This resource basically provide a schedule to manage a resource
+#
+# . Make note of that if the agent runs happen on that window, then only that resource will be applied with the schedule defined else not
+# . There is no guarentee that puppet will enforce the resource at the schedule time.
+#
+# Example : Below resource definition will show us the usage of 'schedule'
+#
+# #
+# # schedule {'weekly_patch_update':
+# # 	weekday	=>	['Sat', 'Sun'],
+# # 	range 	=>	'20:00-23:00',
+# # }
+# #
+# # exec { '/usr/bin/yum update all':
+# # 	schedule =>	'weekly_patch_update',		# --> Here we are calling the schedule metaparameter
+# # }
+# #
+#
+# 
+# * namevar and title attribute in a resource 
+# 'namevar' and 'title' attribute in a resource are almost serves the same purpose, you can find the details about each below 
+#
+# - namevar 
+#   This is a resource which used to identify the resource in a resource declaration
+#   'namevar' will vary according to the type of resources, below are the most common 'namevar' attributes which we uses
+#   
+# . For 'package' resource name is the namevar for that resource, see example below 
+#
+# # package {'kernel_dev_pkg':
+# #  	name 	=> 'kernel-devel',	--> Here 'name' is the 'namevar' attribute which gives the name of the package 
+# #  	ensure	=> 'installed',
+# #  }
+# 	    
+# . For 'file' resource 'path' is the namevar, please see an example below 
+#
+# # file {'resolv.conf':
+# #	path	=> '/etc/resolv.conf',	--> Here 'path' is the 'namevar' which identifies the resource 
+# #	ensure	=> 'file',
+# #	owner	=> 'root',
+# #	group	=> 'root',
+# #	mode	=> '0644',
+# # }
+# 
+# - Title 
+#   Title is way for puppet to identify its resource internally. 
+#   This will be often written in the form of a human-readable description for better identification about the resource 
+#   For more details about the title, please see the example below 
+#
+# # package {'kernel_dev_pkg':		--> Here 'kernel_dev_pkg' is the name of the pckage, puppet uses this 'title' to identify the resource internally
+# #     name    => 'kernel-devel',      --> This is the 'namevar' of the package which basically used by the provider to install the resource on agents  
+# #     ensure  => 'installed',
+# #  }
+#
+# - namevar defaults
+#  In case you do not mention the 'namevar' on a resource then the 'title' gets defaulted as the name of the resource 
+#  But when it goes to the complex manifest declaration it will not be better practice to follow 
+#
+# * File - resource attribute in a detail look
+# Below are the attribute we commaonly uses with a file resource 
+#
+# path 		:	This specifies the target location of a file
+# ensure 	:	what type of conditional requirement we have such as file, directory, link or absent, here file means files present, directory means directory present similarly link too
+# owner		:	owner of that file
+# group		: 	group owner of that file
+# mode		:	permission of that file 
+# content	:	To present the file content as a string 
+# source	:	Specifies the source from a file or template 
+# target 	:	Specifies the target of a symlink
+#
+# Note :  To know more about the file resuorce and its attributes please refer to document page
+# 		  $ puppet describe file
+#
+# - Specifying the content as a string in file resource 
+#
+# # file {'/etc/issue':
+# #	path 	=> '/etc/issue',
+# # ensure	=> 'file',
+# #	owner 	=> 'root',
+# #	group 	=> 'root',
+# #	mode	=> '0644',
+# #	content	=> 'This server is part of the puppet infrastructure',
+# # }
+#
+# - Specifies the content as a source from different file
+# This feature helps us to maintain files on puppet agents which is sourced from puppet master. 
+# Using this feature puppet will pick the content from a file which is defined inside the module  and help to coper over it to agents. 
+# Whenever the puppet agent runs happens, that time integrity of the file which is there in the agent will be matched with the master using MD5 checksum.
+# If the MD5 checksum doesnot match between agent and source file on master, then the source file will be copied over.
+#
+#
+#
+#
+#
+# FINAL REMARK : READ EXTERNAL NODE CLASSIFIER (ENC)
