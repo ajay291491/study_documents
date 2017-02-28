@@ -1105,5 +1105,21 @@
 # file_path		: This is the path of the file with in the module's "files" directory
 #
 # - symlinks : manage sym links to another file
+# using symlink feature we can manage link to another file and this is supported on almost all modern platforms 
+#
+# Example : Below example show sample for symlinks 
+#
+# # file {'/etc/redhat-release':
+# #		ensure 	=> link,
+# #		target	=> '/etc/oracle-release',
+# #	}
+#
+#
+#
+#
+#
+#
+#
+#
 #
 # FINAL REMARK : READ EXTERNAL NODE CLASSIFIER (ENC)
