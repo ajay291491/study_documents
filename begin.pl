@@ -4519,3 +4519,43 @@ use strict;  # Running program in strict mode, for more details please see below
 # * Tips from this chapter *
 # @INC 		: This is the default array contains the information about the path of all modules
 #
+#*************************************************************************************************************************************************
+#                                                                                                                                                #
+#                               ***** Chapter 15 - Perl and DBI *****                                                                 #
+#                                                                                                                                                #
+#*************************************************************************************************************************************************
+#
+# * What is a database 
+# This is a way to represent data and there are various database available in the market 
+# 
+# 1. Relational database (RDBMS)
+#  - These are the most common database available such as postgressql, mysql, oracle, sybase etc 
+#  - These provides better performamnce compare to the desktop based databases software 
+#  - Here Data is stored in tables and each tables will have some key fields which connects to other tables, hence all tables are connected each other
+#
+# 2. Operational database
+#  - An operational database is usually hugely important to Organisations as they include the customer database, personal database and inventory database 
+#  - ie the details of how much of a product the company has as well as information on the customers who buy them. 
+#  - The data stored in operational databases can be changed and manipulated depending on what the company requires.
+#
+# 3. Database warehouses
+#  - Normally in organisations where they need to preserve data for a long time this database is used 
+#  - Data which kept in database warehouse must have already gone through all editing and alteration required and will be unchanged
+#  - These database are kept for market analysis and other comapritive studies using older data with current market 
+#
+# 4. Distributed database
+#  - These database are often used by companies where they have offices in various geographical locations 
+#  - Each location will have its own copy of the database and combination of all together makes a single ditributed database
+#
+# 5. End user database 
+#  - There are wide variety of database available in the end user database 
+#  - Typical examples are excel, word, notepad, presentation and downloadable files etc 
+#
+# * What is DBI module 
+# This is one of the strong and reliable module which provided by perl. 
+# This act as an API between perl program and database to fetch the data and also to insert the database 
+# More details about the DBI module, we will see later in this chapter 
+# 
+# * Introduction Relation database (page : 349)
+#
+#
