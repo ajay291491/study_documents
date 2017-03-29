@@ -4556,6 +4556,95 @@ use strict;  # Running program in strict mode, for more details please see below
 # This act as an API between perl program and database to fetch the data and also to insert the database 
 # More details about the DBI module, we will see later in this chapter 
 # 
-# * Introduction Relation database (page : 349)
+# * A detailed look at relational database 
+# There are mainly two features with the relational database 
+# - Relational database has the data persistent, it continues to exist even after a program continues to access or modifies it 
+# - Unlike files on a server, relational database provides concurrent access for the files by multiple useres, database server make sure the changes are done in a safer way.
+# 
+# Relational database stores data in a tables, tables contain both rows and fields, fields contains one basic piece of information  
+# Let’s say we want to keep some information about our favorite musicians: their names, phone
+# numbers, and the instruments that they play. We might start by creating a list of the musicians like this: 1
+# 
+# Name 					phone
+# Roger Waters 				555-1212
+# Geddy Lee					555-2323
+# Marshall Mathers III 		555-3434
+# Thom Yorke 				555-4545
+# Lenny Kravitz 			555-5656
+# Mike Diamond 				555-6767
+# 
+# This list shows six lines of data—the "rows" in relational-database-speak. 
+# When we take these and place them together into one collection of data, we have a table. 
+# Normally, for each row we want to create a unique identifier—the "primary key", or simply the key (just in case we have two different Marshall Mathers III in our table). 
+# We can access the MMIII we’re interested in using this unique value.
+# We’ll name the field column containing the key player_id and name the other fields, as well:
+# 
+# player_id 	name 				phone
+# 1 		Roger Waters 			555-1212
+# 2 		Geddy Lee 				555-2323
+# 3 		Marshall Mathers III 	555-3434
+# 4 		Thom Yorke 				555-4545
+# 5 		Lenny Kravitz 			555-5656
+# 6 		Mike Diamond 			555-6767
+# 
+# 
+# So now we’ve created a table (let’s name it musicians) with three fields—player_id, name, and phone and six rows of information.
+# Normally when we build a database, we spread the information among several tables that connect to one another in some way, usually by the key, but you can use another field. 
+# To illustrate, let’s expand our information about musicians to describe what each plays and some important facts about those instruments.
+# We could add each instrument to the row in the musicians table, but we’d duplicate a lot of information. 
+# For instance, three of our performers play guitar, so any guitar data we provide we’d have to be repeat for each musician. 
+# Also, several of our musicians have multiple talents—for instance, Thom Yorke plays guitar and keyboards and sings. 
+# If we enter data for each instrument Thom plays, our table will become big and difficult to work with. 
+# Instead, let’s create another table, named instruments, to hold this information:
+# 
+# inst_id		 instrument 		type 		difficulty
+# 1 		Bagpipes 		reed 			9
+# 2 		Oboe 			reed 			9
+# 3 		Violin 			string 			7
+# 4			Harp 			string 			8
+# 5			Trumpet 		brass 			5
+# 6 		Bugle 			brass 			6
+# 7 		keyboards 		keys 			1
+# 8 		Timpani 		percussion 		4
+# 9 		Drums 			percussion		0
+# 10 		Piccolo 		flute 			5
+# 11 		Guitar 			string 			4
+# 12 		Bass 			string 			3
+# 13 		conductor 		for-show-only 	0
+# 14 		Vocals 			vocal 			5
+# 
+# 
+# Now that we’ve defined some instruments along with our opinion of their associated degrees of difficulty, 
+# we somehow need to map the instrument information to the information stored in the musicians table. 
+# In other words, we need to indicate how the instruments and the musicians tables relate. 
+# We could simply add the inst_id value to the musicians table like this:
+# 
+# player_id 		Name 		phone 		inst_id
+# 1 			Roger Waters 555-1212 		 12
+# 
+# and so on, but remember that many of our musicians play more than one instrument. 
+# We would then need two rows for Roger Waters (he sings, too) and three rows for Thom Yorke. 
+# Repeating their information is a waste of memory and makes the database too complex. 
+# Instead, let’s create another table that will connect these two tables. 
+# We will call it what_they_play and it will have two fields:player_id and inst_id.
+# 
+# player_id 	inst_id
+# 1 		11
+# 1 		14
+# 2 		12
+# 2 		14
+# 3 		14
+# 4 		7
+# 4 		11
+# 4 		14
+# 5 		11
+# 5 		14
+# 6 		9
+# 
+# To read all this information and make sense of how it relates, we would first look in the musicians table and find the musician we want—for instance Geddy Lee. 
+# We find his player_id, 2, and use that value to look in the what_they_play table. 
+# In that table, two entries for his player_id map to two instr_ids: 12 and 14. 
+# Taking those two values, we use them as the keys in the instruments table and find that Geddy Lee plays the bass and sings for his band.
+# 
 #
 #
