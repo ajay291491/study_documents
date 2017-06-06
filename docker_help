@@ -1,0 +1,48 @@
+1. How to start the jenkins container from image 
+
+$ docker run -t -p local_port:container_port --name=<name_of_container> -d <docker_image>
+$ docker run -t -p 8080:8080 --name=jenkins -d foxylion/jenkins
+
+2. How to check what containers are running 
+
+$ docker ps -a
+
+3. How to login to a container as a root 
+
+$ docker exec -i -t --user=root <container_name> /bin/bash
+
+4. How to run a command in container 
+
+$ docker exec -i -t <container_name> <command>
+
+5. How to restart a container 
+
+$ docker restart <container name or ID>
+
+6. How to stop a container 
+
+$ docker stop <container_name>
+
+7. How to start a container 
+
+$ docker start <container_name>
+
+8. How remove a container 
+
+$ docker rm <container_name>
+
+9. How to pull an image to docker 
+
+$ docker pull <image_name>
+
+10. How to delete a image in docker 
+
+$ docker rmi <image_name>
+
+11. How to attach to an running container 
+
+$ docker attach <container_name> 
+
+Note : This is almost like a console and you will be able to see output on tty if it started via "-t" option and to detech you need to use "ctrl - c" or "ctrl -p " or "ctrl -q"
+
+TEST : Removing 123 456 .... Anu 04-June-2017 12:47 PM
