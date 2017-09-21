@@ -453,7 +453,7 @@
 # #		ensure	=> "absent"'
 # #	}
 #
-# User 		: This resource is is used to manage an user, there are various attribute along with the user resource. 
+# User 		: This resource is used to manage an user, there are various attribute along with the user resource. 
 # Example	: Below example shows how to define a user resource 
 #
 # # user {'ajay':
@@ -952,7 +952,7 @@
 # - Resource type run on all platforms - user, file, package
 # - Resource type run on platform specific - yumrepo, zfs, registry_value 
 #
-# - component speficific when certail subsystem available - augeas, selboolean, sshkey
+# - component speficific when certain subsystem available - augeas, selboolean, sshkey
 #
 # * Resource Limitation 
 # Providers are exposed by the the limitation of the operating system, that means if a feature which can be supported by an operating system will only can make available by the provider of the resource.
@@ -1080,7 +1080,7 @@
 # Example : Below is an example how in which you will copy the resolv.conf file
 #
 # # file { 'resolv.conf'
-# #		name	=> '/etc/resolv.conf',				--> defining the name identification for the file to manage
+# #		path	=> '/etc/resolv.conf',				--> defining the name identification for the file to manage
 # #		owner 	=> 'root',
 # #		group	=> 'root',
 # #		mode	=> '0644',
@@ -1113,13 +1113,34 @@
 # #		ensure 	=> link,
 # #		target	=> '/etc/oracle-release',
 # #	}
+# 
+# - Managing directory via file resource
+# To manage directory you need to define them as file resource and should mention their permission 
+#
+# Example : Below example show sample about the directory resource 
+#
+# #
+# # file {'app_dir':
+# #		path 	=> '/var/tmp/cache_dir',
+# #		ensure 	=> 'directory',				==> This parameter decides whether it should create a 'file' resource or 'directory' resource.
+# #		mode 	=> '0644',
+# #		owner 	=> 'sathsang',
+# #		group	=> 'root',
+# # }
+# #
+# 
+# Note : When you define a file resource ensure the state of the resource can define only below parameters 
+# 
+# file 		: This makes sure given resource is a file and it exist
+# directory : This makes sure the give resource is a directory and it exist 
+# link 		: This makes sure the link exist, to get the link you need to define the target too where the link should be created or available 
+# absent	: This makes sure the given file resource is absent 
+#
+# Spacial case : You should never use 'present' state along with the 'file' resource, this will ignore the resource state for file.
+#
+# Pending : Introdcution to Deploying a nginx labs (Page : 159)
 #
 #
 #
 #
-#
-#
-#
-#
-#
-# FINAL REMARK : READ EXTERNAL NODE CLASSIFIER (ENC).
+# FINAL REMARK : READ EXTERNAL NODE CLASSIFIER (ENC)
