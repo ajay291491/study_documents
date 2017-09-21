@@ -1,0 +1,41 @@
+                            *  Project - Setup puppet home lab *
+
+# Task 1 : configure puppet network 				
+puppet_master			- completed 
+fedora_agent			- completed	
+centos_agent			- Completed
+
+# Task 2 : Configure public network for internet access
+puppet_master			- completed 
+fedora_agent			- completed	
+centos_agent			- completed
+
+# Task 3 : Configure ntp service 
+puppet_master           - completed
+fedora_agent            - completed
+centos_agent            - completed
+
+# Task 4 : Install dig package  
+puppet_master           - completed
+fedora_agent            - completed
+centos_agent            - completed
+
+# Task 5 : update DNS address to server 
+puppet_master           - Pending
+fedora_agent            - Pending
+centos_agent            - Pending
+
+# Task 5 : Install puppet package or service mode 
+puppet_master           - completed
+fedora_agent            - completed
+centos_agent            - Pending
+
+# Task 6 : Confligure nodes 
+puppet_master           - Pending
+fedora_agent            - Pending
+centos_agent            - Pending
+
+# Task 4 : Test communication between clinet and server 
+
+
+# Task 5 : Create simple file, service and package check for each clients 
