@@ -1138,9 +1138,27 @@
 #
 # Spacial case : You should never use 'present' state along with the 'file' resource, this will ignore the resource state for file.
 #
-# Pending : Introdcution to Deploying a nginx labs (Page : 159)
+# * Service - taking a detail look on the resource attribute 
+# Service resource can be used to manage the service on various platform using puppet. 
+# Puppet will take care of doing the desired function on various hosts using the service resource.
+# In case if you have any custom startup script to deal with the stop or start of the service, then that can also be feed to the service resource. 
+# Below are the atrributes which we uses with the service resource 
 #
+# - Attributes with service resource 
+# name			: This is the namevar attribute, used for marking the name of the service
+# ensure		: used for marking the state of the resource (running, stopped)
+# hasrestart 	: This attribute can be used to specify the restart script if any available, else puppet will use the default init script for stop and start 
 #
+# Note : Thete are many more attributes available with service resource, you can check them in https://docs.puppet.com/puppet/latest/types/service.html
+#
+# Example : Below example tells us how to manage a service resource
+#
+# #
+# # service {'sshd_service':
+# #		name	=> 'sshd',
+# #		ensure	=> 'running',
+# # } 
+# #
 #
 #
 # FINAL REMARK : READ EXTERNAL NODE CLASSIFIER (ENC)
