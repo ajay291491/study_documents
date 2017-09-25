@@ -1160,5 +1160,23 @@
 # # } 
 # #
 #
+# * Exec - executing remote programs
+# exec resource can be used to manage execute a remote program, but this resource usage must be avoid wherever possible due to following reasons 
+# - Outcome of the execution is unknown
+# - Status are not really tracked
+# - Puppet not responsible for idempotency 
+#
+# Example : Below is an example for exec resource 
+#
+# #
+# # exec {'updatedb',
+# #		path	=> '/usr/bin',
+# # 	create	=> '/var/lib/mlocate/mlocate.db',
+# # }
+# #
+#
+# Note : To learn more about exec run "puppet describe exec"
+#
+# page : 162
 #
 # FINAL REMARK : READ EXTERNAL NODE CLASSIFIER (ENC)
