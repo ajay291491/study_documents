@@ -1,0 +1,60 @@
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------
+#																																							 
+#														Chapter 1 :	Introdction to Ansible 																	 	
+#																																							 
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Ansible is a configuration management tool which is supported by Redhat. 
+# It can manage several system resource remotely according to playbook which is defined. 
+# Playbooks are are promises which written in ansible and language used for writing such promise is "YAML".
+# Ansible works on top of the SSH keys, that means code will be deployed on the ssh trusted clients. 
+# 
+# Code language : YAML
+#
+# Code deployment method : PUSH
+# Compare to its other competetors such puppet and cfengine, ansible uses a push method 
+# That means master will push codes to clients, rather than clients pulls code from master
+#
+# Agentless nature : 
+# Ansible do not have a agent or daemon running on the client side, master will take care of pushing the policy on client side
+# If you have the ansible master node key trusted and added to the authorized_keys file in the client, then master node will be able to connect to the client. 
+#
+# Configuration file : /etc/ansible/ansible.conf
+# Ansisble configuration file is the key file which holds information about what should be looked at where for ansible to work
+# Any customarization to the default configuration can be made in this config files
+# Few sample configuration it holds are hostfile, user etc 
+#
+# Inventory file : /etc/ansible/hosts 
+# This is the file in which ansible keeps its inventory and any node which managed by ansible must be added here. 
+#
+# Connectivity : Testing client connection using modules
+# Once you have added the master node key to the client, then you can do the basic connection test as below 
+#
+# #
+# # [root@ansiblemaster01 ~]# ansible clientnode02.svr.apac.sathsang.net -m command -a uptime
+# # clientnode02.svr.apac.sathsang.net | SUCCESS | rc=0 >>
+# #  04:53:16 up 4 days,  7:03,  2 users,  load average: 0.02, 0.02, 0.05
+# # [root@ansiblemaster01 ~]# 
+# #
+#
+# #
+# # root@ansiblemaster01 ~]# ansible clientnode02.svr.apac.sathsang.net -m ping
+# # clientnode02.svr.apac.sathsang.net | SUCCESS => {
+# #   "changed": false, 
+# #   "ping": "pong"
+# # }
+# # [root@ansiblemaster01 ~]# 
+# #
+#
+# Note : When you are calling a module you will need to use "-m" string and followed by "module name".
+#      : When you are calling a atribute within the module you can use "-a" followed by the attribute.
+# 
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------
+# 
+#												Chapter 2 : Introduction to playbook
+#
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+#
+#
+#
+#

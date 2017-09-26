@@ -1179,4 +1179,49 @@
 #
 # page : 162
 #
-# FINAL REMARK : READ EXTERNAL NODE CLASSIFIER (ENC)
+#---------------------------------------------------------------------------------------------------
+# Chapter 9 : Resource relationship
+#---------------------------------------------------------------------------------------------------
+# 
+# . Puppet does not enforce the resource in top down order in the mainfest
+# . Instead puppet checks for the dependancy in source manifest code 
+# . Puppet then reorders the resource enforcement to meet the resource relationship
+#
+# * Metaparameters - Used for defining resource relationships 
+# Metaparameters are used for defining resource order and relationships and it works with almost all the resource types.
+# There are mainly four metaparameters 
+# - require
+# - before 
+# - subscribe 
+# - notify
+#
+# Note : Best practice is always define the relatioship you need and do not defind anything for which you do not need
+#
+# * Require  - Define a referenced resource to applied first
+# Using 'require' you can define a referenced resource to be applied first before the current resource getting applied 
+# This metaparameter is helpful when you need an one resource to be applied as pre-requirement for another one. 
+# Puppet resource reference always comes in pairs, so when we create dependancy we need both 'Type' and 'title' part as shown below.
+#
+# Synatx : Type ['title']
+# 
+# - Type 	: Here first letter will be capital which indicates it as a reference and main reference Types and Package, Service, File etc 
+# - title 	: Title is the name of the other resource to which we are creating a dependancy reference
+#
+# Example : Below example shows us how to define a resource dependancy on openssh 
+#
+# #
+# # package {'openssh':
+# #		ensure 	=> 'installed',
+# #	}
+# #
+# # service {'sshd':
+# #		ensure	=> 'running',
+# #		enable	=> 'true',
+# #		require	=> Package['openssh'],		==> This is how a package rerource getting referenced for service resource
+# #	}	
+# #
+#
+#
+#
+#
+#
