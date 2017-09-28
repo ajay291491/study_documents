@@ -1202,7 +1202,7 @@
 # This metaparameter is helpful when you need an one resource to be applied as pre-requirement for another one. 
 # Puppet resource reference always comes in pairs, so when we create dependancy we need both 'Type' and 'title' part as shown below.
 #
-# Synatx : Type ['title']
+# Synatx : require	=> Type['title']
 # 
 # - Type 	: Here first letter will be capital which indicates it as a reference and main reference Types and Package, Service, File etc 
 # - title 	: Title is the name of the other resource to which we are creating a dependancy reference
@@ -1217,9 +1217,95 @@
 # # service {'sshd':
 # #		ensure	=> 'running',
 # #		enable	=> 'true',
-# #		require	=> Package['openssh'],		==> This is how a package rerource getting referenced for service resource
+# #		require	=> Package['openssh'],		==> Here using metaparameter 'required' we have requested puppet to install the package openssh well before servoce sshd gets started.
 # #	}	
 # #
+#
+# * Before - to refernce a resource a well before another one
+# Before is also like the require metaparameter, but the way we define this is exactly opposite to require
+# This is called on the first resource where another resource is depend on. 
+# Here also the 'Type' and 'title' rules applies the same, Type should have first letter capital and 'title' should be the name of the resource.
+# 
+# Syntax : before => Type['title']
+#
+# Example : Below is an example for before metaparemeter 
+#
+# #
+# # package {'openssh':
+# #		ensure	=> installed,
+# #		before	=> Service['sshd'],		=> Here we have defined the openssh package to get installed well before the service sshd gets started.
+# # }
+# #
+# # service {'sshd':
+# #		ensure	=> running,
+# #		enable	=> true,
+# #	}
+# #
+#
+# NOTE : before and require metaparameters does the same fucntion you can use them according to your own needs.
+#
+# * Refresh events 
+# Refresh events can refresh other resources, refresh events are mainly invoked with metaparameters 'subscribe' and 'notify'.
+# Response to any refresh events is specific to the resource and how it is expected to respond, below are the resources which mainly respond to the refresh events.
+# 
+# - service		: Will restart a service if something gets changed, for example sshd service expected to restart when sshd.conf gets changed
+# - mount 		: will try to remount a resourse if something gets changed in the referenced or containing resource
+# - exec 		: Will alter the way the command executes if the refrenced or containing resource gets changed 
+# - reboot 		: in case any reboot require after the updates
+#
+# NOTE : above are only the built in type resources expected to respond to the refresh events, but there may be other resources which may respond which are available from forge. 
+#
+# * Subscribe - This metaparameter will trigger a refresh event if the 'referenced' resource changes 
+# 'subscribe' metaparameter implies the 'require' metaparemeter, an advantage of using 'subscribe' is it can trigger a refresh event referenced resource changes.
+# It enforces order as well as look for changes on the refrenced resource.
+# Also it send refresh events only when puppet maskes some changes to the referenced resource 
+#
+# Example : Below example will tell us how 'subscribe' metaparameter handles relation between openssh config file and its service 
+#
+# # 
+# # file {'sshd.conf':
+# #		path	=> '/etc/sshd/sshd.conf',
+# #		ensure	=> 'file',
+# #		mode	=> '0644',
+# #		owner	=> 'root',
+# #		group	=> 'root',
+# #		source 	=> 'puppet:///module/openssh/sshd.conf',
+# #	}
+# #
+# # service {'sshd':
+# #		ensure		=>	'running',
+# #		enable		=>  'true',
+# #		subscribe	=>	File['sshd.conf'],				==> This will send a refresh event to containing resource if the referenced resource gets changed.
+# # }
+# # 
+#
+# * notify - This metaparemeter will trigger a refresh event to 'refernce' resource if the 'containing' resource gets changed.
+# 'notify' metaparameter will implies the 'before' metaparameter, this will send a refresh event to reference resource if the containing resource gets changed.
+#  This will enforce order as well as sends refresh events and change ontification to the refrenced resource.
+#  Similar to subscribe, notify metaparameter will also send the refresh events if puppet makes any changes. 
+#
+#  Example : Below example will tell us how 'notify' metaparameter will handle the relation between openssh configuration file and its service
+#
+#  # 
+#  # file {'sshd.conf':
+#  #	path	=> /etc/ssh/sshd.conf',
+#  #	ensure	=> file,
+#  #	mode	=> '0644',
+#  #	owner	=> 'root',
+#  #	group	=> 'root',
+#  #	souce	=> 'puppet:///modules/openssh/sshd.conf',
+#  #	notify	=> Service['sshd'],							==> This will send refresh event to referenced 'sshd' service if containing 'sshd.conf' gets changed.
+#  # }
+#  #
+#  # service {'sshd':
+#  #	ensure	=> 'running',
+#  #	enable	=> 'true',
+#  # }	
+#  #
+# 
+# NOTE : More practical example will be available in the page 178 - 179 in the reference book
+#
+# * Package, File, Service - resource relatiolnship (page : 180)
 #
 #
 #
