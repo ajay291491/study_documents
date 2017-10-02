@@ -1305,8 +1305,182 @@
 # 
 # NOTE : More practical example will be available in the page 178 - 179 in the reference book
 #
-# * Package, File, Service - resource relatiolnship (page : 180)
+# * Package, File, Service - resource relatiolnship 
+# When we define a configuration we mostly will deal with 'package', 'file' and 'service' resource.
+# So it is very important to know we should define resource in what order
 #
+# 1. Package 
+# Package resource should be the one we define very first, there are couple of reason for that 
+# - Package resource may overwrite any of the configuration files we hold. 
+# - Package is the most essential part of a module 
+#
+# #
+# # package {'samba':
+# # 	name	=> 'samba.x86',
+# #		ensure	=> 'present',
+# # }
+# #
+#
+# 2. File 
+# Files should be declared second after the package installation
+# - This will prevent from files getting overwritten due to the package installation
+# - Also service resource will require config file before it getting started 
+#
+# #
+# # package {'samaba':
+# #		name	=> 'samba.x86',
+# #		ensure 	=> 'present',
+# #	}
+# #
+# # File {'samba.conf':
+# #		path	=> '/etc/samba/smb.conf',
+# #		ensure 	=> file,
+# #		owner	=> 'root',
+# #		group	=> 'root',
+# #		mode	=> '0644',
+# #		require	=> Package['samba'],
+# # }
+# #
+#
+# 3. Service 
+# This resource should be declared after package and file resource
+# - This will make sure service will get started with the expected configuration 
+# - Also there won't any chance of failure due to the lack of package or file 
+#
+# #
+# # package {'samaba':
+# #		name	=> 'samba.x86',
+# #		ensure	=> 'present',
+# #	}
+# #
+# # file {'smb.conf':
+# #		path 	=> '/etc/samba/smb.conf',
+# #		ensure	=> file,
+# #		owner	=> 'root',
+# #		group	=> 'root',
+# #		mode	=> '0644'
+# #		notify	=> 	Service['smbd'],		=> This will refresh the service if the file get any config changes, it can achieve via subscribe from service resource too.
+# # }
+# #
+# # service {'samba':
+# #		name	=> 'smbd',
+# #		ensure	=> 'running',
+# #		enable	=> 'true',
+# #	}
+# #
+#
+# NOTE : Use require, before, notify and subscribe metaparameters to make sure you create right dependancy and refresh for resource as needed. 
+# 
+# * Class -  Defining and declaring a class 
+# Defining and declaring a class can be said as 
+# 
+# Defining  : This where you write the manifest for the class. Here you will be constructing the class with resource, variables, sourced files, reference and metaparameters. 
+# Declaring : This is how you call a class whenever you require the same.
+#
+# Example : Below example will tell you how you define and declare a class 
+#
+# #
+# # class {'apache_server':
+# #	
+# #		package {'apache':
+# #			name	=> 'httpd.x86_64',
+# #			ensure	=> 'present',
+# # 	}
+# #
+# # 	file {'httpd.conf':
+# #			name 	=> '/etc/httpd/conf/httpd.conf',
+# #			ensure	=> 'file',
+# #			mode	=> '0644',
+# #			user	=> 'root',
+# #			group	=> 'root',
+# #			require	=> Package['apache'],
+# #		}
+# #
+# # 	service {'httpd':
+# #			name	=> 'httpd',
+# #			ensure	=> 'present',
+# #			enable	=> 'true',
+# #			subscribe	=> File['httpd.conf'],
+# # 	}
+# #
+# # }
+# #
+# # node {'puppetclientnode01.svr.lab.com':
+# #
+# #		include apache_server
+# # }
+# #
+#
+# * Resource order - order dependancies 
+# Resource can be mainly order in two different ways, which are implicit and explicit method. 
+#
+# 1. Implicit order (soft dependacy)
+#  - In this method there won't any dependancies mentioned in the code base.
+#  - Puppet will execute the resources in the order which they defined
+#  - If any explicit dependancy mentioned then puppet will ignore the soft dependacy and will go with what defined in the code base.
+#
+# 2. Explict order 
+# - In this method relationship between the resources will be explictly mentioned in the code base
+# - This will overwrite the soft dependancies wherever required 
+# - This is available from puppet 3+ versions 
+#
+# NOTE : Puppet follows the implict relationship in below categories mainly
+# 
+# - users and groups 
+# - Files and Directories 
+# - user, group and file ownerships 
+#
+# If you need to know more examples on this, then refer page 194 - 196 on the study book
+#
+#---------------------------------------------------------------------------------------------------
+# Chapter 10 : Language constructs 
+#---------------------------------------------------------------------------------------------------
+# This chapter will mainly discuss on below subjects 
+# - Use variables in domain specific language (DSL)
+# - Use arrays in DSL
+# - Use conditional logic expression in the puppet DSL
+# - Create puppet manifest that can work in different operating systems
+#
+# * Variables - how to declare variables 
+# Variable declaration can help us in using a predefined values many times within the same manifest. 
+# This will prevent in declaring the same thing several times in a program. 
+# There are few key things you should know before you start using a variable 
+#
+#  - Variables in puppet DSL starts with a prefix of $, 
+# #
+# #  $config_file='/etc/sysctl.conf'
+# #
+#
+#  - Variables can be declared as a resource title 
+# #
+# #  $config_file='/etc/fstab'
+# #
+# #  file {$config_file:
+# #   	ensure	=> 'file',
+# #  	mode	=> '0644',
+# #  	owner	=> 'root',
+# #  	group	=> 'root',
+# #  	source	=> 'puppet:///modules/fs_module/files/fstab',
+# #  }
+# #
+#
+# - Variables can be declared as resource attribute 
+# #
+# # $search_entry = "google.com yahoo.com msn.com"
+# #
+# # file {'/etc/resolv.conf':
+# #	ensure	=> 'file',
+# #	owner	=> 'root',
+# #	group	=> 'root',
+# #	mode	=> '0644',
+# #	content	=> $search_entry,
+# # }
+# #
+#
+# NOTE : You must define the variable well before it is getting declare because puppet allows reference to the empty variable
+# 	 If you have declared "$search_entry" before declaring then "/etc/resolv.conf" must have created without any content
+#
+# * Variable - Constructing strings (page 201)
 #
 #
 #
