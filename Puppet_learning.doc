@@ -1478,9 +1478,118 @@
 # #
 #
 # NOTE : You must define the variable well before it is getting declare because puppet allows reference to the empty variable
-# 	 If you have declared "$search_entry" before declaring then "/etc/resolv.conf" must have created without any content
+# 	 	 If you have declared "$search_entry" before declaring then "/etc/resolv.conf" must have created without any content
 #
-# * Variable - Constructing strings (page 201)
+# * Variable - Constructing strings 
+# Single quoted strings are always treated as literal
+#
+# Example : 
+#
+# #
+# # $httpd_dir = '/etc/httpd'
+# # notify {'checking for ${httpd_dir} on local file system': }
+# #
+# # Result : checking for $httpd_dir on local file system
+# #
+#
+# If you want variable interpolation, then you will need to use the double quotes " "  while defining the string
+# Also varaible should be called in curly braces ${..} when it is calling along with a string
+#
+# NOTE : Varaible should not called in { } braces when it is called outside a string
+#
+# #
+# # $httpd_dir='/etc/httpd'
+# # notify {'search_notification':
+# #	message	=> "checking for ${httpd_dir} on local file system",
+# # }
+# #
+# # Result : checking for /etc/httpd on local file system"
+# #
+#
+# NOTE : A standard practice to define variable is to define them in "params" class such as "myclass::params", then include that class and scope the variable wherever neeeded
+# 	 This will be covered in details later in scopes.
+#
+# Variables are immutable, that means same variable cannot be reassigned in the same program, but local variable can be defined which can override the global variable 
+#
+# * Variable scope
+# Avalability and usage of the virables are decided by the variable scope.
+# 
+# - Global variables - facts are always global variables are they can call anywhere on the program with a 
+#
+# Syntax  :	${::fact_variable_name} 
+# Example : nofity {"This ${::hostname} is running on ${::timezone}"
+#
+# NOTE : You can find the facter variables using comamnd "facter" from puppet client or any puppet nfra hosts 
+# 
+# - Local variables 
+# - Local variables are normally defined under the class 'params'.
+#   Params can be defined as a class with in the manifest file or it can defined in a separate file under the module/manifests directory as params.pp
+#   You can declare params class many times whenever you want to call the variable since it is idempotent
+#
+# Syntax  : include $modeule_name::params			=> including params class 
+# Synatx  : $test_file = $modeule_name::params::file_name	=> defining a local variable using variable defined in params 
+#
+# - Resource defaults
+#   Puppet allows resource defaults
+#   This can be defined in the class and all resource which fall under the scope will get applied with the defaults 
+#
+# Example : Below resource default declaration set mode "0644" and permission "root:root" for any file create in the same scope  
+#
+# #
+# # File {
+# #	mode 	=> '0644',
+# # 	owner	=> 'root',
+# #	group	=> 'root',
+# # }
+# #
+#
+# NOTE : even though mode is set as 0644 in above example, for any directory puppet will define mode as 0755
+#
+# Example : Below example will tell you how local variables and global variables are used along with params.o
+#
+# #
+# # $ tree /etc/puppetlabs/code/environments/production/modules/log_manager/
+# # /etc/puppetlabs/code/environments/production/modules/log_manager/
+# # └── manifests
+# #     ├── init.pp		=> site manifest for the file
+# #     └── params.pp		=> All variables are defined in this file
+# # 1 directory, 2 files
+# # $ 
+# #
+# # $ more /etc/puppetlabs/code/environments/production/modules/log_manager/manifests/params.pp 
+# # class log_manager::params {		=> params class name
+# #	$dir  = '/var/log'	
+# #	$file = "${dir}/tools.log"
+# # }
+# # $
+# #
+# # $ more /etc/puppetlabs/code/environments/production/modules/log_manager/manifests/init.pp 
+# # class log_manager {	
+# #
+# #	File {				=> setting up file permission for all files created under this class, but directory permission will always be 0755 by default
+# #		mode    => '0664',
+# #		owner   => 'root',
+# #		group   => 'sathsang',
+# #	}
+# #
+# #	include log_manager::params			=> calling params	
+# #	$log_dir  = $log_manager::params::dir		=> defining variable "synatx : $module_name::params::variable_name_defined_in_params
+# #	$log_file = $log_manager::params::file
+# #
+# #	file {"$log_dir":
+# #		ensure => 'directory',
+# # 		before 	=> File["$log_file"],
+# # 	}	
+# #	
+# # 	file {"$log_file":
+# #		ensure  => 'file',
+# #		content => "All logs are from ${::hostname} and running in ${::timezone}",	=> using global variable from facter
+# #	}
+# # }
+# # $
+# #
+#
+# * Arrays ( Page : 210 )
 #
 #
 #
