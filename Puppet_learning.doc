@@ -1589,7 +1589,139 @@
 # # $
 # #
 #
-# * Arrays ( Page : 210 )
+# * Arrays - How to use arrays in puppet
+# Puppet allows simple arrays in its DSL, You can represent array as 
+# . Array should ne enclosed within square bracket 
+# . Every element should be covered with single or double quote depends on whether it is a literal or variable
+# . Each elemnt should be seperated by a comma
+#
+# Syntax : [ 'zeroth_element', 'first_elemnt', 'second_element', ....]
+#
+# - Array as a parameter : Array can be used as an argument to the resource parameter.
+#
+# Example : In the below example an user logmgr will be created and groups 'sathsang', 'nginx', 'chrony will be assigned for the user
+#
+# #
+# # user {'logmgr':
+# #     ensure  => 'present',
+# #     groups  => ['sathsang', 'nginx', 'chrony'], 	=> Here with an use of array we are assiging multiple group for an user
+# # }
+# #
+# #
+#
+# - Array as title : Array can be used as title too 
+#
+# Example : Here we are creating two files exactly with same content, here both files are given as variables and its uses double quote 
+#
+# #
+# # file {["$log_file", "$cache_file"]:		=> Here title used as an array to indicate multiple file should be created 
+# #     ensure  => 'file',
+# #     content => "All logs are from ${::hostname} and running in ${::timezone}",
+# # }
+# #
+#
+# - Array as argument : Array can be passed as an arument to resource with multiple type
+#
+# #
+# #     file {["$log_dir", "$cache_dir"]:
+# #             ensure => 'directory',
+# #             before  => [ File["$log_file", "$cache_file"], Package['rear.x86']],	=> Here multiple arguments passed as array and array of an array
+# #     }
+# #
+# 
+# Example : This example will explain how array can be used in a class in multiple ways 
+#
+# # class log_manager {
+# #
+# #     File {
+# #             mode    => '0664',
+# #             owner   => 'root',
+# #             group   => 'sathsang',
+# #     }
+# #
+# #     include log_manager::params
+# #     $log_dir  = $log_manager::params::dir
+# #     $log_file = $log_manager::params::file
+# #     $cache_dir = $log_manager::params::cache_dir
+# #     $cache_file = $log_manager::params::cache_file
+# #
+# #     file {["$log_dir", "$cache_dir"]:
+# #             ensure => 'directory',
+# #             before  => File["$log_file", "$cache_file"],
+# #     }
+# #     
+# #     file {["$log_file", "$cache_file"]:
+# #             ensure  => 'file',
+# #             content => "All logs are from ${::hostname} and running in ${::timezone}",
+# #     }
+# #
+# #     user {'logmgr':
+# #             ensure  => 'present',
+# #             groups  => ['sathsang', 'nginx', 'chrony'],
+# #     }
+# # }
+# #
+#
+# * Conditional expression
+# Puppet supports mainly four conditional expressions 
+#
+# . Selectors
+# . Case statement
+# . if statement
+# . unless statement
+#
+# Conditionals can be mainly used to return a value or to alter a logic flow 
+#
+# * Selectors 
+# Selectors can be used to select return a value based on a list of choice provide, matching value with selector will be taken as the returning value. 
+#
+# Selectors can normally use a value directly from the selection itself or it can store into a variable and can reuse many time in the program.
+# You can use glocal variables (facts) or local variables or strings as selectors to choose from a list of choice.
+# Selectors are case insensitive, that means selectiors can be represented either in capital or small.
+# Selecors supports regular expressions too, incase if you want to case senistive operations you need to use regular expressions. 
+# Selectors can be used used either to directly use a value or store a variable.
+#
+# NOTE : selectors should always return a value, if there is no matching value then compilation will fail, so it is always good to have a 'default' assigment too.
+#
+# Syntx : selector_name ? { 
+# 		'key_one' => 'value_one',
+# 		'key_two' => 'value_two',
+# 		 default  => 'value',
+# 	  }
+#
+# - How to use selectors to return a value and use a value and directly use it.
+#
+# #
+# # Package {'editor_pkg':
+# # 	ensure  => 'present',
+# # 	name    => $::operatingsystem ? {
+# # 		'Centos'   => 'nano.x86_64',
+# # 		'Redhat'   => 'vim-common.x86_64',
+# # 		default	   => 'gedit',
+# # 		},
+# # }
+# #
+# 
+# - How to use selectors to assign a value to a variable 
+#
+# #
+# # $package_name = $::operatingsystem ? {
+# #    'Centos'    => 'nano.x86_64',
+# #    'Redhat'    => 'vim-common.x86_64',
+# #    default     => 'gedit.x86_64',
+# # }
+# #        
+# # Package {'editor_pkg':
+# #    ensure  => 'present',
+# #    name    => "$package_name",
+# # }
+# #
+#
+# * Case - Choosing one branch of a code (Page : 217)
+#
+#
+#
+#
 #
 #
 #
