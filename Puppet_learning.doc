@@ -1717,8 +1717,204 @@
 # # }
 # #
 #
-# * Case - Choosing one branch of a code (Page : 217)
+# * Case statement
+# Case statement can be used in multiple ways either to choose a specific branch of code where the case match or assign a set of variables where the case matches
+# Cases may be any of the variable 
+# . A literal value 
+# . A variable 
+# . A function call that return a value 
+# . A regular expression 
+# . A special bareword calss 'defult'
 #
+# NOTE : Whenever you write a specific case always make sure you are including the 'default' class and it contains an exit to the program.
+# 	 So that the program can exit in case it did not find the right case match and also it will prevent the program not to execute further and create an unexpected outcome.  
+#
+# - Case : How to use case to choose a branch of code 
+# . You can use case around the resource definitions or any other logical constructs.
+# . Branches can contain any valid puppet code 
+# . zero or one branch will be enforced depends on whether it can match the case or not.
+# 
+# Example : Below example will show you how to choose a list of classes using case 
+#
+# #
+# # class key_apps {
+# #
+# #   $hostname = $::hostname
+# #   case $hostname {
+# #       'clientnode01': {	=> Declaring only one case node and modules classes needed by the same node
+# #          	include rear
+# #          	include nginx
+# #       }
+# #        /clientnode0(2|3)/:  {	=> Using regular expression to define a set of classes for two nodes which matches the regular expression
+# #          	include postgresql::client
+# #          	include rear
+# #        }
+# #    }
+# # }
+# #
+#  
+# - Case : How case can be used to assign multiple variable 
+# Case statements are the ideal way to set multiple  or single variables at once case match. 
+#
+# Example : Below example will show us how to assign variable according various cases.
+#
+# #
+# # $ more params.pp 
+# #   class log_manager::params {
+# #  	case $::operatingsystem {
+# #		'redhat', 'CentOS' : {		=> You can give multiple case matches like this 
+# #			$dir = '/var/log'
+# #			$cache_dir = '/var/tools/cache'
+# #		}
+# #		'SunOS': {			=> Single case match can be given like this 
+# #			$dir = '/var/adm'
+# #			'/var/adm/tools/cache'
+# #		}
+# #		'default': {			=> Default case will execute in case no other case matches 
+# #			fail("operating system ${::operatingsystem} is not supported"}	=> This will terminate the puppet run
+# #		}
+# #	}
+# #	$file = "${dir}/tools.log"
+# #	$cache_file = "${cache_dir}/cache.dat"
+# # }
+# # $ 
+# #
+#
+# * Boolean Expressions 
+# Boolean expressions are always used make a choice based on a truth value
+#
+# - Boolean conditionals 	: if, else, elsif, unless 
+# - False values 	 	: undef, false 
+# - Conditional expressions	: and, or, not
+# - Comparison expressions	: ==, !=, =~, >, <, >=, <=
+# - Arithematic expressions	: +, -, /, *, %, <<, >>
+# - membership 			: in
+# - Operator precedence 
+# 	. !   		(not)
+# 	. * / 		(times, devide)
+# 	. - + 		(minus, plus)
+# 	. << >> 	(left shift and right shift)
+# 	. == != =~ 	(equals, not equals, regex equals)
+# 	. >= <= < < 	(greater than equals, less than equals, greather than, less than)
+# 	. and
+# 	. or
+# NOTE : Paranthesis can be used to explicit set the precedence, i.e ((24+12)*3) means first plus value will take precedence over the multiple
+#
+# Syntax : How to express only 'if' conditionals 
+# 
+# #
+# # if $bar == $foo {
+# #	notify "List of steps to execute when condition is true" 
+# # }
+# #
+#
+# Syntax : How to express 'if else' conditionals
+#
+# #
+# # if $bar == $foo {
+# #	"List of steps to execute if equals"
+# # } else {
+# #	"List of steps to execute if doesnot equals"
+# # }
+# #
+#
+# Syntax : How to express 'if else and elsif'
+#
+# #
+# # if $bar == $foo {
+# #	"List of steps to execute when equals"
+# # } elsif $bar >= $foo {
+# #	"List of steps to execute when greater than or equals"
+# # } else {
+# #	"List of steps to execute if above two condition do not match"
+# # }
+# #
+# 
+# Syntax : How to use regular expression
+#
+# #
+# # if $foo =~ /$bar/ {
+# #	"list of steps to execute if bar contain in foo"
+# # }
+# #
+# 
+# Syntax : How to use conditioanl expressions 
+#
+# #
+# # if $bar =~ $foo and $foo == $too {
+# #	"list of steps to execute"
+# # }
+# # 
+#
+# Example : Below example will tell us about the usage of boolean expressions 
+#
+# #
+# # $ tree /etc/puppetlabs/code/environments/production/modules/health_check/
+# # /etc/puppetlabs/code/environments/production/modules/health_check/
+# # └── manifests
+# #     ├── init.pp
+# #     └── params.pp
+# # 
+# # 1 directory, 2 files
+# # $ more  /etc/puppetlabs/code/environments/production/modules/health_check/manifests/params.pp 
+# # class health_check::params {
+# #
+# #	$uptime_days = $::facts['system_uptime']['days']
+# #	$max_uptime  = '60'
+# #	$due_for_reboot = ($max_uptime - $uptime_days)
+# # }
+# # $ more  /etc/puppetlabs/code/environments/production/modules/health_check/manifests/init.pp 
+# # class health_check {
+# # 
+# #	include health_check::params
+# #
+# #	if $health_check::params::uptime_days == 0 {
+# #		notify {"Host : ${::hostname} has rebooted today and will be rebooted in another ${health_check::params::due_for_reboot} days":}
+# #	} elsif $health_check::params::uptime_days > 0 {
+# #		notify {"Host : ${::hostname} rebooted before $uptime_days and will be rebooted in another ${health_check::params::due_for_reboot} days":}
+# #	}
+# # }
+# # $
+# #
+#
+# * Functions 
+# There are two type of functions in puppet one is 'statement' and another one is 'rvalues'
+#
+# - statement : it stands on its own and doesnot return any values. They will be used for performing standalone tasks such as importing a module or class in manifest etc. 
+# . Few statement functions are given below 
+# tag 		: sets a tag for all respurce contained in the current scope 
+# include 	: evaluate a class 
+# realize 	: makes virtual resource real 
+# require	: evaluate one more classes, adding the required class as a dependancy 
+# fail 		: fail with a parse error message 
+#
+# Example : include nginx  => here 'include is the function used and it just calls the nginx module and doesn't return any value 
+#
+# - rvalues  : Returns values and can only be used when the statement requires value, such as assigment or case statements 
+# defined 	: returns true value if a class or resource is declared
+# file		: truens the content of the file from the server
+# versioncmp	: compare two version number string
+# regexsubst	: Regex string replacement 
+# pick 		: Returns first argument with a value 
+#
+# Example :  Use $pe_server_version if set, otherwise fall back to $pe_version
+#
+# #
+# # $version = pick($::pe_server_version, $::pe_version)
+# #
+#
+# Example : # $version is older than 2015.2 then fail compilation with a warning
+#
+# #
+# # if versioncmp($version, '2015.2.0') < 0 {                                 	=> This is rvalue function
+# #    fail("This Training VM is out of date. Please update: ${download_url}")	=> This is a statement function
+# # }
+# #
+#
+#
+#---------------------------------------------------------------------------------------------------
+# Chapter 11 : ERB Templates (Page : 230)
+#---------------------------------------------------------------------------------------------------
 #
 #
 #
