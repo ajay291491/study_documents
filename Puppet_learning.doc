@@ -1911,12 +1911,221 @@
 # # }
 # #
 #
+# NOTE : If you need more details on puppet function refer : https://docs.puppet.com/puppet/latest/function.html
 #
 #---------------------------------------------------------------------------------------------------
-# Chapter 11 : ERB Templates (Page : 230)
+# Chapter 11 : ERB (Emebedded Ruby) Templates (Page : 230)
 #---------------------------------------------------------------------------------------------------
+# * ERB templates 
+# ERB (Embedded ruby templates) is a template language which offered by Ruby, this is mainly used to create dynamic config or presentation files according to certail condition
+# For example, you want to create a sshd_config file for few set of servers witk "PermitRootLogin = yes" and other few and "PermitRootLogin=no". 
+# In such kind of scenarios rather than using two different files, you can create a dynamic file using the ERB template by writing a require condition for the same. 
 #
+# Puppet can evaluate ERB template with 'template' and 'inline_template' functions, see function link for more details to understand about it
 #
+# Templates are mostly plain text files, inserting an ERB tag allows yo to
+# . Display or act on the contents of variable 
+# . Alter the flow of logic 
+# . Include Ruby code to perform calculation or iterate
+#  
+# - Advanatages 
+# . Construct dynamic file without complex code 
+# . Update the config or presetanation file changes without touching the puppet code 
+# . Re-usable file generation pattern 
+# . Allow less technical people to update the file presentation 
+# . cleaner and more readable code.
+#
+# - Disadvanatge
+# . You can concentrate only one thing at a time, i.e, when you write code write your code and when you design the file design your file.
+#
+# * ERB syntax - How to use a variable in template 
+# We will be using below module to understand about ERB template 
+#
+# #
+# # $ /etc/puppetlabs/code/environments/production/modules/add_users/
+# #   ├── files
+# #   │   └── profile
+# #   ├── manifests
+# #   │   ├── init.pp
+# #   │   └── params.pp
+# #   ├── README.md
+# #   └── templates
+# #       ├── function_detect.erb
+# #       ├── host_details.erb
+# #       └── uptime_details.erb
+# # 3 directories, 7 files
+# # $
+# #
+#
+# - How to call a variable 'already defined' from site.pp. 
+# When '$variable_name' already defined in init.pp then you can use same in ERB as '@variable_name'
+#
+# Syntax : <%= @variable_name %>   => here string variables are denoted with "@" symbol
+#
+# Example : In below example there is a variable "$labuser_profile" picked from 'params.pp' is called again in ERB template 'function_detect.erb' as '<%= @labuser_profile %>'
+#
+# #
+# # $ more /etc/puppetlabs/code/environments/production/modules/add_users/manifests/init.pp |grep labuser_profile
+# #	$labuser_profile 	= $add_users::params::lab_user_prfile
+# # $
+# # $ more  /etc/puppetlabs/code/environments/production/modules/add_users/templates/function_detect.erb
+# # profile		= <%= @labuser_profile %>
+# # $
+# #
+#
+# - How to call a global 'facter varaible' directly, 
+# There is no change in the way it calls, since it is accessible globally you 'do not need' to define in 'init.pp'.
+# You can just call the same facter varable with precednce of '@'
+#
+# Syntax : <%= @facter_variable_name %>
+#
+# #
+# # $ more  /etc/puppetlabs/code/environments/production/modules/add_users/templates/host_details.erb 
+# #  hostname	= <%= @hostname %>
+# #  operatingsystem	= <%= @operatingsystem %>
+# #  hardware arch	= <%= @hardwaremodel %>
+# #  ip address	= <%= @ipaddress %>
+# # $
+# #
+#
+# IMPORTANT NOTE : You wont be able to access the variable from 'params.pp' until it is declared in 'init.pp'.
+#
+# - How to call an Array defined in 'init.pp'
+# You can use the .each operator in ruby to call array vaiables in ERB which already defined in site manifest.
+#
+# Syntax : <% @array_name.each do |val| -%>			=> Here each element will be piked from array $array_name defined in init.pp
+# 		value of current element is : <%= val %>	=> Here it will printed as "value of current element is : some_value"
+#          <% end -%>						=> This is how you end the loop
+#
+# Example : Below is an example of calling an array which is defined in params.pp
+#
+# # 
+# # $ grep \$uptime\   /etc/puppetlabs/code/environments/production/modules/add_users/manifests/params.pp |head -1
+# #     $uptime = ["Days : ${uptime_days}", "Hours : ${uptime_time}", "Seconds : ${uptime_sec}"]		=> This array isa defined in the params.pp
+# # $ grep \$uptime  /etc/puppetlabs/code/environments/production/modules/add_users/manifests/init.pp 
+# #     $uptime	= $add_users::params::uptime									=> Here array is called in init.pp
+# # $ cat /etc/puppetlabs/code/environments/production/modules/add_users/templates/uptime_details.erb
+# #    <% @uptime.each do |val| -%>										=> Ruby way of calling an array and processig it
+# #    Current uptime in <%= val %>										=> Here out will be printed as "Current uptime in Days : 2" etc until loop completes
+# #    <% end -%>												=> This is how you end the loop 
+# # $ 
+# #
+# 
+# - How to check conditions 
+# You can use the same ruby conditionals such as 'if then, else etc to check conditioanls 
+#
+# Syntax : <% if $string_variable <operator> value_to_match  then -%>
+# 		steps to execute 
+#          <%end -%>
+#
+# Example : Above example is now processed with an if condition to porcess only if it is Linux 
+#
+# #
+# # $ cat /etc/puppetlabs/code/environments/production/modules/add_users/templates/uptime_details.erb
+# # <% if @kernel =~ /Linux/ then -%>		=> regular expression matches only if Linux then process further 
+# #    <% @uptime.each do |val| -%>
+# #    Current uptime in <%= val %>
+# #    <% end -%>
+# # <% end -%>					=> ends the confitional 
+# # $
+# #
+#
+# - Template() function - How to call ERB templates
+# You can use the template() function to call the ERB templates, we can either use single ERB template as a content or multile ERB template as same content using concatination
+#
+# Syntax : file {'file_name':
+# 		content	=> template(template_name.erb)
+# 	}
+#
+# Example : Below example will show how to call a single ERB template 
+#
+# #
+# #   file {'lab_user_identity':
+# #        path    => "${labuser_home}/identity.dat",
+# #        content => template('add_users/function_detect.erb',
+# #    }
+# #
+# #
+#
+# Example : Below example will show how to call a multiple ERB template as a concatination
+#
+# #
+# #   file {'lab_user_identity':
+# #        path    => "${labuser_home}/identity.dat",
+# #        content => template('add_users/function_detect.erb',
+# #                     'add_users/host_details.erb',
+# #                     'add_users/uptime_details.erb'),
+# #    }
+# #
+# 
+#
+#---------------------------------------------------------------------------------------------------
+# Chapter 12 : Defined resource type  (Page : 243)
+#---------------------------------------------------------------------------------------------------
+# * Defined resource Type
+# Also called as 'defined types' or 'defines' are blocks of puppet code that can used multiple times with different parameters. 
+# Once defined they can be used just like a new resource type
+# You can declare resources in that resource type when you are evualuating the resources
+#
+# - When you define a resource it should contain below key items
+# . The define keyword
+# . The name of the defined type
+# . An optional parameter list, which consists of:
+#    . An opening parenthesis
+#    . A comma-separated list of parameters (e.g. String $myparam = "default value"). Each parameter consists of:
+#    . An optional data type, which will restrict the allowed values for the parameter (defaults to Any)
+#    . A variable name to represent the parameter, including the $ prefix
+#    . An optional equals (=) sign and default value (which must match the data type, if one was specified)
+#    . An optional trailing comma after the last parameter
+#    . A closing parenthesis
+# . An opening curly brace
+# . A block of arbitrary Puppet code, which generally contains at least one resource declaration
+# . A closing curly brace
+#
+# Syntax & Example : You can follow below example for syntax 
+#
+# # /etc/puppetlabs/puppet/modules/apache/manifests/vhost.pp
+#
+# define apache::vhost (			=> starting with define and name of the defined type, could see starting with paranthesis 
+# 	Intiger $port,
+# 	String[1] $docroot,			} resource declaration, this input will be taken when resource getting delcared
+# 	String[1] $servername = $title,
+# 	String $vhost_name = "*",
+# )
+#
+# {						=> Block of code 
+# include apache
+# include apache::params
+#
+# $vhost_dir = $apache::params::vhost_dir
+#
+#  file { "${vhost_dir}/${servername}.conf":
+#    ensure  => file,
+#    owner   => 'www',
+#    group   => 'www',
+#    mode    => '0644',
+#    content => template('apache/vhost-default.conf.erb'),
+#    require => Package['httpd'],
+#    notify  => Service['httpd'],
+#  }
+# }
+#
+# * Declaring an instance
+# Instances of a defined type (often just called “resources”) can be declared the same way a normal resource is declared. (That is, with a resource type, title, and set of attribute/value pairs.)
+#
+# The parameters used when defining the type become the attributes (without the $ prefix) used when declaring resources of that type. 
+# Parameters which have a default value are optional; if they are left out of the declaration, the default will be used. Parameters without defaults must be specified.
+#
+# To declare a resource of the apache::vhost defined type from the example above:
+#
+# apache::vhost {'homepages':
+#   port    => 8081,
+#   docroot => '/var/www-testhost',
+# }
+#
+# NOTE : To know more about define resource type  https://puppet.com/docs/puppet/5.3/lang_defined_types.html#declaring-an-instance
+#
+# Page 245 : Perform an example for Defined resource type and then move to next topic 
 #
 #
 #
