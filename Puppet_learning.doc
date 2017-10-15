@@ -2125,7 +2125,224 @@
 #
 # NOTE : To know more about define resource type  https://puppet.com/docs/puppet/5.3/lang_defined_types.html#declaring-an-instance
 #
+# SPECIAL NOTE : NO LAB DONE FOR THIS, PLEASE DO BEFORE EXAM
+#
 # Page 245 : Perform an example for Defined resource type and then move to next topic 
+#
+#---------------------------------------------------------------------------------------------------
+# Chapter 13 : Advanaced classes
+#---------------------------------------------------------------------------------------------------
+# * Hiera - Introduction 
+# Hiera will act like an external data source for your puppet manifest. 
+# By using hiera you will need to only write clean codes into your manifest. 
+# Your site specific data which serves the manifest will be stored under your hiera data source. 
+#
+# - Advantages 
+# . You need to only write code in the manifest file which can be re-used for several nodes
+# . Your site sepcifc data will be stored inside your hiera data source
+# . When you need to make changes to specific data such as dns server or ntp server, then you need to only touch hiera datasource do not need to touch code. 
+# . It makes the configuration part more clear
+# . Less editing needed on the code 
+# . This also brings down the chances of the unintended side errors such as catalogue compilation errors and syntax error due to the simplicity.
+#
+# * Hiera - How to configure
+# Hiera configuration file is normally located at "/etc/puppetlabs/puppet/hiera.conf".
+# Facts and other variables in scope are used for the data resolution.
+#
+# You can see hiera config location using below command
+#
+# #
+# # $ puppet config print hiera_config
+# # /etc/puppetlabs/puppet/hiera.yaml
+# # $
+# #
+#
+# There are mainly three main component inside the hiera.yaml configuration file 
+# 
+# - Backends 	: Type of formatting it uses, in most common cases it will use yaml, json also avaiable as default option. But there are few more add on language too available 
+# - Data source : This will normally starts with an yaml / json hash such as :yaml or :json and inside that another key value pair of :datadir : <path>
+# - Heirarchy	: Heirarchy will contains the list of directories through which hiera will look for data and this will follow the hierarchy it represent in list.
+# 		  This will be represented as normally a string or array in yaml
+# 
+# Example : Below is a sample /etc/puppetlabs/puppet/hiera.yaml configuration file 
+#
+# #
+# # $ cat /etc/puppetlabs/code/hiera.yaml
+# # ---
+# # :backends: 			=> This indicates what backend should be used 
+# #   - yaml
+# #
+# # :yaml:
+# #   :datadir: '/etc/puppetlabs/code/environment/production/hieradata/'	=> This explains the datadirectory of the yaml 
+# #
+# # :hierarchy:			=> This explains how data will be processed, it follows the below hierarchy
+# #   - "%{clientcert}"		=> This will be located at '/etc/puppetlabs/code/environment/production/hieradata/%{clientcert}.yaml'
+# #   - "%{datacenter}"		=> This will be located at '/etc/puppetlabs/code/environment/production/hieradata/%{datacenter}.yaml'
+# #   - defaults		=> This will be located at '/etc/puppetlabs/code/environment/production/hieradata/default.yaml'
+# #
+#
+# NOTE : Hiera will convert the variable name as actual file names to locate the files under the 'datadir'
+#
+# NOTE : Hiera will normally fail if it detect any of the two conditions 
+#        1. If the 'hiera.yaml' configuration file not found 
+#        2. If the 'hiera.yaml' configuration file allows empty configuration
+#
+# * Hierarchy - a detailed view 
+# Hierarchy is normally classified and three 
+# . Global
+# . Environemnt
+# . Module 
+#
+# Global 	- This normally contains the node specific data.
+# Environemnt	- This normally contains the site or datacenter specific data. 
+# Module 	- This Normally contains the default value specif to all. 
+# 
+# When there is hiera lookup intiated using hiera function, then it will look for the 'Global' .yaml file and if it connot find a matching key then it will move to Environement .yaml and finally Module .yaml. 
+#
+# Example : Lets say you are trying to lookup a ntp server information node a node clientnode01.sathsang.svr.apac.net at Sengkang datacenter
+#
+# #
+# # class ntp {
+# #
+# # 	class ntp::client {
+# #		file {"$ntp_config_file":
+# #		ensure	=> file 
+# #		content	=> hiera($ntp_server)
+# #		}
+# #	}
+# # }
+# #
+#
+# Now this will intiate a query first on '/etc/puppetlabs/code/environment/production/hieradata/clientnode01.sathsang.svr.apac.net.yaml
+# If this cannot find the data, then it will move onto '/etc/puppetlabs/code/environment/production/hieradata/sengkang.yaml'
+# Finally if it cannot find on above two files, then it will look at the '/etc/puppetlabs/code/environment/production/hieradata/default.yaml'
+#
+# NOTE : Hiera will normally fail if it detect any of the two conditions 
+#        1. If the 'hiera.yaml' configuration file not found 
+#        2. If the 'hiera.yaml' configuration file allows empty configuration
+# 
+# * Hiera functions 
+# Below are functions available with hiera 
+# 
+# - hiera($key)
+#   This will call out hiera to look up a key using the configured datacources hierarchy
+#   This returns the first value found 
+#
+# - hiera_array($key)
+#   This will call out hiera and look up all datasources using the key and all returned results will be returned as an array 
+#   Element can be any type
+#
+# - hiera_hash($key)
+#   This will go through and hierarchy and and results will be converted into single hash and will be returned 
+#   Here must be a hash
+#
+# - hiera_include($key)
+#   This will call heira_array(key) function and will search for hierarchy 
+#   Here we should only search for class which need to be included 
+#   Result will be a class and it will be automatically included.
+#
+# Example : Sample Hiera yaml definition and lookup 
+#
+# # 
+# # $ more /etc/puppetlabs/code/environments/production/hieradata/nodes/clientnode02.svr.apac.sathsang.net.yaml 
+# # ---
+# # port: 80
+# # customdir: '/var/www/node02'		=> Simple YAML lookup for key value 
+# # docroot: '/var/www/node02/html'
+# # index: '/var/www/node02/html/index.html'
+# # datacenter: sengkang 
+# # $ 
+# #
+# # $ more /etc/puppetlabs/code/environments/production/modules/apache/manifests/init.pp |grep -i hiera
+# #	$document_root = hiera('docroot')
+# # 	$port	=  hiera('port')
+# # 		path	=> hiera('customdir'),	=> calling the value with the key
+# #		path	=> hiera('index'),
+# # $ 
+# # 
+#
+#---------------------------------------------------------------------------------------------------
+# Chapter 14 : Modules 
+#---------------------------------------------------------------------------------------------------
+# You will be able to download the pre-approved puppet modules from below site 
+#
+# Puppet Forge : https://forge.puppet.com/
+#
+# Here you will be able to see many modules, always better to choose the puppet supported modules. 
+#
+# To list the puppet module installed on the server you can use below command 
+#
+# $ puppet module list 
+#
+# If you want to see the directory structure of each module use below command 
+#
+# $ puppet module list --tree
+#
+# If you want to search a module from the module then you can use below command 
+#
+# $ puppet module search <module_name>
+#
+# To install a module you can run below command 
+#
+# $ puppet module install <module_name>
+#
+# NOTE : When you install a module from puppet forge, there will be many modules which can be customizable according to your need.
+#
+# Example : Lets take you have downloaded a mysql module from puppet forge, then you can provide the values as below 
+#
+# #
+# # class {'mysql::backup':
+# #	backupuser	=> 'myuser',		=> This are custom parameters you are passing into a pre-build 'mysql' module		
+# #	backupdir	=> '/tmp/backups',
+# # }
+# #
+#---------------------------------------------------------------------------------------------------
+# Chapter 15 : Roles and profile 
+#---------------------------------------------------------------------------------------------------
+# NOTE : This chaper to be covered later
+#
+#
+#
+#
+#
+#
+#---------------------------------------------------------------------------------------------------
+#  TIPS
+#---------------------------------------------------------------------------------------------------
+# Puppet style guide : https://puppet.com/docs/puppet/5.3/style_guide.html
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#---------------------------------------------------------------------------------------------------
+# PENDING AND TO BE COVERED 
+#---------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+#
+# * Examination point of view *
+#
+# 1. Learn more about style Guide
+# 2. contain 
+# 3. PE console 
+# 4. Mcollective 
+# 5. Heira
+# 6. define lab
+#---------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+#
+#
 #
 #
 #
