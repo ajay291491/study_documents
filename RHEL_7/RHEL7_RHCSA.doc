@@ -1,0 +1,448 @@
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# SA 1 Chapter 1 : Redirection 
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# * How to perform redirection in rhel 7
+#
+# Below are rge standard error codes available for a Linux system 
+# 0	- standard input  (stdin)
+# 1	- standard output (stdout)
+# 2	- standard error  (stderr)
+#
+# Below are the redirection techniques used 
+#
+# > 			- Redirect stdout to a file 
+# >>			- append stdout to a file
+# 2>			- redirect standard error to a file 
+# 1>>			- append standard output to a file
+# >/output_file 2>&1 	- This will redirect both standard output and error to a file
+#
+# Example : $ dmidecode -s system-product-name >/dev/null 2>&1
+#
+# tee			- This command can help you in doing redirection to both screen and output file 
+#
+# Example : $dmidecode -s system-product-name |tee -a /dev/null
+#
+# * Using find command and processing its output
+# find 	- This command will help you to find the details from a system according to the query given
+# exec	- Thic command will execute the command as a pipe using its previous command output
+#
+# Example : find /home -user maria -type f -exec cp -p { } /var/tmp/maria/ \;
+#
+# NOTE : You can use various option with find command to search for and also you can use any command with exec to complette the action 
+#
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# SA 1 Chapter 2 : user administration 
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# * Below are the reserved user id in an unix system 
+# 0 		- super user
+# 1 - 199	- non customizable system account
+# 200 - 999	- custamizable system account 
+# 1000 - 99999	- Regular users 
+#
+# Below are the user key files 
+# /etc/passwd 		- This file contains the user basic information such as their username, uid, gid, homedir. shell, desc etc
+# /etc/shadow		- This file contains the encrypted password details for the user 
+# /etc/login.defs	- This file contains the definition or information about the users which are going to create in the system 
+#
+# NOTE : If we make any changes to the '/etc/login.defs' then there won't be any effect to the previously created users, but it will be in effect for any new users getting created.
+#
+# * How to create an user
+# user can be created using 'useradd' command and you can use below switch to achieve various options along with it
+#
+# -u 	- To specify any specific user id 
+# -g	- To specify any group id 
+# -G	- To specify any secondary groups 
+# -s	- To specify any shells
+# -d	- To specify the home directory path
+# -L	- To lock an user
+# -U	- To unlock an user
+#
+# Example : $ useradd -d /export/home -s /bin/bash -u 1010 labuser
+#
+# * How to modify an user 
+# You can modify an user with 'usermod' also you can use the above switches along with it for modification 
+#
+# NOTE : when you modify an user it is always better to use '-a' to append its current config else it will be overwritten 
+#
+# Example : $ usermod -a -G student labuser
+#
+# * Few useful commands 
+# groupadd	- To add a group
+# groups	- To list the groups of an user
+# id -a 	= TO get the comaplete userid and groups details of an user
+# 
+# * sudo 
+# sudo is configured via configuration file '/etc/sudoers' 
+# if you want an user to provide with sudo privilage then you need to ammend a line as below 
+# 
+# username	ALL=(ALL)	ALL		-> This will give an user to perform commands as root with his password 
+# username	ALL=(ALL)	NOPASSWD :ALL	-> This will give an user to perform commands as root witout even using password
+#
+# * Chage 
+# This command can be used to set or get the password aging policies for an user
+# 
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# SA 1 Chapter 3 : Getting help from Redhat 
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# * Pinfo 
+# pinfo is a new documentation tool  which introduced in place of man pages 
+# 
+# Syntax  : $ pinfo comamnd
+# Example : $ pinfo dmidecode
+#
+# * Also you can use "man" pages and also the weburl if you have an account https://support.redhat.com
+#
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# SA 1 Chapter 4 : Permissions 
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# * Read write and execute permision using chmod command 
+# In linux permissions are defined as "owner level", "group level" and "others".
+# Using chmod command we are set permission in unix level. 
+# There are mainly three permissions in this, read, write and execute. 
+#
+# Below are few sample examples to set the permissions 
+#
+# $ chmod 0777 /tmp/test  	=> This will give rwx permission foe file owner, group owner and others too.
+# $ chmod u+x /tmp/test		=> This will set execute permission for user 
+# $ chmod g+w /tmp/test		=> This will set write permission for group 
+# $ chmod o+r /tmp/test		=> This will set read permission for others 
+# $ chmod o+rw- /tmp/test	=> This will set read write permission for others 
+# $ chmod a+x /tmp/test		=> This will set execute permission for file owner, group owner and others 	
+# $ chmod g-w /tmp/test		=> This will remove write permission for group owner
+# $ chmod o-x /tmp/test		=> This will remove execute permission for others 
+#
+# * setuid, setgid and sticky bit 
+#
+# setuid  : If you have set 'setuid' for a file, then when someone executes the files at that he will get the permission of the owner 
+# Syntax  : chmod u+s /tmp/test	
+# Example : /usr/bin/passwd	=> When you execute the password file it helps you to execute the program as root and it even changes root owned files such as /etc/shadow
+#
+# $ ls -l /tmp/test
+# -rwSrw-r-- 1 sathsang sathsang 0 Nov  4 16:04 /tmp/test
+# $
+#
+# setgid  : if you have set 'setgid' for a file, then when someone execute something from that directory he will get the permission of the group owner. 
+# syntax  : chmod g+s /tmp/test
+#
+# $ ls -l /tmp/test
+# -rw-rwSr-- 1 sathsang sathsang 0 Nov  4 16:04 /tmp/test
+# $
+# 
+# stickybit : When sticky bit set to a directory, then anyone can create file under that directory, but only the owner can change the file. 
+# syntax    : chmod o+t /tmp/test_dir
+# Example   : /tmp 
+#
+# $ ls -l /tmp/test
+# -rw-rw-r-T 1 sathsang sathsang 0 Nov  4 16:04 /tmp/test
+# $
+#
+# * Access control list (ACL)
+# If you want to set any special permissions other than above what we discussed, then you can use ACL.
+# ACL will help you to set pemission for individual user level. 
+# When you set ACL on a file you will see a '+' mark at the end of the file permission 
+#
+# NOTE : ACL will help you set permission beyond your normal chmod permission for specific user 
+#
+# Synatx : $ setfacl -m u:user_name:permission file_name
+# synatx : $ setfacl -m g:user_name:permission file_name 
+# syntax : $ setfacl -R u:user_name:permission dir_name
+# syntax : $ setfacl -R g:group_name:prmission dir_name
+#
+# Example : Below is an example for setting ACL on a file in user level
+# 
+# $ setfacl -m u:sathsang:rw- /tmp/test
+# $ ls -l /tmp/test
+# -rw-rw----+ 1 root root 0 Nov  4 16:04 /tmp/test
+# $ getfacl /tmp/test
+# $ getfacl: Removing leading '/' from absolute path names
+#  # file: tmp/test
+#  # owner: sathsang
+#  # group: sathsang
+# user::rw-
+# user:sathsang:rw-
+# group::rw-
+# mask::rw-
+# other::---
+# $
+# 
+# Example : Below is an example for setting ACL on group level in a directory
+# 
+# $ getfacl /tmp/test_dir
+# getfacl: Removing leading '/' from absolute path names
+#  # file: tmp/test_dir
+#  # owner: root
+#  # group: root
+# user::rwx
+# group::r-x
+# group:sathsang:rwx
+# mask::rwx
+# other::r--
+# $
+#
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# SA 1 Chapter 5 : Log files and configuration
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# * rsyslog - logging mechanism
+#
+# In RHEL 7 log mechanism is managed by 'rsyslogd' daemon and its configuration file is located at '/etc/rsyslog.conf' and also '*.conf' file located under '/etc/rsyslog.d'
+# You can look at the "### RULES ###" session in the /etc/rsyslog.conf to understand about the various logging configuration present on your system 
+# 
+# # grep -A 15 '#### RULES ####' /etc/rsyslog.conf
+# #### RULES ####
+#
+# # Log all kernel messages to the console.
+# # Logging much else clutters up the screen.
+# #kern.*                                                 /dev/console
+#
+# # Log anything (except mail) of level info or higher.
+# # Don't log private authentication messages!
+# *.info;mail.none;authpriv.none;cron.none                /var/log/messages
+#
+# # The authpriv file has restricted access.
+# authpriv.*                                              /var/log/secure
+#
+# # Log all the mail messages in one place.
+# mail.*                                                  -/var/log/maillog
+#
+# * journalctl 
+# In RHEL7 there is a new utility also introduced to handle the logfile mechanism, which is called 'journalctl'
+# journalctl can display the log from the time journalctl service started to now 
+# This gets reset everytime when system gets rebooted. 
+#
+# $  journalctl |head -5
+# -- Logs begin at Tue 2017-05-09 06:09:05 +08, end at Sat 2017-11-04 16:40:33 +08. --
+# May 09 06:09:05 localhost.localdomain systemd-journald[210]: Runtime journal (/run/log/journal/) is 8.0M, max 799.2M, 791.2M free.
+# May 09 06:09:05 localhost.localdomain kernel: microcode: microcode updated early to revision 0x1c, date = 2015-02-26
+# May 09 06:09:05 localhost.localdomain kernel: Linux version 4.8.6-300.fc25.x86_64 (mockbuild@bkernel02.phx2.fedoraproject.org) (gcc version 6.2.1 20160916 (Red Hat 6.2.1-2) (GCC) ) 
+# May 09 06:09:05 localhost.localdomain kernel: Command line: BOOT_IMAGE=/vmlinuz-4.8.6-300.fc25.x86_64 root=/dev/mapper/fedora-root ro rd.lvm.lv=fedora/root rd.lvm.lv=fedora/swap rhgb quiet LANG=en_US.UTF-8
+# $
+#
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# SA 1 Chapter 6 : Managing time (NTP or CHRONY)
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# * How to manage time in RHEL 7
+# IN RHEL 7 time is managed by 'chronyd' daemon and configuration file is '/etc/chrony.conf'
+# You can follow below procedure to setup time sync in RHEL 7 server
+#
+# $ vi /etc/chrony.conf
+#   server timeservername.com iburst		# here you will see iburst which help to sync NTP faster when the chronyd service gets started 
+# $ 
+# $ timedatectl set-ntp true			# This will setup the NTP as true
+# $
+# $ systemctl enable chronyd.service		# These two command will enable chronyd on startup and will start now 
+# $ systemctl start chornyd.service 
+# $
+# $ systemctl is-enabled chronyd.service	# These two commands can be used to check chronyd enabled for startup and also running now
+# $ systemctl is-active chronyd.service 
+# $
+# $ timedatectl 				# This command will show currently NTP is in sync or not 
+#      Local time: Sat 2017-11-04 16:58:36 +08
+#  Universal time: Sat 2017-11-04 08:58:36 UTC
+#        RTC time: Sat 2017-11-04 08:58:24
+#       Time zone: Asia/Singapore (+08, +0800)
+# Network time on: yes
+# NTP synchronized: yes
+# RTC in local TZ: no
+# $
+#
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# SA 1 Chapter 7 : Network configuration manager (NetwrokManger)
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# In RHEL 7 network is managed by network manager daemon and you multiple of ways to configure the same 
+#
+# - nmutil : a menu based utility
+# - nmcli  : a command line based utility
+#
+# * nmutil 
+# This is menu based command line utility to configure the network configuration 
+#
+# Syntax : nmutil (follow the menu)
+#
+# * nmcli  - This is a command line utility to configure network interface 
+#
+# * How to setup an a static IP address for an interface using nmcli 
+#
+# $ nmcli connection add type ethernet con-name system_eth0 if-name eth0
+# $ nmcli connection modify system_eth0 ipv4.addresses "192.168.0.10/24" ipv4.gateway "192.168.0.1" ipv4.dns "8.8.8.8" ipv4.dns-search "sathsang.com" ipv4.method "manual"
+# $ nmcli connection show system_eth0 		=> This will show the network configuration 
+# $ systemctl restart network.service
+# $ ifconfig
+# 
+# * How to set hostname
+# $ hostnamectl set-hostname new_hostname 
+# $ hostname -f					# This will show you the FQDN of the hostname
+#
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# SA 1 Chapter 8 : File archives
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# - gzip : tar -czvf file_name.tar.gz file_name
+# - bzip : tar -cjvf file_name.tar.bz file_name
+# - xz   : tar -cJvf file_name.tar.xz file_name 
+#
+# - gunzip : gunzip file_name.tar.gz |tar xvf -
+# - bunzip : bunzip file_name.tar.gz |tar xvf -
+# - unxz   : unxz file_name.tar.gz |tar xvf -
+#
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# SA 1 Chapter 8 : Yum 
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# /etc/yum.repos.d/ 	=> This is the location where you can see repo files in yum
+# $ yum-config-manager  => This command can be used to configure 
+#
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# SA 1 Chapter 9 : Job Schedulers  
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# * CRON 
+# . Key files and commands 
+# - /etc/cron.d/			=> Location for root cron file which can run hourly, daily or weekly
+# - /var/spool/cron/$(username) 	=> crontab for every user
+# - crontab -l 				=> To list the crontab 
+# - crontab -u user_name -l		=> To list the crontab for an user 
+# - crontab -e 				=> To edit the crontab
+# - crontab -u user_name -e 		=> To edit the crontab for an user 
+#
+# . Crontab entry format 
+#
+#   *   *   *  *   *		comamnd_to_execute >> log_file 2>&1
+#   |	|   |  |   |
+#   |	|   |  |   | -------------------- Day of the Week (0 - 6)
+#   |	|   |  |--------------------------- Month of the Year (1 - 12)
+#   |	|   |----------------------------------- Day of the Month (1 - 31)
+#   |	|------------------------------------------- Hour of the day (0 - 23)
+#   |----------------------------------------------- Minute of the hour (0 - 59)
+#
+# * Crontab services 
+# $ systemctl enable crond.servoce
+# $ systemctl start crond.service
+#
+# . Few examples 
+# 
+# 5 11 * * *   vmstat >> /tmp/perfstat.log 2>&1  # This command will run at 11:05 AM every day 
+# */5 11 * * * vmstat >> /tmp/perfstat.log 2>&1  # This command will run at every files in 11 AM 
+# * 0 30 * * * vmstat >> /tmp/perfstat.log 2>&1  # This command will run at 30th 00:00 AM 
+#
+# NOTE : if you want a job to create any iteration of the job in certain minutes you need to use '*/time' in time format
+# */5		=> Runs very 5 minutes 
+# */15		=> Runs every 15 minutes 
+#
+# * AT
+# at is a one time job scheduler
+#
+# syntax : at now +(minutes|hour|days|month|"hour month date year")
+#
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# SA 1 Chapter 10 : Managing process priortities  
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# * NICE 
+# In Linux process priorities can be managed with "nice" command. 
+#
+# - nice value ranges from -19 to +20
+# - process priorty ranges from 0 - 39
+#
+# - Default nice value for any process will be zero
+# - Default process priority for a process will be 20 
+#
+# In case you want to increate the process priorty then you need to reduce the nice value 
+# In case you want to decrease the process priority then you need to increase the nice value 
+#
+#	 NICE Value 		PROCESS PRIORITY
+#	 ----------		----------------
+#	   -19				1	
+#	   -18				2
+#	   -17				3
+#	   -16				4	
+#	   -15				5
+#	   -14				6
+#	   -13				7
+#	   -12				8
+#	   -11				9
+#	   -10				10
+#	   -09				11
+#	   -08				12
+#	   -07				13
+#	   -06				14
+#	   -05				15
+#	   -04				16
+#	   -03				17
+#	   -02				18	
+#	   -01				19
+#	    00				20
+#	    01				21
+#	    02				22
+#	    03				23
+#	    04				24
+#	    05				25
+#	    06				26
+#	    07				27
+#	    08				28
+#	    09				29
+#	    10				30
+#	    11				31
+#	    12				32
+#	    13				33
+#	    14				34
+#	    15				35
+#	    16				36
+#	    17				37
+#	    18				38
+#	    19				39
+#	    20				40
+#
+# * How to change nice value for a process 
+#
+# $ nice -n <value> <process_id>		# This will command will start a new in give nice value 
+# $ renice -m <value> <process_id>		# This will change the nice value of an existing process
+#
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# SA 1 Chapter 11 : SELINUX  
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# * SELINUX
+# Selinux is an additional security layer offered by RHEL7.
+# In RHEL 7 you cannot disable selinux, either you can use 'permissive' or 'enforced' level of security. 
+#
+# Disabled   : This will disable selinux 
+# Permissive : This will permit any action on the system, but there will be an audit available for all action in /var/log/audit.log
+# Enforced   : This will apply all selinux policy on the system and will restrict any unathorized action 
+#
+# Config file : /etc/selinux/selinux.conf
+#
+# $ getenforce 		=> This command will give you the current enforce level in selinux 
+#
+# * How to change selinux enforcement temporarily during the server run
+#
+# $ setenforce 0 	=> This will make the selinux enforcement to 'permissive'
+# $ setenforce 1 	=> This will make the selinux enforcement to 'Enforced'
+#
+# * How to change selinux enforcement permenantly 
+# You need to update the '/etc/selinux/selinux.conf' file and change enforcement mode to 'Permissive' or 'Enforced' 
+# Then followed by a reboot 
+#
+# * How can you perform filesystem relabel in selinux 
+#
+# $ touch /.autorelabel
+# $ init 6
+#
+# * What is the command to manage selinux attributes 
+#
+# $ semanage 
+# $ seinfo 
+#
+# NOTE : For more details please refer to redhat documentation 
+#
+# * How to change the filesystem context 
+#
+# $ semanage fcontext -a -t .....
+# $ restoreconv -R -v ...
+#
+# NOTE : For more details please refer to redhat documentation 
+#
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# SA 1 Chapter 11 : Disk and Partitioning  
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# * Linux disk partition types 
+# - fdisk
+# - gdisk 
+#
+#
+#
+#
