@@ -440,9 +440,86 @@
 # SA 1 Chapter 11 : Disk and Partitioning  
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
 # * Linux disk partition types 
-# - fdisk
-# - gdisk 
+# In RHEL 7 there are two types of disk partitioning available one is fdisk and another one is gdisk
 #
+# * Fdisk 
+# Can have 4 partitions, normally we make 3 primary partition and 1 extended partition. 
+# From the extended parition we can create any number of logical partitioning. 
 #
+# NOTE : When you create extended partition make sure you use the remaining whole disk else you won't be able to use the remaining space if you are unable to make one more extended partition due to 4. 
 #
+# * Gdisk 
+# This is a GPT bases partitioning and there is no limit on the number of the partition you can create 
+#
+# * How to create a partition using fdisk 
+# $ fdisk 
+# > m 			=> for help
+# > n			=> to create new partition 
+# n> type 		=> primary or extended (it is laways advisable to create extended parition for applications)
+# n> partition number
+# n> starting block
+# n> ending block	=> You can choose size here +1G or +1024M or you give block extends 
+# > 
+# > t 
+# t> partition code	=> select code (or run L to display code) 8e for swap and 82 for LVM
+# > w			=> Write new partition table and save 
+# > q			=> quit
+# $
+# $ partprobe 		=> This will refresh the new partition table in kernel and new deice will created according to the requirement
+#
+# * Logical volume manager 
+# Logical volume manager can be used to pool the disk, once we create a pool then we can create volumes from a group of disk according to our need. 
+# Logical volume manaher has mainly three components 
+#
+# . PV (phisical volume)	: TO bring a disk or partition in LVM we need to first we need to promote it as a PV 
+# 
+# $ pvcreate /dev/sda 
+#
+# . VG (Volume group)	: We can create volume group by accumilating the PV
+#
+# $ vgcreate data_vg /dev/sda
+#
+# NOTE : When you create a VG by default LVM uses block size as "4", in case you want to change block size to 8 or 16 or 64 or 128 then you can specify using "-s" string 
+#
+# . LV (Logical volume) 	: LV will be the one used for creating file system and directly mount and write data 
+#
+# $ lvcreate -L +10G -n data_vol data_vg
+#
+# NOTE : when you create LV you can either use "-L" then size in MB or GB or "-l" with block extend
+#      : i.e, if you want a size of 1024MB size with 16M block extend VG, then you need to mention as "lvcreate -l 75 -n lv_name vg_name"
+#
+# $ vgcreate -s 8M data_vg /dev/sda
+#
+# * How to create a volume and mount 
+#
+# $ pvcreate /dev/sdb
+# $ vgcreate -s 16M apps_vg /dev/sdb
+# $ lvcreate -l 100 -n apps_vol apps_vg
+# $ mkfs.ext4 /dev/apps_vg/apps_vol
+# $ vi /etc/fstab
+# $ mkdir /mount_point; mount /mount_point
+#
+# * How to extend a XFS filesystem 
+# 
+# $ vgdisply 
+# $ lvextend -L +1G /dev/apps_vg/apps_vol
+# $ xfs_growfs /dev/apps_vg/apps_vol
+# $ df -h 
+#
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# SA 1 Chapter 12 : Boot break in RHEL 7
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# 
+# 1. Boot the server to grub 
+# 2. Select the kernel and press 'e' to edit
+# 3. Select the kernel_entry start with vmlinuz* 
+# 4. Go to the end of the line using 'ctrl+e'
+# 5. Type rd.break 
+# 6. If you want to boot into any specific systemctl target then after the rd.break mention 'rd.break systemd.unit=rescue.target' 
+# 7. If you have any console issue, then you can mention 'console=tty1' also.
+# 8. mount -o remount,rw /sysroot
+# 9. chroot /sysroot
+# 10. Perform needed changes 
+# 11. touch /.autorelable 	=> if you want to selinux 
+# 12. ctrl + d			=> This will exit out of the shell and reboot the host
 #
