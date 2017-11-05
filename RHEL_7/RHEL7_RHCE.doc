@@ -1,0 +1,56 @@
+# ---------------------------------------------------------------------------------------------------------------------------------
+# Chapter 01 : Shell Scripting 
+# ---------------------------------------------------------------------------------------------------------------------------------
+# * Shell scripting
+# shell scripting can be used to automate a chain of commands with a logical linking into it. 
+# Shell scripting can be useful in automating small scale automations when it goes to complex automation tasks where you need multi dimensional array then perl or python will be a better alternative 
+# In this chapeter you will see only a minimal notes from shell scripting since expereinced in it . 
+#
+# * Variable representation 
+# VAR_1 = 'TEST ONE'  	=> This can be used to represent the string as it is TEST ONE
+# VAR_2 = "$TEST_2"   	=> This will process the value of the variable $TEST_2 and will give an output
+# VAR_3 = '$1'		=> This will only give the output as $1
+# VAR_4 = "$1"		=> This will process the value of the $1 and provide 
+# 
+# * Few tips 
+# unset				=> This will remove the value of a variable , Example : unset $VAR_2
+# /etc/profile.d/coloursi*.sh	=> This will set the colors for various commands and file types
+# /etc/profile			=> This is where we can cutomize the environment variables 
+# ~/.bash.profile		=> This is where you can custom your shell related environment variable 
+# $PS1				=> This variable indicates how your landing shell should look like.
+#
+# $ let X=10+2+7		=> You can use let also while doing arithamatic calculation
+# eho $X
+# echo $((10+2+7))		=> You can use paramethesis along with 
+#
+# String Comparison and intiger comparison in conditionals 
+#
+# * String manupulation 
+# st = "1234567"
+# echo ${#st}  		=> This will print length of the string which is "7"
+# echo ${st:3} 		=> This will print string from the 3rd position which is 4567
+# echo ${st:3:5} 	=> This will print string from 3rd position to 5th which 3, 4, 5
+#
+# NOTE : For a detailed study on shell scripting look at the SA3 chapter 11 and 12.
+#
+# ---------------------------------------------------------------------------------------------------------------------------------
+# Chapter 02 : SYSTEMD (service management)
+# ---------------------------------------------------------------------------------------------------------------------------------
+# * Introduction 
+# (Start from Page 1 : SA 3)
+#  **** Make note of what ever you have learned in shell scripting and read book once ****
+#
+# $ systemctl -t hiiI		elp
+# $ systemctl list-dependencies sshd.service [ color code ]
+# $ systemctl isolate multi-user.target [ to temporarily switch the target ]
+#
+# # systemd.unit=emergency.target [ boot from grub - update details ]
+# -------------------------------------
+# Topics to be covered 
+# -------------------------------------
+# APCHE webserver 
+# NFS 
+# SAMBA 
+# ISCSI 
+# MARIA DB
+#
