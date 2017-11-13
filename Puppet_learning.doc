@@ -2297,54 +2297,222 @@
 # # }
 # #
 #---------------------------------------------------------------------------------------------------
-# Chapter 15 : Roles and profile 
-#---------------------------------------------------------------------------------------------------
-# NOTE : This chaper to be covered later
-#
-#
-#
-#
-#
-#
-#---------------------------------------------------------------------------------------------------
-#  TIPS
-#---------------------------------------------------------------------------------------------------
-# Puppet style guide : https://puppet.com/docs/puppet/5.3/style_guide.html
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#---------------------------------------------------------------------------------------------------
-# PENDING AND TO BE COVERED 
-#---------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------
-#
-# * Examination point of view *
-#
-# 1. Learn more about style Guide
-# 2. contain 
-# 3. PE console 
-# 4. Mcollective 
-# 5. Heira
-# 6. define lab
-#---------------------------------------------------------------------------------------------------
+# Chapter 15 : Roles and profile  (pending)
 #---------------------------------------------------------------------------------------------------
 #
 #
+#---------------------------------------------------------------------------------------------------
+#		Special Topics for examination 
+#---------------------------------------------------------------------------------------------------
+# PE Console or Puppet Dashboard
+#---------------------------------------------------------------------------------------------------
+# * Configuration section in puppet dashboard 
+#
+# Configuration session mainly has theree sub pages such as overview, events, packages and reports 
+#
+# - Configuration => Overview Page 
+# This is a powerful feature of the puppet enterprise console.
+# This works in terms with the puppet DB database to provoide the satus reports 
+# In the overview page you will see mainly three columns or criteria of reports 
+# 
+# 1. Nodes in enforcement : This indicates the nodes in which configurations are managed by puppet, you can see three catagories in this. 
+#    - With failure 		: Puppet tried to make some changes but failed to complete the action successfully and need investigation
+#    - with corrective changes 	: Puppet found descripencies with the previous run or defined catalogue and took corrective action to make changes
+#    - with intentional changes	: Puppet had applied the catalogue successfully on the node for the first time.
+#
+# 2. Nodes with no-op resources : This indicates resources enabled but it is not going to do any changes on the system.
+# 3. Nodes not reporting 	: Nodes which not given any reports or connected, by default it should update the report in 30 minutes.
+#
+# - Configuration => Events page 
+# Under this page you will be able to see the information related to the puppet runs, there are option to list such as last run, last 30 minutes , one hour, 24 hour etc
+# There are also changes with repesct to the classes, nodes and resources as well. 
+# You can navigate through if any event to understand more about the changes in puppet.
+#
+# - Configuration =>  Reports Page 
+# This page will have the detailed reports of the changes going through the puppet infrastructure. 
+# You can even download reports from this page.
+#
+# * Nodes section in puppet dashboard 
+# In this section you will be seeing two child pages such as 'Inventory' and 'classification' 
+#
+# - Nodes => Inventory 
+# In this page you will see a list of nodes available in the puppet. 
+# If you click on each node you can see everal tabs in each nodes which will give you detailed information about that node such as
+# - Facts
+# - Classes
+# - Variables 
+# - Reports 
+# - Grouops (Node groups which classified)
+# - activity 
+#
+# Note : You can also do a puppet run from dashboad and you can get the report also for the same. 
+#        There are various options available which using puppet run such as 'noop', 'debug', 'trace' and 'evaltrace'.
+#
+# - Nodes => Classification 
+# Under this section you group nodes into certain classification and assign few classes or variables common to those classes. 
+# Any node which comes under the classification will share common behaviour. 
+# You can see few tabs under any classification to assign or view  values such as 
+#
+# - Rules  		-> This is where you can pin nodes to the classification, you can use certificate name from that node. 
+# - Matching node 	-> This will show any nodes which is already part of the classification 
+# - classes 		-> This is where you can assign classes common to all nodes in the classification. 
+# - variables 		-> Place where you can assign any global variables for the classes and will be available in all nodes of the class. 
+# - Activity		-> This help us to see the any activites with respect to the classification. 
+#
+# - Nodes => Unsigned certificates 
+# In this session you can sign the unsigned certificate and you can get the command to add the node. 
+#
+# * Authentication methods
+# Supports its own local users and their information will be stored in the puppet DB.
+# Support LDAP and AD authentication methods 
+#
+# Location              : LOGIN => ACCESS CONTROL => (USERS | USER ROLES | EXTERNAL DIRECTORY)
+#
+# CREATE A USER         : ACCESS CONTROL => USERS => CREATE OR EDIT USERS
+# MEMBERSHIP To ROLES   : ACCESS CONTROL => USER ROLES => MEMBER USERS
+# RESET PASSWORD        : ACCESS CONTROL => USERS => SELECT USER => RESET PASSWORD
+# EXTERNAL DIRECTORY    : You can use LDAP or active directory to authenticate the domain user in PE console.
+#
+# * License 
+# For enterprise version you will get 10 free license and you can buy more if you need 
+# Enterprise version will support the auto upgrade if we purchase license. 
+#
+# Location : LOGIN => LICENSE (UNDER THE ACCESS CONTROL)
+# 
+# BUY LICENSE           : LICESNSE => Puchase now 
 #
 #
+#---------------------------------------------------------------------------------------------------
+# Types and Providers
+#-------------------------------------------------------------------------------------------------- an
+# If you are looking for an detailed lecture on types and provider then please go through the below video lecture during puppet conf 2016
+# Video  : https://www.youtube.com/watch?v=Jr8H0wSUMBY
+# Lecturer : Martin Alfke 
+# 
+# * Types 
+# When you have a scenario where you cannot work with the normal resource types available, then you can start looking for custom resource types for your module. 
+# Cutom types in a module are a set of ruby instruction to use a type of resource with various parameters and properties as desired. 
+# This will help us to get rid of the 'exec' resource type available which creates an overburden on managing resources. 
 #
+# You can create types with Ruby language and it can be kept at '<module_name>/lib/puppet/type/type_name.rb
+#
+# Example : Below example shows few sample custom resource type in postgresql standard module. 
+#
+# $ tree /etc/puppetlabs/code/environments/production/modules/postgresql/lib/puppet/type/
+# /etc/puppetlabs/code/environments/production/modules/postgresql/lib/puppet/type/
+# ├── postgresql_conf.rb
+# ├── postgresql_conn_validator.rb
+# ├── postgresql_psql.rb
+# └── postgresql_replication_slot.rb
+#
+# 0 directories, 4 files
+# $
+#
+# Example : Sample custom type written in ruby 
+#
+# $ cat /etc/puppetlabs/code/environments/production/modules/postgresql/lib/puppet/type/postgresql_replication_slot.rb 
+# Puppet::Type.newtype(:postgresql_replication_slot) do
+# @doc = "Manages Postgresql replication slots.
+#
+# This type allows to create and destroy replication slots
+# to register warm standby replication on a Postgresql
+# master server.
+# "
+# 
+#  ensurable
+#
+#  newparam(:name) do
+#    desc "The name of the slot to create. Must be a valid replication slot name."
+#    isnamevar
+#    newvalues /^[a-z0-9_]+$/
+#  end
+# end
+#
+# $
+# 
+# * Providers 
+# Providers are the custom ruby programs which help your defaulti resource types or custom resource type within the ruby program to manage across various platforms. 
+# Platform in the sense here we are referring to various operating system such as Linux, Solaris, Windows, Aix or various applicaions. 
+# An advntage of using providers is that, you will need to only create new provide acording to any new version of the operating system releases. 
+# There won't be any changes required in the resource types of definition since the underlying provider will be taking care of the changes. 
+#
+# You should be locating your custom providers at below location 
+# Location : <module_name>/lib/puppet/provider/provider_name.rb
+#
+# Example : Below are the list of providers available with the postgresql module. 
+#
+# $ tree /etc/puppetlabs/code/environments/production/modules/postgresql/lib/puppet/provider/
+# /etc/puppetlabs/code/environments/production/modules/postgresql/lib/puppet/provider/
+# ├── postgresql_conf
+# │   └── parsed.rb
+# ├── postgresql_conn_validator
+# │   └── ruby.rb
+# ├── postgresql_psql
+# │   └── ruby.rb
+# └── postgresql_replication_slot
+#     └── ruby.rb
+# 
+# 4 directories, 4 files
+# 
+# $
+#
+# Example : Below is a sample puppet provider program 
+#
+# $  more /etc/puppetlabs/code/environments/production/modules/postgresql/lib/puppet/provider/postgresql_conf/parsed.rb                             
+# require 'puppet/provider/parsedfile'
+#
+# Puppet::Type.type(:postgresql_conf).provide(
+#   :parsed,
+#   :parent => Puppet::Provider::ParsedFile,
+#   :default_target => '/etc/postgresql.conf',
+#   :filetype => :flat
+# ) do
+#   desc "Set key/values in postgresql.conf."
+#
+#   text_line :comment, :match => /^\s*#/
+#   text_line :blank, :match => /^\s*$/
+#
+#   record_line :parsed,
+#     :fields   => %w{name value comment},
+#     :optional => %w{comment},
+#     :match    => /^\s*([\w\.]+)\s*=?\s*(.*?)(?:\s*#\s*(.*))?\s*$/,
+#     :to_line  => proc { |h|
+#
+#       # simple string and numeric values don't need to be enclosed in quotes
+#       if h[:value].is_a?(Numeric)
+#         val = h[:value].to_s
+#       else
+#         val = h[:value]
+#       end
+#       dontneedquote = val.match(/^(\d+.?\d+|\w+)$/)
+#       dontneedequal = h[:name].match(/^(include|include_if_exists)$/i)
+#
+#       str =  h[:name].downcase # normalize case
+#       str += dontneedequal ? ' ' : ' = '
+#       str += "'" unless dontneedquote && !dontneedequal
+#       str += val
+#       str += "'" unless dontneedquote && !dontneedequal
+#       str += " # #{h[:comment]}" unless (h[:comment].nil? or h[:comment] == :absent)
+#       str
+#     },
+#     :post_parse => proc { |h|
+#       h[:name].downcase! # normalize case
+#       h[:value].gsub!(/(^'|'$)/, '') # strip out quotes
+#     }
+#
+# end
+# $
+#
+# * Disadvnatages of using exec resource 
+# Never try to use a puppet modules with 'exec' resource type, because it will require lot of code change when a version chabges.
+# Exec resource status are not really tracked by puppet, so its not that trustwrorthy. 
+# Youw won't be able to port the same module accross platforms since the same exec may not work as expected in various version of the OS. 
+#
+# NOTE : If you want to achieve the same goal of what exec does, then create custom type and provider which will help you port your module across varios platforms.
+#
+# * Getter and Getter 
+# Getter and setter provides puppet an idempotent feature which is core concept of puppet, these are defined at the provider level.
+# Getter will help you to get the properties of the resource which already defined or it can track the status of the resource.
+# Setter can help you make the changes according to the catalogue definition where getter find mismatch with the definition.
 #
 #
