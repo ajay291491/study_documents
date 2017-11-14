@@ -2304,7 +2304,7 @@
 #---------------------------------------------------------------------------------------------------
 #		Special Topics for examination 
 #---------------------------------------------------------------------------------------------------
-# PE Console or Puppet Dashboard
+#  Exam Chapter 1 : PE Console or Puppet Dashboard
 #---------------------------------------------------------------------------------------------------
 # * Configuration section in puppet dashboard 
 #
@@ -2383,7 +2383,7 @@
 #
 #
 #---------------------------------------------------------------------------------------------------
-# Types and Providers
+# Exam Chapter 2 : Types and Providers
 #-------------------------------------------------------------------------------------------------- an
 # If you are looking for an detailed lecture on types and provider then please go through the below video lecture during puppet conf 2016
 # Video  : https://www.youtube.com/watch?v=Jr8H0wSUMBY
@@ -2514,5 +2514,73 @@
 # Getter and setter provides puppet an idempotent feature which is core concept of puppet, these are defined at the provider level.
 # Getter will help you to get the properties of the resource which already defined or it can track the status of the resource.
 # Setter can help you make the changes according to the catalogue definition where getter find mismatch with the definition.
+#
+#---------------------------------------------------------------------------------------------------
+# Exam Chapter 3 : SSL related 
+#-------------------------------------------------------------------------------------------------- 
+# * How to add a node to puppet infra 
+#
+# 1. Install the puppet agent on the node and make sure 'puppet.service' and 'mcollective.service' are running.
+# 2. Once you have installed these then run puppet agent -t, see sample below
+#
+# $ puppet agent -t
+#  Info: Creating a new SSL key for clientnode01.svr.apac.sathsang.net
+#  Info: Caching certificate for ca
+#  Info: csr_attributes file loading from /etc/puppetlabs/puppet/csr_attributes.yaml
+#  Info: Creating a new SSL certificate request for clientnode01.svr.apac.sathsang.net
+#  Info: Certificate Request fingerprint (SHA256): BE:BE:37:C9:3F:31:05:4E:74:4C:BD:27:FE:84:73:39:E3:B4:DC:26:97:19:1C:C6:6B:FA:29:CA:4E:E7:01:9F
+#  Info: Caching certificate for ca
+#  Exiting; no certificate found and waitforcert is disabled
+# $
+#
+# 3. Once you have done this, then sign the certificate from the master. 
+#
+# [root@puppetmaster01 provider]# puppet cert list
+#  "clientnode01.svr.apac.sathsang.net" (SHA256) BE:BE:37:C9:3F:31:05:4E:74:4C:BD:27:FE:84:73:39:E3:B4:DC:26:97:19:1C:C6:6B:FA:29:CA:4E:E7:01:9F
+# [root@puppetmaster01 provider]# puppet cert sign clientnode01.svr.apac.sathsang.net
+# Signing Certificate Request for:
+#   "clientnode01.svr.apac.sathsang.net" (SHA256) BE:BE:37:C9:3F:31:05:4E:74:4C:BD:27:FE:84:73:39:E3:B4:DC:26:97:19:1C:C6:6B:FA:29:CA:4E:E7:01:9F
+# Notice: Signed certificate request for clientnode01.svr.apac.sathsang.net
+# Notice: Removing file Puppet::SSL::CertificateRequest clientnode01.svr.apac.sathsang.net at '/etc/puppetlabs/puppet/ssl/ca/requests/clientnode01.svr.apac.sathsang.net.pem'
+# [root@puppetmaster01 provider]#
+# 
+# NOTE : You can atain above two steps by running the same command which you see under pe-concsole -> 'Unsigned Certificate'
+#
+# * How to Remove a node from puppet infra 
+#
+# 1. First stop the puppet and mcollectice service on the agent. 
+#
+# $ systemctl stop puppet.service
+# $ systemctil stop mcollective.service
+#
+# 2. Purge the node from puppet master, then will remove the puppet certificate and also willd deactivate the node from the puppetDB.
+#
+# $ puppet node purge <certificate name>
+#
+# 3. Then run run puppet agent on the master to, this run will copy the certificate revocation list (CRL) to the correct SSL directory to the delivery of the node
+#
+# $ puppet agent -t 
+#
+# 4. Then reload the pe-puppetserver service to reload the config and remove the agent certificate, else during the next puppet run agent will get activated in puppetDB. 
+#
+# $ /etc/init.d/pe-puppetserver reload 
+#
+#---------------------------------------------------------------------------------------------------
+# Exam Chapter 3 : PuppetDB
+#-------------------------------------------------------------------------------------------------- 
+#
+# * What information are getting stored in puppet DB 
+# - facts 
+# - catalogue 
+# - reports 
+#
+# Example : Please see below message for a sample puppet run on a node clientnode01.svr.apac.sathsang.net
+#
+# 2017-11-14 10:57:48,135 INFO  [p.p.command] [3703-1510628267993] [81 ms] 'replace facts' command processed for clientnode01.svr.apac.sathsang.net
+# 2017-11-14 10:57:50,060 INFO  [p.p.command] [3704-1510628269876] [111 ms] 'replace catalog' command processed for clientnode01.svr.apac.sathsang.net
+# 2017-11-14 10:57:52,211 INFO  [p.p.command] [3705-1510628272082] [63 ms] 'store report' puppet v4.10.1 command processed for clientnode01.svr.apac.sathsang.net
+
+#
+#
 #
 #
