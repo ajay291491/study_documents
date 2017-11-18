@@ -195,6 +195,45 @@
 # }
 # [root@puppetagentcentos ~]# 
 #
+# * Custom facts 
+# Custom facts are factor values which you are creating for your need, Custom facts can be devided into two types.
+# - static custom facts 	: This will contain plane text based facts, simple jason or yaml facts can also be in this catagory 
+# - executable custom facts	: This will be executable script such as perl or python or jason or yaml in executable format. 
+#
+# Custom facts can be stored in different loactions 
+# /etc/facter/facts.d
+# /etc/puppetlabs/facter/facts.d
+# /opt/puppetlabs/facter/facts.d
+# /etc/puppetlabs/code/manifests/${environemnt}/module_name/facts.d
+#
+# * How to configure custom facts 
+# Kindly follow below steps to update the custom facts 
+#
+# 1. Update the pe.conf file with the new facter path 
+# $ grep -i factpath /etc/puppetlabs/puppet/puppet.conf
+# factpath = $factpath:/etc/puppetlabs/facter/facts.d:/opt/puppetlabs/facter/facts.d:/etc/facter/facts.d
+# $
+# 
+# 2. Create your facter into any of the custom fact location defined above 
+# $  cat /etc/puppetlabs/facter/facts.d/static_fact.yaml 
+#  puppet_infra:
+#    pe_master : puppetmaster01
+#    pe_console : puppetconsole01
+#    pe_db : puppetdb01
+# $ 
+#
+# 3. Now try to lookup the facter 
+# [root@puppetmaster01 facts.d]# facter puppet_infra
+# {
+#   pe_console => "puppetconsole01",
+#   pe_db => "puppetdb01",
+#   pe_master => "puppetmaster01"
+# }
+# $ facter puppet_infra.pe_master
+# puppetmaster01
+# $
+# 
+#
 # * Resource
 #
 # Any component managed via puppet is called resource, you can run below command to fetch the resource details from the 'resource abstraction layer (RAL)
@@ -2661,8 +2700,90 @@
 #
 # $
 #
+#---------------------------------------------------------------------------------------------------
+# Exam Chapter 6 : Marionatte collective (M Collective)
+#-------------------------------------------------------------------------------------------------- 
+# Mcollective a normally a orchestration or parallal job processing tool, which can be used to perform job on certain nodes.
+# Every node will be having two agents running on the node one is 'puppet agent' and second one is 'mcolelctive agent'. 
 #
+# Mcollective agent will not directly contact a server list or node to get a data rather than that it uses 
+# - Powerful data sources like puppetDB 
+# - Or it uses the middle ware messaging tools like MQ (Rabbit MQ) is the most common we uses. 
 #
+# When you can process a query or action from mcollective node then it will send the same message to a middleware messaging node 
+# From the middleware messaging node data will be send across to all nodes. 
 #
+# Mcollective normally has four different plugins by default 
 #
+# - Agent plugin  	: Carry out the actions 
+# - Security plugin 	: For authentication process 
+# - COnnection plugin 	: For network connection 
+# - Data plugin 	: For data filtering 
+# 
+# You can also add several plugins to Mcollective to perform additional actions 
 #
+# Mcollective can be mostly used to perform various actions on its configured node
+# - checking status of a package, user, service, file etc 
+# - installing or uninstall a package 
+# - start, stop and restart service on a list nodes.
+#
+# Example : Few sample Mcollective commands 
+#
+# $ mco package rear.x86 status
+# $ mco package rear.x86 uninstall 
+# 
+# $ mco service sshd status 
+# $ mco service sshd restart 
+#
+# NOTE : Mcollective will require few configuration files on the node from which you are performing the query and also the end node. 
+#
+# For Server : /etc/mcollective/server.cfg
+# For client : /etc/mcollective/client.cfg
+#
+# For more details on its configuration please look at below links. 
+#
+# https://puppet.com/docs/mcollective/current/reference/basic/configuration.html
+# https://puppet.com/podcasts/podcast-using-mcollective-for-orchestration
+# https://www.youtube.com/watch?v=4XLGSJV782Y
+#
+#---------------------------------------------------------------------------------------------------
+# Exam Chapter 7 : Custom facts  
+#-------------------------------------------------------------------------------------------------- 
+# * Custom facts 
+# Custom facts are factor values which you are creating for your need, Custom facts can be devided into two types.
+# - static custom facts         : This will contain plane text based facts, simple jason or yaml facts can also be in this catagory 
+# - executable custom facts     : This will be executable script such as perl or python or jason or yaml in executable format. 
+#
+# Custom facts can be stored in different loactions 
+# /etc/facter/facts.d
+# /etc/puppetlabs/facter/facts.d
+# /opt/puppetlabs/facter/facts.d
+# /etc/puppetlabs/code/manifests/${environemnt}/module_name/facts.d
+#
+# * How to configure custom facts 
+# Kindly follow below steps to update the custom facts 
+#
+# 1. Update the pe.conf file with the new facter path 
+# $ grep -i factpath /etc/puppetlabs/puppet/puppet.conf
+# factpath = $factpath:/etc/puppetlabs/facter/facts.d:/opt/puppetlabs/facter/facts.d:/etc/facter/facts.d
+# $
+# 
+# 2. Create your facter into any of the custom fact location defined above 
+# $  cat /etc/puppetlabs/facter/facts.d/static_fact.yaml 
+#  puppet_infra:
+#    pe_master : puppetmaster01
+#    pe_console : puppetconsole01
+#    pe_db : puppetdb01
+# $ 
+#
+# 3. Now try to lookup the facter 
+# [root@puppetmaster01 facts.d]# facter puppet_infra
+# {
+#   pe_console => "puppetconsole01",
+#   pe_db => "puppetdb01",
+#   pe_master => "puppetmaster01"
+# }
+# $ facter puppet_infra.pe_master
+# puppetmaster01
+# $
+
