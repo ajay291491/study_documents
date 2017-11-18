@@ -2786,4 +2786,48 @@
 # $ facter puppet_infra.pe_master
 # puppetmaster01
 # $
+#---------------------------------------------------------------------------------------------------
+# Exam Chapter 7 : Code manager , File sync and R10K
+#-------------------------------------------------------------------------------------------------- 
+# * Code manager 
+# Code manager is used to deploy code in Puppet master by contacting it with github. 
+# Under the hood code manager uses 'r10k' and 'filesync' service to stage, commit and sync your code. 
+# - r10k      => will help to download the code from Git repo to staging directories
+# - File sync => will help to sync code from staging directories to compile masters
+#
+# * How code manager works
+# 1. You will need to create a control repository (such as git) with branches for each environment that you want to create (such as production, development, testing etc).
+# 2. You will also create a 'puppetfile' in each environment in each repository to mention what modules need to downloaded for that environemnt. 
+# 3. This allows code to directly create dirctories which you have setup based on the branches setup 
+# 4. When you push code to your control repo, code manager will pull the repo and will place the code into a staging directory '/etc/puppetlabs/code-staging'. 
+# 5. Then File sync picks up the chnages on new code changes and will pause the puppet server to avoid the conflict. 
+# 6. Then it will sync the live code done to the environment directories of your puppet masters. 
+#
+# Example : Sample config file for r10k.yaml 
+#
+# $ cat /etc/puppetlabs/r10k/r10k.yaml|grep -v \#
+# ---
+# cachedir: '/opt/puppetlabs/server/data/r10k'
+# sources:
+#  operations:
+#    remote: 'git@github.com:ajay291491/puppet.git'
+#    basedir: '/etc/puppetlabs/code/environments'
+#  private_key: '/root/.ssh/id_rsa'
+# $ 
+# 
+# Example : Sample output of code deployment 
+#
+# $ r10k deploy environment -v
+# INFO	 -> Deploying environment /etc/puppetlabs/code/environments/development
+# INFO	 -> Environment development is now at d11d7179819faa5a573f25ee13d13b5004b93c18
+# INFO	 -> Deploying environment /etc/puppetlabs/code/environments/master
+# INFO	 -> Environment master is now at 1594cdffb3f7491bf3bf0dc6a65bf3a41559a7ea
+# INFO	 -> Deploying environment /etc/puppetlabs/code/environments/production
+# INFO	 -> Environment production is now at c67713132879bfefc1a6c90490cc4ef96cb8dc0e
+# $
+#
+#
+#
+#
+#
 
