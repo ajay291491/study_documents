@@ -132,7 +132,37 @@ It can be about anything """
 # Not True         = False 
 # Not False        = True 
 #
+# * if condition statement
+# if is a conditional statement which excutes if the value is 'True' 
+# 
+# syntax : if params_one conditional_operattor params_two :
+#              statemant_to_execute
+# 
+# Example : below example will show us the usage for if
+# 
+# | name = raw_input("Please enter your name : ")
+# | if name == "ajay" :
+# |   print "Thanks for entering your name as : %s" %(name)
+#
+# * if .. else conditional statement
+# When you use this conditional statement, all conditions or functions which are True will get executed in if statement and false will get executed in else 
+# 
+# Syntax : if function(): 
+#              execute the true condition
+#          else: 
+#              execute the false condition
+#
+# Example : below example will explain you about an if else condition
+#
+# | from datetime import datetime
+# | country_name = raw_input("Please Enter your Country : ")
+# | state_name   = raw_input("Please Enter your State : ")
+# | current_time = datetime.now()
+# | print "\nYour values are read at : %s-%s-%s %s:%s:%s \n" %(current_time.day, current_time.month, current_time.year, current_time.hour, current_time.minute, current_time.second)
+# | if country_name == state_name: 
+# |    print "You are living in a small country %s" %(country_name)
+# | else:
+# |     print "You are living in a big contry where your country is %s and state is %s" %(country_name, state_name)
 #
 #
-
-
+#
