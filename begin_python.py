@@ -164,5 +164,55 @@ It can be about anything """
 # | else:
 # |     print "You are living in a big contry where your country is %s and state is %s" %(country_name, state_name)
 #
+# * if..elif..else conditional statement
+# When you have multiple keys to match before taking a decission then you can use if..elif..else statements 
+#
+# Synatx : if function():
+#              statements 
+#          elif function():
+#              statements
+#          else:
+#              statements
+#
+# Example : Below example will tell you about the usage of if..elif
+#
+# | def choose_your_fruit(fruit):
+# |     if fruit == "apple":
+# |         return "king of fruits"
+# |    elif fruit == "orange":
+# |        return "Tangy and prince"
+# |    else:
+# |        return "No match found"
+# | #print choose_your_fruit('apple')
+# | #print choose_your_fruit('orange')
+# | user_input = raw_input("Please enter your fruit Choice : ")
+# | print "You have choosen : %s - " %(user_input) + choose_your_fruit(user_input)
+#      
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 03 - inputs
+#-------------------------------------------------------------------------------------------------------------
+# * raw_input
+# You can request an user input in a script using 'raw_input' function 
+# 
+# variable = raw_input("Enter your input : ")
+#
+# Example : Below example will show you how to take an user input
+#
+# | name = raw_input("Please enter your name : ")
+# | print "You have entered : %s" %(name) 
+#
+# * .isalpha method 
+# You can use '.isalpha' method to make sure any varibale input given is alphabetical then it gives the value 'True'
+# If you have entered a non-alphebetical charecter then it will return the value as "False"
+# 
+# Synatx : variable.isalpha()
+#
+# Example : Below example will print the value only if the variable is alphabetical charector
+#
+# | name = raw_input("Please enter your name : ")
+# | if name.isalpha():
+# |    print "You have entereted a name : %s " %(name)
+#
+# Pending : Chapter 3 9/11
 #
 #
