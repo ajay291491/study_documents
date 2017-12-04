@@ -340,7 +340,14 @@
 # You can get the complete details of these modules by referring to below link 
 # 
 # Source : https://docs.python.org/3/library/functions.html
+# 
+# There are few builtin functions which we need to be aware of 
 #
+# min ()    => This will give you the minimum values from a list , e.g : min_value = min(-10, 10, 20, -100)    : Here result will be -100
+# max ()    => This will give you the maximum or biggest value in a list , e.q : max_value = max(-10, 10, 20, -100)    : Here result will be 20
+# abs()     => This will give you the absolute value of a number, that is distance from zero distance = abs(-10)       : Here rsult will be 10
+# type()    => This will resturn the type of the variable or data is either int, float or string, this will be very useful ehen you are writing if condition to check the type if the input
+# 
 #
 #
 #
