@@ -348,8 +348,246 @@
 # abs()     => This will give you the absolute value of a number, that is distance from zero distance = abs(-10)       : Here rsult will be 10
 # type()    => This will resturn the type of the variable or data is either int, float or string, this will be very useful ehen you are writing if condition to check the type if the input
 # 
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 05 - List and various methods to handle 
+#-------------------------------------------------------------------------------------------------------------
+#
+# * List 
+# List can be used store more than one value in a variable. It can be either a string or numbers. 
+# When you define a set of values with in a list you need to put then inside [ ] which separated by commas. 
+# 
+# Syntax : zoo = [ 'tiger', 'panda', 'monkey', 'dear']
+#
+# Example : Below example show us sample list 
+#
+# | from datetime import datetime
+# | current_time = datetime.now()
+# | def zoo_animals():
+# |     zoo_animals = ['tiger', 'elephant', 'dear', 'monkey']
+# |    print "If you go to zoo on %d th on you can see : %s" %(current_time.day, zoo_animals)
+# |
+# | zoo_animals()
+#
+# * Array or list slicing (method to access elements in an array)
+# You can access elements in the array in 4 different methods
+#
+# 1. Call the element expicitly by the index number of that element
+# Syntax : array_name[x]    => here x is the index name 
+# 
+# 2. Give a range, if you want to access a portion of an array then use the range method.
+# Syntax : aray_name[x:y]   => Here 'x' means index value of the first element to start with and 'y' means any element before the 'y' index 
+#
+# 3. Calling any elements any elments before any specific index number 
+# Syntax : array_name[:y]   => This will slice any elements before index y
+#
+# 4. Calling any elements after any specific index number 
+# Syntax : array_name[x:]   => This will slice as x and any elements after that.
+#
+# Example : below example you will see how to access list elemnts with any index number of range 
+#
+# | def display_new_cars():
+# |    tata = ['hexa', 'nexon', 'tigor', 'bolt']
+# |    maruthi = ['swift', 'breza', 'dzire', 'waganor']
+# |    hundai = ['creta', 'i10', 'i20', 'ion']
+# |    new_cars = [tata, maruthi, hundai]
+# |    print "These are the new cars available in the market \n => %s" %(new_cars)
+# |    print "Tata cars => %s" %(new_cars[0])
+# |    print "Tata and Maruthi cars : %s " %(new_cars[0:2])
+# |    print "Maruthi and Hunday cars : %s" %(new_cars[1:3])
+# |    print "Any car excluding Hundai : %s" %(new_cars[:2])
+# |    print "Any excluding Tata %s : " %(new_cars[1:])
+# |
+# | display_new_cars()
+#
+# - You can retrieve each element from the list by giving the index number of the array elements, index number always starts from zero
+#
+# zoo_animals = [ 'tiger', 'elephant', 'deer', 'monkey'] 
+# index numbers =>  0           1        2        3
+#
+# | user_input = int(raw_input("Please Enter the index number : "))
+# | 
+# | def display_zoo_animal(index_number):
+# |    zoo_animals = ['tiger', 'elephant', 'dear', 'monkey']
+# |    if index_number < 4:
+# |        print  zoo_animals[index_number]
+# |    else:
+# |        print "out of range"
+# |
+# | display_zoo_animal(user_input)
+#
+# - You can also add or replace values by assigning values to the curresponding values 
+#
+# menu = ['tea', 'coffe', 'ice cream', 'juice', 'bread', 'rice']
+# | print menu
+# | menu = menu + ['sambar']
+# | print menu
+# | menu[1] = 'vodka'
+# | print menu
+# | menu [5] = ''
+# | print menu
+#
+# * How find the length of list (using object len)
+# You can find the length of a list using object 'len',
+#
+# Syntax : len(array)
+#
+# Example : Below example will show you how to find the length of an array
+#
+# | car_park = ['ford', 'tata', 'maruthi', 'hundai']
+# | total_cars = len(car_park)
+# | print "Total number of cars in cark park are : %d" %(total_cars)
+#
+# * How to append a list
+# You append elements into a list by using the 'list_name.append' method 
+#
+# Synatax : array_name.append('element')
+#
+# Example : Below example will show you how to append an item to an array 
+# 
+# | car_park = ['ford', 'tata', 'maruthi', 'hundai']
+# | car_park.append('honda')
+# | car_park.append('bajaj')
+# | print car_park
+# 
+# * Many methods in list object
+#
+# - How to find the index number of an elme                         => array_name.index("element")                  # Example : car_park.index[3]
+# - How to replace an element in an array with index number         => array_name.insert(index_number, "element")   # Example : car_park.insert[2, "Honda"]
+# - How to sort an element in an array                              => array_name.sort                              # Example : car_park.sort
+# - How to remove an element from an array                          => array_name.remove(element)                   # Example : car_park.remove("Honda")
+#
+# Example : Below example will show the usage of .index and .insert method in list object
+#
+# | from datetime import datetime
+# | current_time = datetime.now()
+# | family = ['Achu', 'vaiga', 'Aparna', 'Ajay']
+# | def replace_value(current_name, nick_name):
+# |     index_number = family.index(current_name)
+# |     if type(index_number) == int:
+# |        family.insert(index_number, nick_name)
+# |        print "My sweet family : %s this was processed at date %d-%s-%d" %(family, current_time.day, current_time.month, current_time.year)
+# |
+# | print "Your family : %s" %(family)
+# | current_name = raw_input("Please choose your family member name as shown above : ")
+# | nick_name = raw_input("Please enter the nickname of %s :" %(current_name) )
+# | replace_value(current_name, nick_name)
+#
+#
+# * for loop 
+# When you want to perform an action on set of action in all elements of a list then you can use for loop to achieve that task 
+#
+# Syntax : for variable_name in list_name:
+#               Do_the_stuff
+#
+# Example : Below example will show the usage of for loop
+#
+# | family = ['Achu', 'vaiga', 'Aparna', 'Ajay']
+# | for member in family:
+# |    print member
+#
+# Example : using for loop along with sorting a number array 
+#
+# | serial_numbers = [10, 20, 50, 40 ,32, 56, 21, 39]
+# | serial_numbers.sort()
+# | for number in serial_numbers:
+# |     square = number**2
+# |     print "Square of %-3d => %5d" %(number, square)
+# 
+# 
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 06 - Dictionaries
+#-------------------------------------------------------------------------------------------------------------
+# Dictionaries are two dimensional array or list and they consist of the key value pair.
+# Similar to list, rather than accessing elemnt via an index number, you can access the values with the keys in a dictionary
+# Dictionaries are stored in curely braces { } and the way store is like below 
+#
+# Synatx : dictionary_name = {
+#               'key_one'   : value_one,
+#               'key_two'   : value_two,
+#               'Key_three' : value_three,
+#          }
+#
+# Syntax : dictionary_name['key_one']   => This will give the result as value_one
+#
+# Example : Below example will show you an usage about dictionary using for loop
+#
+# | family = {
+# |     'Son'       : 'Achu',
+# |     'Daughter'  : 'Vaiga',
+# |     'Mother'    : 'Aparna',
+# |     'Father'    : 'Ajay',
+# |     }
+# | print family['Son']
+# | print family['Daughter']
+# | print family['Mother']
+# | print family['Father']
+#
+# * Adding values to dictionary 
+# Similar to a list, dictionaries are also mutable, that means you can add values to the dictionry even after you have created it 
+# To add a value to the existing dictionary you need to asign a key : value pair using below syntax 
+# 
+# Syntax : dict_name['new_key'] = value 
+#
+# Example : Below example will show how to add a key value pair to a dictionary
+#
+# | dict_name = {
+# |     'Daughter'  : 'Vaiga',
+# |     'Mother'    : 'Aparna',
+# |     'Father'    : 'Ajay',
+# |     }
+# | dict_name['Son'] = "Achu"
+# | print dict_name
+#    
+# * Delete values from dictionary
+# You can delete values also from dictionary using below syntax 
+#
+# Syntax : del dict_name['key_name']
+#
+# Example : You can delete values from dictionary as below
+#
+# | cars = {
+# |    'tata'    :   ['hexa', 'nexon'],
+# |    'maruti'  :   ['brezza', 'boleno'],
+# |    'hundai'  :   ['i10', 'eon'],
+# |    }
+# |
+# | print cars
+# | user_input = raw_input("Enter the car company you want to remove : ")    
+# | del(cars[user_input])
+# | print "You have only these cars left in showroom : %s" %(cars)
+#
+# * How to pull only keys from a dictionary
+# You can pull only keys from a dictionary and it can be used further to achieve various tasks, you can pull key as below 
+#
+# Synatx : dict_name.keys()
+#
+# Example : Print elements in a dictionary and delete or modify what you do not need
+#
+# | human_needs = {
+# |     'charector'     : 'This defines whom you are',
+# |     'wish'          : 'This defines what you want to be',
+# |     'jelous'        : 'This will make you devil',
+# |     'kindness'      : ['philanthrophy', 'marathon', 'help'],
+# |     }
+# | 
+# | for charector_type in human_needs.keys():
+# |     if charector_type == 'jelous':
+# |         del(human_needs[charector_type])                    """ => This will delete the key and value"""
+# |     if charector_type == 'kindness':
+# |         human_needs[charector_type].remove('marathon')      """ => This will remove only an element in list associated with that key """
+# |         
+# | print human_needs
+#
+# * How to perform various functions with in the dictionary 
+#
+# del(dict_name['key']                              => This will delete a key in that array 
+# dictname ['key_name'] = value                     => This will simply add a key value pair to the dictionary
+# dict_name['key_name'].remove('element')           => This can be used to remove an element from a list associated with a key in the dictionary
+# dict_name['key_name'].append('element')           => This will append an element to the list associated with the key in the dictionary 
+# dict_name['key_name'].insert(index, 'element')    => This will insert an element in the list in certain index number within a list associated to a key in dict.
+# dict_name['key_name'].sort()                      => This will sort values in that list associated with that key
 #
 #
 #
-
+#
 
