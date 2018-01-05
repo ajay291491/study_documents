@@ -493,6 +493,30 @@
 # |     square = number**2
 # |     print "Square of %-3d => %5d" %(number, square)
 # 
+#
+# * Using list in a function 
+# When you are writing a function you can use list as an input to the function. 
+# 
+# Synatx : function_name(list_name)  or function_name(list_of_elements)
+#
+# Example : Below example will show us the usage of list in the function
+#
+# | def detect_manufacturer(cars):
+# |     total_tata_cars = 0 
+# |     total_hundai_cars = 0
+# |     total_maruthi_cars = 0 
+# |   for car in cars:
+# |         if car == 'hexa' or car == 'nexon' or car == 'tiago':
+# |            total_tata_cars = total_tata_cars + 1
+# |        elif car == 'creta' or car == 'i10' or car == 'eon':
+# |            total_hundai_cars = total_hundai_cars + 1
+# |        elif car == 'baleno' or car == 'breza' or car == 'alto':
+# |            total_maruthi_cars = total_maruthi_cars + 1
+# |    return (total_tata_cars, total_hundai_cars, total_maruthi_cars)
+# |
+# | cars = [ 'breza', 'hexa', 'alto', 'creta', 'beleno', 'tiago', 'nexon' , 'eon']
+# | print detect_manufacturer(cars)
+#
 # 
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 06 - Dictionaries
@@ -588,6 +612,7 @@
 # dict_name['key_name'].sort()                      => This will sort values in that list associated with that key
 #
 #
+# 
 #
 #
 
