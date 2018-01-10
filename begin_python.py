@@ -74,7 +74,7 @@
 # | print "There are %d fruits in the basket %s %s %s" %(total_fruits, fruit_one, fruit_three, fruit_two)
 # | print "These %s and %s fruits can be taken to schoool, but %s can only to hospital" %(fruit_two, fruit_three, fruit_one)
 #
-# NOTE : Make sure the number of '%s' you have in the sting and vriables with in %( ) should be same, else the compilation will fail
+# NOTE : Make sure the number of '%s' you have in the sting and variables with in %( ) should be same, else the compilation will fail
 #
 # * datetime function
 # While working on scripts we will need to keep track of our time, we can use the datetime function to keep track of the time.
@@ -455,6 +455,9 @@
 # - How to replace an element in an array with index number         => array_name.insert(index_number, "element")   # Example : car_park.insert[2, "Honda"]
 # - How to sort an element in an array                              => array_name.sort                              # Example : car_park.sort
 # - How to remove an element from an array                          => array_name.remove(element)                   # Example : car_park.remove("Honda")
+# - How to remove an element using index number                     => array_name.pop(index_number)                 # Example : car_park.pop(0)
+# - How to remove an elemnt with its name                           => array_name.remove(element)                   # Example : car_park.remove('ford')
+# - How to remove and element from an array using del()             => del(array_name[index_number])                # Example : del(car_park[0])
 #
 # Example : Below example will show the usage of .index and .insert method in list object
 #
@@ -472,6 +475,15 @@
 # | nick_name = raw_input("Please enter the nickname of %s :" %(current_name) )
 # | replace_value(current_name, nick_name)
 #
+#
+# Example : Below example will explain about various usage of list removal
+#
+# | grocery_items = ['lendil', 'rice', 'wheat', 'piece']
+# | total_item = len(grocery_items)
+# | first_removal = grocery_items.pop(0)
+# | second_removal = grocery_items.remove('rice')
+# | print "There are total of %d items available and %s and %s removed now" %(total_item, first_removal, second_removal)
+# | print "remaining items are %s" %(grocery_items)
 #
 # * for loop 
 # When you want to perform an action on set of action in all elements of a list then you can use for loop to achieve that task 
@@ -572,8 +584,8 @@
 # | cars = {
 # |    'tata'    :   ['hexa', 'nexon'],
 # |    'maruti'  :   ['brezza', 'boleno'],
-# |    'hundai'  :   ['i10', 'eon'],
-# |    }
+# |   'hundai'  :   ['i10', 'eon'],
+# | }
 # |
 # | print cars
 # | user_input = raw_input("Enter the car company you want to remove : ")    
@@ -611,8 +623,58 @@
 # dict_name['key_name'].insert(index, 'element')    => This will insert an element in the list in certain index number within a list associated to a key in dict.
 # dict_name['key_name'].sort()                      => This will sort values in that list associated with that key
 #
-#
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 07 - Few builtin function which is useful in day to day 
+#-------------------------------------------------------------------------------------------------------------
+# In this chapter we will see the usage of few of builtin functions which can be used for day to day scripting
 # 
+# * How to get all possible usage of a module 
+# To get all possible usage of a module, you can call that function with in a dir() function 
+# 
+# Syntax : dir(function_name)
+#
+# Example : below examples will tell us the usage of the various functions 
+#
+# | import math
+# | import datetime
+# | print dir(range)        # This will print all options inside range()
+# | print dir(math)         # This will print all options inside math()
+# | print dir(datetime)     # This will print all options inside datetime()
+#
+# * datetime()
+# This function will help us to print various datetime formats and details 
+# 
+# Method  : import datetime                 => This is how you can import the datetime module completely
+# or      : from datetime import datetime   => This is how you can import only datetime() function from datetime module
+# synatx  : current_time = datetime.now()   => This will store complete datetime value to variable current_time
+#         : current_time.day                => This will print the current date
+#         : current_time.hour               => Thus will print the details of the current hour 
+#         : current_time.month              => This will print the details of current month
+#         : current_time.year               => This will print the details of current year
+# details : dir(datetime)
+#
+# * range ()
+# This  is a python inbuilt function which can be used to get a range of numbers as a list
+# 
+# Syntax : rang(to_what_number)
+#        : range(from_number, to_number)
+#
+# Example : Below example will help you to understand the usage of the range() function 
+#
+# | def display_even_numbers(from_number, to_number):
+# |   numbers = range(from_number, to_number)
+# |   even_numbers = []
+# |   odd_numbers  = []
+# |   for number in numbers:
+# |     if (number % 2) == 0:
+# |      even_numbers.append(number)
+# |    else :
+# |      odd_numbers.append(number)
+# |  print "Odd number in the list is : %s"  %(odd_numbers)
+# |  print "Even number in the list is : %s" %(even_numbers)
+# | 
+# | display_even_numbers(20, 40)
 #
 #
+
 
