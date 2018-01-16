@@ -458,6 +458,8 @@
 # - How to remove an element using index number                     => array_name.pop(index_number)                 # Example : car_park.pop(0)
 # - How to remove an elemnt with its name                           => array_name.remove(element)                   # Example : car_park.remove('ford')
 # - How to remove and element from an array using del()             => del(array_name[index_number])                # Example : del(car_park[0])
+# - How to append to a list                                         => array_name('element')                        # Example : car_park('Maruti')
+# - How to multiply an array and append to a list                   => array_name([array_element] * count]          # Example : car_park(['Jeep'] * 5)
 #
 # Example : Below example will show the usage of .index and .insert method in list object
 #
@@ -676,5 +678,151 @@
 # | display_even_numbers(20, 40)
 #
 #
-
+# * split() function
+# We can use split function to split a string using any delimeter within the string and produce a list
+# Delimeter can be " " "," /  \  :  . or any other of these kind of symbols   
+# 
+# Syntax : string_name.split("delimeter"
+#
+# Example : Below example will show us how to split a string and store it in an array
+# 
+# | def split_a_sentence(sentence):
+# |   lists = sentence.split(" ")
+# |   count = 0
+# |   for word in lists:
+# |     count = count + 1
+# |     print "%d : %s" %(count, word)
+# |
+# | split_a_sentence("My name is Ajay")
+#
+#
+# * join() function
+# This function can be used to join or concatinate a list in to a string using any  given delimeter 
+# Delimeter can be " " "," /  \  :  . or any other of these kind of symbols   
+#
+# Syntax : "delimeter".join("list")
+#
+# Example : Below example will show us the usage about join function 
+#
+# | def join_a_list(lists):
+# |  joined_word = ' : '.join(lists)
+# |   return joined_word
+# | 
+# | word_1 = "My name is"
+# | word_2 = "Ajay"
+# | lists=[word_1, word_2]
+# | 
+# | print join_a_list(lists)
+#
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 08 - Loops 
+#-------------------------------------------------------------------------------------------------------------
+# * While loop 
+# While loop will continue to execute the loop until the given condition is true 
+#
+# Synatx : while condition_to_check:
+#            steps_to_execute
+#
+# Example : Below example will show how to use a while loop 
+#
+# | def check_your_while_loop(max_range):
+# |   counter = 0
+# |   if max_range > 5:
+# |     while counter < max_range:
+# |       print counter
+# |       counter += 1 
+# |   else:
+# |     print "Range is too short"
+# | 
+# | max_number = raw_input("Please enter your number : ")    
+# | check_your_while_loop(int(max_number))
+#        
+# * How to increase counter in a loop 
+# There are two methods you can use for increasing the counter after intializing your counter
+#
+# method 1 : counter = counter + 1
+# method 2 : counter += 1
+#
+# * break statement
+# break statement will help you to exit out of the loop. 
+#
+# Syntax : break 
+#
+# Example : Below example will show the usage of break
+#
+# | def fruits_basket(fruits):
+# |   for fruit in fruits:
+# |    if fruit == 'apple':
+# |      print "I cannot eat this fruit %s, tray returned" %(fruit)
+# |      break
+# |    else:
+# |      print fruit
+# |
+# | fruits = []
+# | input_fruit = raw_input("Please Enter your fruit name : ")
+# | while input_fruit != 'end':
+# |  fruits.append(input_fruit)
+# |  input_fruit = raw_input("Please Enter your fruit name : ")
+# | 
+# | fruits_basket(fruits)
+#
+# * While else loop ()
+# One thing which is peculiar about python is while else, not all languuages provides that feature. 
+# While else will be working like this 
+# - while loop will get excuted until the condition is true 
+# - if the condition comes false then while will skip and else will get executed
+# - at any point in time if you are using break in the while loop, then else condition won't be processed
+#
+# Syntax : while condition_to_check:
+#               steps_tor_execute
+#           else:
+#               steps_to_execute 
+#
+# Example : Below example will tell us how to use a while else loop
+#
+# | import random
+# | def display_random_number(user_input):
+# |   counter = 0 
+# |   while counter < 10:
+# |     number = random.randint(0, int(user_input))
+# |     print number
+# |     counter += 1
+# |     if number > 9:
+# |       print "Detected random number greater than 9 and is : %s" %(number)
+# |      break
+# |  else:
+# |    print "You have exceed your counter limit of 9"
+# | 
+# | user_input = raw_input("Please enter your number choice : ")
+# | display_random_number(user_input)
+#
+# * for loop
+# for loop can be used to perform action on a list of items, this can process the list of statements given according to the number of elements given inthe list 
+# 
+# Syntax : for variable_name in list_name
+#               statement_to_execute
+#
+# Example : Below example will show us an usage of for loop using a list created by range
+#
+# | for number in range(0, 15):
+# |  if number < 10:
+# |    print number,                    => This comma will cut down the new line 
+# |  else:
+# |    print "You have exceed limit"
+# |    break
+#
+# Example : Below example will tell us an usage of using for loop from a list 
+#
+# | def test_your_array():
+# |   family = ['aparna', 'ajay', 'vaiga', 'rishi']
+# |   for member in family:
+# |     if member is "ajay":
+# |       print "%10s : is currently overseas" %(member)
+# |     else:
+# |       print "%5s : is current in India" %(member)
+# | 
+# | test_your_array()
+#   
+#
+#
 
