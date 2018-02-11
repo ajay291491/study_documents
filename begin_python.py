@@ -218,7 +218,6 @@
 # | if name.isalpha():
 # |    print "You have entereted a name : %s " %(name)
 #
-# Pending : Chapter 3 9/11
 #
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 04 - Functions 
@@ -382,6 +381,18 @@
 #
 # 4. Calling any elements after any specific index number 
 # Syntax : array_name[x:]   => This will slice as x and any elements after that.
+#
+# 5. Calling every odd element in the list 
+# Syntax : array_name[::2]
+#
+# 6. Reversing an array 
+# Syntax : array_name[::-1]
+#
+# 7. Reversing an array and list only difference of 10
+# Syntax : array_name[::-10]
+#
+# 8.Listing an array with a difference of 10 
+# Syntax : array_name[::10]
 #
 # Example : below example you will see how to access list elemnts with any index number of range 
 #
@@ -560,41 +571,23 @@
 # | print family['Mother']
 # | print family['Father']
 #
-# * Adding values to dictionary 
-# Similar to a list, dictionaries are also mutable, that means you can add values to the dictionry even after you have created it 
-# To add a value to the existing dictionary you need to asign a key : value pair using below syntax 
-# 
-# Syntax : dict_name['new_key'] = value 
+# * Printing all dictionary contents
+# You can print all dictionary contents together by using the "items" function 
 #
-# Example : Below example will show how to add a key value pair to a dictionary
+# Syntax  : dict_name.items()
 #
-# | dict_name = {
-# |     'Daughter'  : 'Vaiga',
-# |     'Mother'    : 'Aparna',
-# |     'Father'    : 'Ajay',
-# |     }
-# | dict_name['Son'] = "Achu"
-# | print dict_name
-#    
-# * Delete values from dictionary
-# You can delete values also from dictionary using below syntax 
+# Example : Below example will print all dictionary contents together 
 #
-# Syntax : del dict_name['key_name']
-#
-# Example : You can delete values from dictionary as below
-#
-# | cars = {
-# |    'tata'    :   ['hexa', 'nexon'],
-# |    'maruti'  :   ['brezza', 'boleno'],
-# |   'hundai'  :   ['i10', 'eon'],
+# | my_family = {
+# |   "Father"   : "Ajay",
+# |   "Mother"   : "Aparna",
+# |   "Daughter" : "Vaiga",
+# |   "Son"      : "Rishi",
+# |   "Members"  : 4,
 # | }
-# |
-# | print cars
-# | user_input = raw_input("Enter the car company you want to remove : ")    
-# | del(cars[user_input])
-# | print "You have only these cars left in showroom : %s" %(cars)
+# | print my_family.items()     => This will print the output as [('Daughter', 'Vaiga'), ('Son', 'Rishi'), ('Father', 'Ajay'), ('Members', 4), ('Mother', 'Aparna')]
 #
-# * How to pull only keys from a dictionary
+# * How to access keys from a dictionary
 # You can pull only keys from a dictionary and it can be used further to achieve various tasks, you can pull key as below 
 #
 # Synatx : dict_name.keys()
@@ -616,6 +609,56 @@
 # |         
 # | print human_needs
 #
+# * How to access values from a dictionery 
+# You can access values from the dictionery by two methods, one is by accessing using its key second one is by using '.values()' function 
+#
+# Syntax : dict_name[key]
+# or     : dict_names.values()
+#
+# Example : Below example will show us how to access values from a dictionary using .values() function
+# 
+# | human_values = {
+# |  'anger' : 'will kill youfself',
+# |  'love'  : 'will give you pleassure',
+# |  'sad'   : 'slow poison',
+# |  'mad'   : 'will kill others',
+# | }
+# | print human_values.values()
+#
+# * Adding values to dictionary 
+# Similar to a list, dictionaries are also mutable, that means you can add values to the dictionry even after you have created it 
+# To add a value to the existing dictionary you need to asign a key : value pair using below syntax 
+# 
+# Syntax : dict_name['new_key'] = value 
+#
+# Example : Below example will show how to add a key value pair to a dictionary
+#
+# | dict_name = {
+# |     'Daughter'  : 'Vaiga',
+# |     'Mother'    : 'Aparna',
+# |     'Father'    : 'Ajay',
+# |     }
+# | dict_name['Son'] = "Achu"
+# | print dict_nameG
+#    
+# * Delete values from dictionary
+# You can delete values also from dictionary using below syntax 
+#
+# Syntax : del dict_name['key_name']
+#
+# Example : You can delete values from dictionary as below
+#
+# | cars = {
+# |    'tata'    :   ['hexa', 'nexon'],
+# |    'maruti'  :   ['brezza', 'boleno'],
+# |   'hundai'  :   ['i10', 'eon'],
+# | }
+# |
+# | print cars
+# | user_input = raw_input("Enter the car company you want to remove : ")    
+# | del(cars[user_input])
+# | print "You have only these cars left in showroom : %s" %(cars)
+#
 # * How to perform various functions with in the dictionary 
 #
 # del(dict_name['key']                              => This will delete a key in that array 
@@ -624,6 +667,7 @@
 # dict_name['key_name'].append('element')           => This will append an element to the list associated with the key in the dictionary 
 # dict_name['key_name'].insert(index, 'element')    => This will insert an element in the list in certain index number within a list associated to a key in dict.
 # dict_name['key_name'].sort()                      => This will sort values in that list associated with that key
+# dict_name.items()                                 => This will print the complete dictionery content including all key and values 
 #
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 07 - Few builtin function which is useful in day to day 
@@ -714,6 +758,45 @@
 # | 
 # | print join_a_list(lists)
 #
+# * enumerate() function
+# This is an inbuilt function will help you to get the index value of an array especially when used with for loops 
+# Normally you won't be needing to print or use index value of an array, but at times there will be some requirement to use index numbers 
+#
+# Syntax : enumerate(list_name)
+# 
+# Example : Below example will show how to use enumerate() function 
+#
+# | from datetime import datetime
+# | current_time = datetime.now()
+# | school_toppers = ['Gowry', 'Ammu', 'Vaiga', 'Rishi']
+# | print "Result publised on %s" %(current_time)
+# | for index_number, name in enumerate(school_toppers):
+# |    print "%d : %s" %((index_number+1), name)
+#
+# * zip() function
+# This function will help to access multiple list or array at the same time using a for loop
+#
+# Syntax  : for element_a, element_b in zip(list_a, list_a):
+#           list_of _statements
+#
+# Example : Below example will tell us an usage about zip() function
+#
+# | from datetime import datetime
+# | 
+# | fruits = ['apple', 'orange', 'cherry', 'grapes' ]
+# | likers = ['Rishi', 'Vaiga', 'Ajay', 'Appu']
+# | 
+# | def fruit_likers(fruit_basket, likers_list):
+# |    for fruit, liker in zip(fruit_basket, likers_list):
+# |        if liker != 'Ajay':
+# |            print "%s like : %10s fruit" %(fruit, liker)
+# |        else:
+# |            print "Ajay is not residing with Family on %s" %(datetime.now())
+# |            next 
+# |
+# | fruit_likers(fruits, likers)
+#
+#
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 08 - Loops 
 #-------------------------------------------------------------------------------------------------------------
@@ -766,6 +849,28 @@
 # | 
 # | fruits_basket(fruits)
 #
+# * next statement
+# You can use next to skip the current execution of the loop and skip to the next one 
+#
+# synatax : next 
+# 
+# Example : Below example will shos us the usage of 'next' statement in loop
+#
+# | from datetime import datetime
+# | 
+# | fruits = ['apple', 'orange', 'cherry', 'grapes' ]
+# | likers = ['Rishi', 'Vaiga', 'Ajay', 'Appu']
+# | 
+# | def fruit_likers(fruit_basket, likers_list):
+# |    for fruit, liker in zip(fruit_basket, likers_list):
+# |        if liker != 'Ajay':
+# |            print "%s like : %10s fruit" %(fruit, liker)
+# |       else:
+# |           print "Ajay is not residing with Family on %s" %(datetime.now())
+# |            next 
+# | 
+# | fruit_likers(fruits, likers)
+#
 # * While else loop ()
 # One thing which is peculiar about python is while else, not all languuages provides that feature. 
 # While else will be working like this 
@@ -796,7 +901,7 @@
 # | user_input = raw_input("Please enter your number choice : ")
 # | display_random_number(user_input)
 #
-# * for loop
+# * for loop (with list)
 # for loop can be used to perform action on a list of items, this can process the list of statements given according to the number of elements given inthe list 
 # 
 # Syntax : for variable_name in list_name
@@ -823,6 +928,138 @@
 # | 
 # | test_your_array()
 #   
+# * for loop (with dicionary)
+# You can handle each item in the dictionary using 'key' function, using this 'key' function you can call every value too in that dictionary
+#
+# Syntax : for key in dict_name:
+#             print dict_name[key] ==> This will print value of that key associated in the dictionary 
+#
+# Example : Below example will show how to handle a dictionary using for loop
+#
+# | Ajay_family = { 'Father'   : 'Ajay',
+# |                 'Mother'   : 'Aparna',
+# |                 'Daughter' : 'Vaiga',
+# |                 'Son'      : 'Achu', }
+# |
+# | def print_family_details(family_book):
+# |     
+# |     for role in family_book:                            => This will pick the key of the dictionary into the 'role' variable
+# |        print "%-8s : %s" %(role, family_book[role])     => 'family_book[role]' will print the value of the that 'role' which is the key
+# |
+# | print_family_details(Ajay_family)
+#
+# * for .. else loop
+# Similar to the 'else' condifion which we used with while loop, 'for' loop also provides else functionality
+# Once all elements in the loop are completed, then else will gets executed 
+#
+# Syntax  : for element in array_name:
+#               statements_to_execute
+#           else:
+#               statements_to_execute
+#
+# Example : Below example tell us the usage of for else
+#
+# | jobs = ['electronics', 'computer', 'driver', 'medical']
+# | counter = 0
+# | for job in jobs:
+# |   print "%d : %s" %((counter+1), job)
+# |   counter += 1
+# | else:
+# |   print "We have shown %d jobs and no more jobs left !!!" %(counter)
+#
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 09 - Advanced way of programming in python
+#-------------------------------------------------------------------------------------------------------------
+# * List comprehension :  How to create dynamic list using only loop
+# You can process a list using a loop and then store in an array, this can be done using one single step using below method
+#
+# Synatx : list_name = [ variable loop_to_iterate ]
+#
+# Example : Below example will show us how to consctruct an array 
+#
+# | second_fifty_number = [ number for number in range(50, 101) ]       => This will add 'number' which comes out of the loop into list 'second_fifty_number'
+# | print second_fifty_number
+#
+# * List comprehension - How to create a dynamic list (using loops and conditions)
+# You can also use expression modifer methods to write programs in a advanced method and which will help you to reduce the program 
+#
+# Synatax : list_name = [ variable_name loop_to_iterate and condition_to_test ]
+# 
+# Example : Below example will show us how to create a dynamic list
+# 
+# | odd_numbers = [ number for number in range(51) if number%2 != 0 ]   => here number will get append in the 'odd_numbers' list if the condition is true
+# | print odd_numbers 
+#
+# * List comprehension - How to process something and store in a list
+# You can process something before you store an elemnt into a list
+#
+# Synatx : list = [ element_variable command_to_process loops_to_process || condition_to_process ]
+#
+# Example : Below example will tell us how to proces and store in a list
+#
+# | square_of_even_numbers = [ number*2  for number in range(50) if number%2 == 0 ]
+# | print square_of_even_numbers
+#
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 10 - classes objects and methods in python
+#-------------------------------------------------------------------------------------------------------------
+# Python is an object oriented programming language, which means python uses a class, object and method to create programming templates which are reusable. 
+# This offers a various freedom for everyone to keep reusing the classes which are deined are already. Definition for class, object and method are given below. 
+#
+# Class   - Class is a template which is defined and which can be reused with many objects.
+# Object  - Objects are the instance of the classes which are used for certain purpose using class.
+# Methods - Any function which is defined inside the class is called the methods.
+#
+# * Class - A detailed look
+# By convention class name should be starting with a 'class' keywork, then the 'class name' and the object from which class inherits. 
+# That is if you look at below example it is explained better 
+#
+# Syntax : class class_name(object):
+#
+# Example : here you defined a class keyword, then class name and then the object
+# | class MyClass(object):
+# |   pass                    # Pass doesn't do anything it just act as a place holder instead of expression which expected by python
+#
+# . __init__ function 
+# When we start defining a class we must always initialize a function with name '__init__' function. 
+# This function is required to intialize the objects which are getting created by the class. 
+# This function must always contain some arguments amongst that 'self' argument is a must and should always be there. 
+# Argument 'self' refers to the name of the object it is getting created using the class. 
+# 
+# NOTE : You can think '__init__' is the function which boots up each objects the class creates.
+# 
+# Example : Below example will tell us how to define a class with __init__ function and self argument
+#
+# | class MyClass(object):
+# |   def __ini__(self):
+# |     pass        
+#
+# Example : Lets define some additional argument along with the __init__ function and see how it gets processed
+# 
+# | class FamilyDetails(object):
+# |   def __init__(self, father, mother, son, daughter):
+# |     self.father   = father
+# |     self.mother   = mother
+# |     self.son      = son
+# |     self.daughter = daughter
+# | 
+# | ajay_family = FamilyDetails("Ajay", "Aparna", "Rishi", "Vaiga")
+# | print ajay_family.father
+# | print ajay_family.mother
+# | print ajay_family.daughter
+# | print ajay_family.son
+# | 
+# | vijayan_family = FamilyDetails("Vijayan", "Lolitha", "Rajesh", "Raji")
+# | print vijayan_family.father
+# | print vijayan_family.mother
+# | print vijayan_family.daughter
+# | print vijayan_family.son
+# | 
+# | anu_family = FamilyDetails("Anu", "Reshma", "Prayag", "TBD")
+# | print anu_family.father
+# | print anu_family.mother
+# | print anu_family.son
+# | print anu_family.daughter
 #
 #
-
+#
