@@ -1024,9 +1024,10 @@
 # When we start defining a class we must always initialize a function with name '__init__' function. 
 # This function is required to intialize the objects which are getting created by the class. 
 # This function must always contain some arguments amongst that 'self' argument is a must and should always be there. 
-# Argument 'self' refers to the name of the object it is getting created using the class. 
+# Argument 'self' refers to the name of the object itself getting created using the class. 
+# If you have more arguments for those class, then it will be referred as 'self.argument_variable', this means variable getting intialized for the object
 # 
-# NOTE : You can think '__init__' is the function which boots up each objects the class creates.
+# NOTE : You can think '__init__' is the function which boots up or intialize each objects the class creates.
 # 
 # Example : Below example will tell us how to define a class with __init__ function and self argument
 #
@@ -1038,7 +1039,7 @@
 # 
 # | class FamilyDetails(object):
 # |   def __init__(self, father, mother, son, daughter):
-# |     self.father   = father
+# |     self.father   = Father                                # => Here self represent the object itself and remaining arguments are passed as 'self.argument_name'
 # |     self.mother   = mother
 # |     self.son      = son
 # |     self.daughter = daughter
@@ -1061,5 +1062,64 @@
 # | print anu_family.son
 # | print anu_family.daughter
 #
+# NOTE : CONTINUE LEARNING ABOUT PYTHON CLASS SCOPE DEFINTIONS FOR VARIABLE AND FUNCTIONS 
 #
+# * Variable scope in class 
+# Based on the scope variables are devided into three types in class 
+
+# - Global variable   : When dealing with class, you can have variable available everywere in the python program, they are called global variables.
+#
+# - Member variable   : Variables those available only for the members of the certain class are called member variables. 
+#                     : Member variables are normally access via 'object_name.variable' outside the class.
+# 
+# - Instance varaible : Variables which are available to only to perticular instance of a method within a class is called as instance variable.
+#
+# * Methods 
+# Functions which defined inside the class are called methods, we have already seen '__init__' method earlier. 
+# You can also define your own methods along with the class 
+#
+# Example : Below example will show defining a method within a class 
+#
+# | class Check_Cars(object):
+# | 
+# |   city = "Delhi"                                                 # => This is a member variable, if you want access outside class, you can call it as 'tata_cars.city' with object tata_cars
+# |  
+# |   def __init__(self, brand, model, milage):
+# |     self.brand  = brand
+# |     self.model  = model
+# |     self.milage = milage
+# | 
+# |   def milage_ranking(self):
+# |     if self.milage > int(25):
+# |       print  "Good Milage for %s %s with %s" %(self.brand, self.model, self.milage)
+# |     else:
+# |      print "Average Milage for %s %s with %s" %(self.brand, self.model, self.milage)
+# | 
+# |  def onroad_status(self, car_model):                           # => here 'onroad_status' is a method and and 'car_model' is an instance variable 
+# |    if car_model == "Tigor":
+# |       print "%-5s Onroad in 2017" %(car_model)
+# |     elif car_model == "H5X":
+# |       print "%-5s Onroad in 2019" %(car_model)
+# |    elif car_model == "Hexa":
+# |       print "%-5s Onroad in 2016" %(car_model)
+# |    else:
+# |      print "car_model Model do not found"
+# | 
+# | tata_cars = Check_Cars("Tata", "Tigor",  "25")
+# | tata_cars.milage_ranking()
+# |  
+# | tata_models = {
+# |     "Sedan"  : "Tigor",
+# |     "SUV"    : "H5X",
+# |     "MPV"    : "Hexa",
+# | } 
+# |  
+# | print "You are finding the details for tata cars in %s" %(tata_cars.city)   # => member variable picked ouside the class 
+# | for car_type in tata_models.keys():
+# |    tata_cars.onroad_status(tata_models[car_type])
+# |  
+#
+# Note : In the above example you have defined object as 'tata_cars' and there are two methods you can find inside the class which are 'milage_ranking' and 'onroad_status'
+#      : Here model, brand and milage are the global variable available for all methods 
+#      : Here car_model is an instance variable only with the method 'onroad_status'
 #
