@@ -1004,14 +1004,14 @@
 # Chapter 10 - classes objects and methods in python
 #-------------------------------------------------------------------------------------------------------------
 # Python is an object oriented programming language, which means python uses a class, object and method to create programming templates which are reusable. 
-# This offers a various freedom for everyone to keep reusing the classes which are deined are already. Definition for class, object and method are given below. 
+# This offers a various freedom for everyone to keep reusing the classes which are defined already. Definition for class, object and method are given below. 
 #
 # Class   - Class is a template which is defined and which can be reused with many objects.
 # Object  - Objects are the instance of the classes which are used for certain purpose using class.
 # Methods - Any function which is defined inside the class is called the methods.
 #
 # * Class - A detailed look
-# By convention class name should be starting with a 'class' keywork, then the 'class name' and the object from which class inherits. 
+# By convention class name should be starting with a 'class' keyword, then the 'class name' and the object from which class inherits. 
 # That is if you look at below example it is explained better 
 #
 # Syntax : class class_name(object):
@@ -1039,7 +1039,7 @@
 # 
 # | class FamilyDetails(object):
 # |   def __init__(self, father, mother, son, daughter):
-# |     self.father   = Father                                # => Here self represent the object itself and remaining arguments are passed as 'self.argument_name'
+# |     self.father   = father                                # => Here self represent the object itself and remaining arguments are passed as 'self.argument_name'
 # |     self.mother   = mother
 # |     self.son      = son
 # |     self.daughter = daughter
@@ -1078,7 +1078,7 @@
 # Functions which defined inside the class are called methods, we have already seen '__init__' method earlier. 
 # You can also define your own methods along with the class 
 #
-# Example : Below example will show defining a method within a class 
+# Example : Below example will show defining a method within a class also will help us to understand diffrent type of variables
 #
 # | class Check_Cars(object):
 # | 
@@ -1120,6 +1120,188 @@
 # |  
 #
 # Note : In the above example you have defined object as 'tata_cars' and there are two methods you can find inside the class which are 'milage_ranking' and 'onroad_status'
-#      : Here model, brand and milage are the global variable available for all methods 
+#      : Here model, brand and milage are the member variable available for all methods 
 #      : Here car_model is an instance variable only with the method 'onroad_status'
+# 
+# * Class inheritance
+# Classes can inherit from another class and this process is called class inheritance.
+# If we take a real life example, we know cars, trucks and bikes are all vehicles, so when we say in programatic way we cam define all these three are inherited from vehicle class
+# Similary each sub class sedan, suv and hatchback has super class as cars and also it can inherit few attributes from vehicles
+# But at the same time any sub classes within cars class cannot inherit from Bikes class. 
+# That means if we have classes with simiar attributes, then we can inherit those attributes from super class and this model is supported by few object oriented programming languages.
+#
+#                                |------> Sedan  
+#  	       |--------> Cars---|------> Suv
+#              |                 |------> Hatchback 
+#              |
+#              |                 |----> Mini Truck 
+# Vehicles -- >  -------> Trucks-|----> Lorry 
+#              |                 |----> Oil Tanker
+#              |
+#              |                 |----> Sicycle
+#              |--------> Bikes--|----> Scooter
+#                                |----> Sports Bike
+#
+# In similar way python also supports class inheritance, it can inherit from single super class and it also supports multiple inheritances.
+#
+# There are two types of classes will involves as part of the inheritance 
+#
+# . Super Class - This class is going to be the 'parent class' or can be called as an 'ancistor class' from which another class will get inherited. 
+#                 That means attributes of super class can be used in other classes.
+# . sub class   - This is going to be the class which will get inherited from it's super class.
+#
+# Syntax : class Super_Class_Name(object):		=> Here we are defining Super Class just as similar as any other class we learned so far
+#		pass
+#
+#          class Sub_Class_Name(Super_class_Name):	=> Here we are defining sub class and instead object we are giving the 'super class name' as the object, so it can inherit its values
+#		Process_something
+#
+# Example : Below example will show us about a basic class inheritance and using the methods of the super class 
+#
+# |
+# | class Family_Name(object):                                                          # => This is the super class here 
+# |   def __init__(self, names, family_name, grand_pa_name):
+# |    self.names         = names
+# |    self.family_name   = family_name
+# |    self.grand_pa_name = grand_pa_name 
+# |
+# |  def return_full_name(self):
+# |    for name in self.names:
+# |      if name != self.family_name:
+# |        print "Full name for %10s : %s, %s" %(name, name, self.family_name) 
+# |
+# | class Family_Members(Family_Name):                                                  # => This is the sub class getting inherited from super class 'Family_Name'
+# |    def print_family_message(self):
+# |        print "This is originated from  : %s" %(self.family_name)
+# |
+# |    def check_grand_father(self):
+# |        print "Also the grand father is : %s \n" %(self.grand_pa_name)
+# |
+# | def print_family_details(family_members, family_name, grand_father_name):
+# |    generation_names = Family_Members(family_members, family_name, grand_father_name)    # => Here object instance is created with the sub class 'Family_Members'
+# |    generation_names.return_full_name(                                                   # => But we are using the method defined in the super class 'Family_Name')
+# |    generation_names.print_family_message()                                              # => Here we are calling the methods which defined in the sub class, but variables referened via super class
+# |    generation_names.check_grand_father()
+# | 
+# | first_gen_members  = ['Vijayan', "Lolitha", "Raji", "Rajesh"]
+# | second_gen_memebrs = ['Ajay', 'Aparna', 'Vaiga', 'Rishi']
+# | 
+# | print_family_details(first_gen_members, 'Vijayan', 'Surendran')
+# | print_family_details(second_gen_memebrs, 'Ajay', 'Vijayan')
+# |
+#
+# * Overriding the __init__ method of super class 
+# In the previous example we have seen the sub class is actually inheriting the '__init__' attribute from the super class. 
+# Sometime this will be an advanatage but sometime it will be a limitation based on the requirements. 
+# To overcome that we can have an '__init__' method on the sub class it self 
+#
+# Example : Below example will show us how to use seperate __init__ method for the sub class 
+#
+# |
+# | class IndiaCars(object):
+# |    def __init__(self, brand):                  # => Here super class 'IndiaCars' has its own __init__ method
+# |        self.brand = brand
+# |    def display_car_maker(self):
+# |        print "Car make is %s" %(self.brand)
+# |
+# | class CarModel(IndiaCars):              
+# |    def __init__(self, model):                   # => Here sub class 'CarModel' which inherits from 'IndiaCars' has also its own __init__ method
+# |        self.model = model
+# |    def display_car_model(self):
+# |        print "Your car model is %s" %(self.model)
+# |
+# | leading_car_maker = IndiaCars('Tata')           # => Here both methods are assigned different objects since they hold different __init__ function 
+# | leading_car_model = CarModel('hexa')
+# | leading_car_maker.display_car_maker()           # => Calling the object method as needed.
+# | leading_car_model.display_car_model()
+# |
+#
+# * Overriding Super class methods
+# Similar to inheriting the methods and attributes from the super class, sub class also can override the same methods which is there in the Super class.
+# This can be useful in situation where you want to follow a set of methods from the superclass but not all and few you want to keep its own version in subclass.
+#
+# Example : In below example we are going to override one of the method from the superclass 
+#
+# | 
+# | class School_Details(object):
+# |    def __init__(self, transport, class_room):
+# |       self.transport  = transport
+# |       self.class_room = class_room 
+# |    def kids_transportation(self):                                               # => This method is defined with name 'kids_transportation' in superclass
+# |        print "This Kid will be coming to school in : %s" %(self.transport)
+# |    def class_room_details(self):
+# |        print "This kid is studying at class : %s" %(self.class_room)
+# | 
+# | class Tution_Details(School_Details):
+# |     def kids_transportation(self, transport_mode):                              # => This method is defined with name 'kids_transportation' in subclass which overrides superclass
+# |        print "This kid will be coming to tution centre in : %s" %(transport_mode)
+# |
+# | achu = School_Details("Omni", "KG1")                                            # => Here object is referred to the superclass directly and using 'kids_transportation'
+# | achu.kids_transportation()
+# | achu.class_room_details()
+# |
+# | vaiga = Tution_Details("bus", "1G")         
+# | vaiga.kids_transportation("cycle")                                              # => Here object is referred to the subclass and it uses 'kids_transportation' as defined in the subclass
+# | vaiga.class_room_details()
+# |
+#
+# * 'super' call - Using a method from superclass even though sub class has the same method defined
+# In the previous example we came to know how to override a method which is defined in superclass. 
+# But at times we will end up in situation even though we have a overriding method defined in sub class we still need to use the same method which is in superclass.
+# To solve this problem python also a provides a fascility called as 'super' call using which you can refer to the base or superclass from the subclass or derived class 
+#
+# Syntax : super(subclass_name, self).method_name_from_superclass(attributes)
+#
+# Example : Below example will show us how to work with 'super' call method to access a overriden method from superclass
+# | 
+# | class School_Details(object):
+# |   def __init__(self, transport, class_room):
+# |      self.transport  = transport
+# |     self.class_room = class_room 
+# |   def kids_transportation(self):                                               # => This method is defined with name 'kids_transportation' in superclass
+# |     print "This Kid will be coming to school in : %s" %(self.transport)
+# |  def class_room_details(self):
+# |     print "This kid is studying at class : %s" %(self.class_room)
+# |
+# | class Tution_Details(School_Details):
+# |   def kids_transportation(self, transport_mode):                              # => This method is defined with name 'kids_transportation' in subclass which overrides superclass
+# |     print "This kid will be coming to tution centre in : %s" %(transport_mode)
+# |   def kids_school_transportation(self):     
+# |      return super(Tution_Details, self).kids_transportation()                 # => Here we are using the method which defined in the superclass using 'super' call
+# | 
+# | achu = School_Details("Omni", "KG1")                                            # => Here object is referred to the superclass directly and using 'kids_transportation'
+# | achu.kids_transportation()
+# | achu.class_room_details()
+# | 
+# | vaiga = Tution_Details("bus", "1G")         
+# | vaiga.kids_transportation("cycle")                                              # => Here object is referred to the subclass and it uses 'kids_transportation' as defined in the subclass
+# | vaiga.class_room_details()
+# | vaiga.kids_school_transportation()
+# |
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+
 #
