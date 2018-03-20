@@ -1,0 +1,276 @@
+#********************************************************************************************************************************************
+# 			NOTE : Always refer above link for detailed documentation on MariaDB						    #
+#********************************************************************************************************************************************
+# 			Reference : https://www.tutorialspoint.com/mariadb/index.htm
+# 			Quick ref : https://www.tutorialspoint.com/mariadb/mariadb_quick_guide.htm
+#********************************************************************************************************************************************
+#--------------------------------------------------------------------------------------------------------------------------------------------
+#
+#			Chapter 1 : Installing and starting MariaDB
+#			
+#--------------------------------------------------------------------------------------------------------------------------------------------
+# * How to install MariDB 
+# | $ yum groupinstall mariadb mariadb-client
+# 
+# * Enable firewall rules 
+# | $ firewall-cmd --add-service=mysql --permanent
+# | $ firewall-cmd --reload 
+#  
+# * Enable and start service 
+# | $ systemctl enable mariadb
+# | $ systemctl start mariadb
+#
+# * Secure the installation and set the root password for databse 
+# | $ mysql_secure_installation 
+#
+# * Login to the database 
+# | $ mysql -u root -p
+#
+# | [root@rhcemaster01 ~]# mysql -u root -p
+# | Enter password:
+# | Welcome to the MariaDB monitor.  Commands end with ; or \g.
+# | Your MariaDB connection id is 12
+# | Server version: 5.5.56-MariaDB MariaDB Server
+# | 
+# | Copyright (c) 2000, 2017, Oracle, MariaDB Corporation Ab and others.
+# | 
+# | Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+# | 
+# | MariaDB [(none)]> show databases;
+# | +--------------------+
+# | | Database           |
+# | +--------------------+
+# | | information_schema |
+# | | monthly_finance    |
+# | | mysql              |
+# | | performance_schema |
+# | +--------------------+
+# | 4 rows in set (0.00 sec)
+# | 
+# | MariaDB [(none)]> exit
+# | Bye
+# |[root@rhcemaster01 ~]#
+#
+#--------------------------------------------------------------------------------------------------------------------------------------------
+#			Chapter 2 : Creating a database and tables
+#--------------------------------------------------------------------------------------------------------------------------------------------
+# * Creating a database
+# | MariaDB [(none)]> create database monthly_finance
+# |    -> ;
+# | Query OK, 1 row affected (0.00 sec)
+# | 
+# | MariaDB [(none)]> show databases;
+# | +--------------------+
+# | | Database           |
+# | +--------------------+
+# | | information_schema |
+# | | monthly_finance    |
+# | | mysql              |
+# | | performance_schema |
+# | +--------------------+
+# | 4 rows in set (0.00 sec)
+# | 
+# | MariaDB [(none)]>
+# 
+# * Creating a Table 
+# | MariaDB [monthly_finance]> create table Jan_2018(
+# |    -> SN INT NOT NULL AUTO_INCREMENT,
+# |    -> shop_name VARCHAR(100) NOT NULL,
+# |    -> product_name VARCHAR(100) NOT NULL,
+# |    -> purchase_date DATE,
+# |    -> purchased_by VARCHAR(100) NOT NULL, 
+# |    -> PRIMARY KEY (SN));
+# | Query OK, 0 rows affected (0.05 sec)
+# |
+# | MariaDB [monthly_finance]> show tables;
+# | +---------------------------+
+# | | Tables_in_monthly_finance |
+# | +---------------------------+
+# | | Jan_2018                  |
+# | +---------------------------+
+# | 1 row in set (0.00 sec)
+# | 
+# | MariaDB [monthly_finance]>
+#
+# * Inserting data into the table 
+# | MariaDB [monthly_finance]> INSERT INTO Jan_2018 (SN, shop_name, product_name, purchase_date, purchased_by) VALUES (3, "fairprice", "yogurt", "2017-01-15", "aparna");
+# | Query OK, 1 row affected (0.03 sec)
+#
+# * How to see all details from the table 
+# | MariaDB [monthly_finance]> select * from Jan_2018;
+# | +----+-----------+--------------+---------------+--------------+
+# | | SN | shop_name | product_name | purchase_date | purchased_by |
+# | +----+-----------+--------------+---------------+--------------+
+# | |  1 | fairprice | milk         | 0000-00-00    | ajay         |
+# | |  2 | fairprice | milk         | 2017-01-14    | ajay         |
+# | |  3 | fairprice | yogurt       | 2017-01-15    | aparna       |
+# | +----+-----------+--------------+---------------+--------------+
+# | 3 rows in set (0.00 sec)
+# | 
+# | MariaDB [monthly_finance]>
+# |
+#
+# * Inserting data into a table (here we are not manually giving the auto incremental value 'SN')
+# | MariaDB [monthly_finance]> INSERT INTO Jan_2018 (shop_name, product_name, purchase_date, purchased_by) VALUES ("subway", "sandwich", "2017-01-25", "achu");
+# | Query OK, 1 row affected (0.02 sec)
+# | 
+# | MariaDB [monthly_finance]> select * from Jan_2018;
+# | +----+------------+--------------+---------------+--------------+
+# |  SN | shop_name  | product_name | purchase_date | purchased_by |
+# | +----+------------+--------------+---------------+--------------+
+# |   1 | fairprice  | milk         | 0000-00-00    | ajay         |
+# |   2 | fairprice  | milk         | 2017-01-14    | ajay         |
+# |   3 | fairprice  | yogurt       | 2017-01-15    | aparna       |
+# |   4 | fairprice  | oil          | 2017-01-16    | aparna       |
+# |   5 | shengsiong | fish         | 2017-01-19    | vaiga        |
+# |   6 | shengsiong | vegitables   | 2017-01-19    | achu         |
+# |   7 | toysrus    | shoes        | 2017-01-25    | vaiga        |
+# |   8 | bata       | shoes        | 2017-01-25    | ajay         |
+# |   9 | subway     | sandwich     | 2017-01-25    | achu         |
+# | +----+------------+--------------+---------------+--------------+
+# | 9 rows in set (0.00 sec)
+# | 
+# | MariaDB [monthly_finance]>
+#--------------------------------------------------------------------------------------------------------------------------------------------
+#			Chapter 3 : Create users
+#--------------------------------------------------------------------------------------------------------------------------------------------
+# * help grant
+# This help menu can give complete details about creating users 
+#
+# * Creating an user who has full privilage on a database 'monthly_finance'
+# | MariaDB [monthly_finance]> CREATE USER 'ajay'@'localhost' IDENTIFIED BY "password"
+# |   -> ;
+# | Query OK, 0 rows affected (0.00 sec)
+# | 
+# | MariaDB [monthly_finance]> GRANT ALL ON monthly_finance.* TO 'aparna'@'localhost';
+# | Query OK, 0 rows affected (0.00 sec)
+# |
+# | MariaDB [monthly_finance]> flush privileges;
+# | Query OK, 0 rows affected (0.00 sec)
+# |
+# | MariaDB [monthly_finance]>
+#
+# * Creating an user who has read only permission (select privilage)
+# | MariaDB [monthly_finance]> CREATE USER 'ajay'@'localhost' IDENTIFIED BY "password"
+# |   -> ;
+# | Query OK, 0 rows affected (0.00 sec)
+# | 
+# | MariaDB [monthly_finance]> GRANT SELECT ON monthly_finance.* TO 'ajay'@'localhost';
+# | Query OK, 0 rows affected (0.00 sec)
+# |
+# | MariaDB [monthly_finance]> flush privileges;
+# | Query OK, 0 rows affected (0.00 sec)
+# |
+# | MariaDB [monthly_finance]>
+#
+# * Creating an user who has read only permission (select privilage) only on a specific table 'Jan_2018' in database 'monthly_finance'
+# | MariaDB [monthly_finance]> CREATE USER 'vaiga'@'localhost' IDENTIFIED BY "password";
+# | Query OK, 0 rows affected (0.00 sec)
+# | 
+# | MariaDB [monthly_finance]> GRANT SELECT on monthly_finance.Jan_2018 TO 'ajay'@'localhost';
+# | Query OK, 0 rows affected (0.00 sec)
+# | 
+# | MariaDB [monthly_finance]> flush privileges;
+# | Query OK, 0 rows affected (0.00 sec)
+# | 
+# | MariaDB [monthly_finance]> 
+#
+#--------------------------------------------------------------------------------------------------------------------------------------------
+#			Chapter 4 : working with SQL queries 
+#--------------------------------------------------------------------------------------------------------------------------------------------
+# * How to list all database in a system 
+# | MariaDB [monthly_finance]> show databases;
+# | +--------------------+
+# | | Database           |
+# | +--------------------+
+# | | information_schema |
+# | | monthly_finance    |
+# | | mysql              |
+# | | performance_schema |
+# | +--------------------+
+# | 4 rows in set (0.00 sec)
+#
+# * How to swtch to a database
+# | MariaDB [information_schema]> use monthly_finance;
+# | Reading table information for completion of table and column names
+# | You can turn off this feature to get a quicker startup with -A
+# | 
+# | Database changed
+# | MariaDB [monthly_finance]> 
+# 
+# * How to list all tables in a database.  
+# | MariaDB [monthly_finance]> show tables;
+# | +---------------------------+
+# | | Tables_in_monthly_finance |
+# | +---------------------------+
+# | | Apr_2018                  |
+# | | Aug_2018                  |
+# | | Dec_2018                  |
+# | | Feb_2018                  |
+# | | Jan_2018                  |
+# | | Jul_2018                  |
+# | | Jun_2018                  |
+# | | Mar_2018                  |
+# | | May_2018                  |
+# | | Nov_2018                  |
+# | | Oct_2018                  |
+# | | Sep_2018                  |
+# | +---------------------------+
+# | 12 rows in set (0.00 sec)
+#
+# * How to list all contents from a table
+# | MariaDB [monthly_finance]> select * from Jan_2018;
+# | +----+------------+--------------+---------------+--------------+
+# | | SN | shop_name  | product_name | purchase_date | purchased_by |
+# | +----+------------+--------------+---------------+--------------+
+# | |  1 | fairprice  | milk         | 0000-00-00    | ajay         |
+# | |  2 | fairprice  | milk         | 2017-01-14    | ajay         |
+# | |  3 | fairprice  | yogurt       | 2017-01-15    | aparna       |
+# | |  4 | fairprice  | oil          | 2017-01-16    | aparna       |
+# | |  5 | shengsiong | fish         | 2017-01-19    | vaiga        |
+# | |  6 | shengsiong | vegitables   | 2017-01-19    | achu         |
+# | |  7 | toysrus    | shoes        | 2017-01-25    | vaiga        |
+# | |  8 | bata       | shoes        | 2017-01-25    | ajay         |
+# | |  9 | subway     | sandwich     | 2017-01-25    | achu         |
+# | +----+------------+--------------+---------------+--------------+
+# | 9 rows in set (0.00 sec)
+# | 
+# | MariaDB [monthly_finance]>
+#
+# * How to make specific queries to list certian information
+# 
+# . Query to find the purchase detail where 'purchased_by' is 'ajay'
+# | MariaDB [monthly_finance]> select * from Jan_2018 where purchased_by='ajay';
+# | +----+-----------+--------------+---------------+--------------+
+# | | SN | shop_name | product_name | purchase_date | purchased_by |
+# | +----+-----------+--------------+---------------+--------------+
+# | |  1 | fairprice | milk         | 0000-00-00    | ajay         |
+# | |  2 | fairprice | milk         | 2017-01-14    | ajay         |
+# | |  8 | bata      | shoes        | 2017-01-25    | ajay         |
+# | +----+-----------+--------------+---------------+--------------+
+# | 3 rows in set (0.00 sec)
+#
+# . Query to find 'product_name' where 'purchased_by' is ajay
+# | MariaDB [monthly_finance]> select product_name from Jan_2018 where purchased_by='ajay';
+# | +--------------+
+# | | product_name |
+# | +--------------+
+# | | milk         |
+# | | milk         |
+# | | shoes        |
+# | +--------------+
+# | 3 rows in set (0.00 sec)
+#
+# . Query to find total number of items purchased_by 'ajay 
+# | MariaDB [monthly_finance]> select count(product_name) from Jan_2018 where purchased_by='ajay';
+# | +---------------------+
+# | | count(product_name) |
+# | +---------------------+
+# | |                   3 |
+# | +---------------------+
+# | 1 row in set (0.00 sec)
+# |
+# | MariaDB [monthly_finance]>
+# |
+#
+#
