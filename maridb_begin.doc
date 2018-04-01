@@ -4,6 +4,7 @@
 # 			Reference : https://www.tutorialspoint.com/mariadb/index.htm
 # 			Quick ref : https://www.tutorialspoint.com/mariadb/mariadb_quick_guide.htm
 #********************************************************************************************************************************************
+#			MariaDB and Python : https://www.thegeekstuff.com/2016/06/mysql-connector-python/
 #--------------------------------------------------------------------------------------------------------------------------------------------
 #
 #			Chapter 1 : Installing and starting MariaDB
@@ -150,7 +151,7 @@
 # |
 # | MariaDB [monthly_finance]>
 #
-# * Creating an user who has read only permission (select privilage)
+# * Creating a local user who has read only permission (select privilage)
 # | MariaDB [monthly_finance]> CREATE USER 'ajay'@'localhost' IDENTIFIED BY "password"
 # |   -> ;
 # | Query OK, 0 rows affected (0.00 sec)
@@ -174,6 +175,19 @@
 # | Query OK, 0 rows affected (0.00 sec)
 # | 
 # | MariaDB [monthly_finance]> 
+#
+# * How to create an user who can connect remotely (This user can be used if you are connecting remotely to database)
+# | MariaDB [(none)]> CREATE USER 'anu' IDENTIFIED BY 'anu275';
+# | Query OK, 0 rows affected (0.00 sec)
+# | 
+# | MariaDB [(none)]> GRANT SELECT ON indian_cars.* TO 'anu'
+# |     -> ;
+# | Query OK, 0 rows affected (0.01 sec)
+# | 
+# | MariaDB [(none)]> flush privileges;
+# | Query OK, 0 rows affected (0.00 sec)
+# | 
+# | MariaDB [(none)]> 
 #
 #--------------------------------------------------------------------------------------------------------------------------------------------
 #			Chapter 4 : working with SQL queries 
@@ -273,4 +287,254 @@
 # | MariaDB [monthly_finance]>
 # |
 #
-# NOTE : Learnig to be continued 
+#--------------------------------------------------------------------------------------------------------------------------------------------
+#			Chapter 5 : Querying MariaDB locally using python
+#--------------------------------------------------------------------------------------------------------------------------------------------
+# * You can query MariaDB locally and remotely using python, for local please follow below steps. 
+# 
+# 1. Install the 'mysql-connector-python-2.1.7-1.el7.x86_64.rpm' module from https://dev.mysql.com/downloads/file/?id=472611
+# | $ wget https://dev.mysql.com/downloads/file/?id=472611
+# | $ yun install mysql-connector-python-2.1.7-1.el7.x86_64.rpm
+#
+# 2. make sure you have users available locally to connect to database 
+# |MariaDB [(none)]> select Host,User from mysql.user;
+# | +-----------+--------+
+# | | Host      | User   |
+# | +-----------+--------+
+# | | %         | anu    |
+# | | 127.0.0.1 | root   |
+# | | ::1       | root   |
+# | | localhost | ajay   |
+# | | localhost | aparna |
+# | | localhost | root   |
+# | | localhost | vaiga  |
+# | +-----------+--------+
+# | 7 rows in set (0.00 sec)
+# | 
+# | MariaDB [(none)]> 
+#
+# 3. You are going to connect below databse and make same query
+# |MariaDB [(none)]> show databases;
+# |+--------------------+
+# || Database           |
+# |+--------------------+
+# || information_schema |
+# || indian_cars        |
+# || monthly_finance    |
+# || mysql              |
+# || performance_schema |
+# |+--------------------+
+# |5 rows in set (0.00 sec)
+# |
+# |MariaDB [(none)]> use monthly_finance;
+# |Reading table information for completion of table and column names
+# |You can turn off this feature to get a quicker startup with -A
+# |
+# |Database changed
+# |MariaDB [monthly_finance]> show tables;
+# |+---------------------------+
+# || Tables_in_monthly_finance |
+# |+---------------------------+
+# || Apr_2018                  |
+# || Aug_2018                  |
+# || Dec_2018                  |
+# || Feb_2018                  |
+# || Jan_2018                  |
+# || Jul_2018                  |
+# || Jun_2018                  |
+# || Mar_2018                  |
+# || May_2018                  |
+# || Nov_2018                  |
+# || Oct_2018                  |
+# || Sep_2018                  |
+# |+---------------------------+
+# |12 rows in set (0.00 sec)
+# |
+# |MariaDB [monthly_finance]> select * from Jan_2018;
+# |+----+------------+--------------+---------------+--------------+
+# || SN | shop_name  | product_name | purchase_date | purchased_by |
+# |+----+------------+--------------+---------------+--------------+
+# ||  1 | fairprice  | milk         | 0000-00-00    | ajay         |
+# ||  2 | fairprice  | milk         | 2017-01-14    | ajay         |
+# ||  3 | fairprice  | yogurt       | 2017-01-15    | aparna       |
+# ||  4 | fairprice  | oil          | 2017-01-16    | aparna       |
+# ||  5 | shengsiong | fish         | 2017-01-19    | vaiga        |
+# ||  6 | shengsiong | vegitables   | 2017-01-19    | achu         |
+# ||  7 | toysrus    | shoes        | 2017-01-25    | vaiga        |
+# ||  8 | bata       | shoes        | 2017-01-25    | ajay         |
+# ||  9 | subway     | sandwich     | 2017-01-25    | achu         |
+# |+----+------------+--------------+---------------+--------------+
+# |9 rows in set (0.00 sec)
+# |
+# |MariaDB [monthly_finance]> select * from Jan_2018 where purchased_by='ajay';
+# |+----+-----------+--------------+---------------+--------------+
+# || SN | shop_name | product_name | purchase_date | purchased_by |
+# |+----+-----------+--------------+---------------+--------------+
+# ||  1 | fairprice | milk         | 0000-00-00    | ajay         |
+# ||  2 | fairprice | milk         | 2017-01-14    | ajay         |
+# ||  8 | bata      | shoes        | 2017-01-25    | ajay         |
+# |+----+-----------+--------------+---------------+--------------+
+# |3 rows in set (0.00 sec)
+# |
+# |MariaDB [monthly_finance]> 
+#
+# 4. Write a script like below to connect to database and get the query
+# | #!/usr/bin/python
+# | #
+# | # DESC : Script to manage monthly_finance table in MariaDB
+# | 
+# | #
+# | # Importing required modules 
+# | #
+# | 
+# | import mysql.connector as mariadb		=> importing 'mysql.connector' module with allias name 'mariadb'
+# | 
+# | #
+# | # Defining subroutines 
+# | #
+# | 
+# | def get_user_table_details(user_name):
+# |   mariadb_connection = mariadb.connect(user=user_name, password='xxxxxx', host='127.0.0.1', database='monthly_finance')		=> Opening Connection to DB locally
+# |   cur = mariadb_connection.cursor()											 		=> Setting up cusrsor for query
+# |   query  = ("select * from Jan_2018 where purchased_by='ajay'")									=> Defining database query
+# |   cur.execute(query)														=> Defining database query
+# |   for data in cur:
+# |     print data
+# |   mariadb_connection.close()													=> Closing database connection
+# |
+# | # 
+# | # Calling sub routines
+# | #  
+# |
+# | get_user_table_details('ajay')
+# | 
+# | #
+# | #
+# | # End of script
+#
+# 5. Now execute the script and see the output 
+#
+# | [root@rhcemaster01 db_scripts]# python manage_monthly_finance.py 
+# | (1, u'fairprice', u'milk', None, u'ajay')
+# | (2, u'fairprice', u'milk', datetime.date(2017, 1, 14), u'ajay')
+# | (8, u'bata', u'shoes', datetime.date(2017, 1, 25), u'ajay')
+# | [root@rhcemaster01 db_scripts]# 
+#
+#
+#--------------------------------------------------------------------------------------------------------------------------------------------
+#			Chapter 6 : Querying MariaDB Remotely using python
+#--------------------------------------------------------------------------------------------------------------------------------------------
+#
+# * To connect to MariaDB remotely you will need certain settings on both local and remote side of the database
+#
+# * Database server : Setting needed on the database and database server 
+# 1. Create an user in the database which can be accessed remotely 
+#
+# | MariaDB [(none)]> CREATE USER 'anu' IDENTIFIED BY 'anu275';			=> This use do not have 'localhost' tag
+# | Query OK, 0 rows affected (0.00 sec)
+# | 
+# | MariaDB [(none)]> GRANT SELECT ON indian_cars.* TO 'anu'
+# |     -> ;
+# | Query OK, 0 rows affected (0.01 sec)
+# | 
+# | MariaDB [(none)]> flush privileges;
+# | Query OK, 0 rows affected (0.00 sec)
+# | 
+# | MariaDB [(none)]>
+# | MariaDB [(none)]> select USER,HOST from mysql.user where USER='anu';
+# | +------+------+
+# | | USER | HOST |
+# | +------+------+
+# | | anu  | %    |
+# | +------+------+
+# | 1 row in set (0.00 sec)
+# | 
+# | MariaDB [(none)]>
+#
+# 2. Now make sure '/etc/my.cnf' file do not have these parameters not set 'skip-networking' and 'bind'
+#
+# | [root@rhcemaster01 db_scripts]# egrep -i 'skip-networking|bind' /etc/my.cnf
+# | [root@rhcemaster01 db_scripts]# 
+#
+# 3. Make sure You have opened firewall rules for mysql service 
+#
+# | $ firewall-cmd --add-service=mysql --permanent
+# | $ firewall-cmd --reload 
+#
+# 4. Make sure You have opened the port for mysql communicatio remotely
+#
+# | $ firewall-cmd --add-port=3306/tcp --permanent
+# | $ firewall-cmd --reload
+#
+# 5. Restart MariaDB so that the changes can reflect 
+#
+# | $ systemctl restart mariadb
+# | $ systemctl is-enabled mariadb
+#
+#
+# * Remote Accessing host -  Setup needs to be done on the client side or (remote server) where you are performing que0ries
+#
+# 1. To query MariaDB remotely you will need to install the 'mysql-connector-python-2.1.7-1.el7.x86_64.rpm' module from https://dev.mysql.com/downloads/file/?id=472611
+# | $ wget https://dev.mysql.com/downloads/file/?id=472611
+# | $ yun install mysql-connector-python-2.1.7-1.el7.x86_64.rpm
+#
+# 2. Create a script which can connect to remote database server and make query 
+#
+# | #!/usr/bin/python
+# | #
+# | # DESC : Script to manage monthly_finance table in MariaDB
+# | #
+# | 
+# | #
+# | # Importing required modules 
+# | #
+# | 
+# | import mysql.connector as mariadb
+# | 
+# | #
+# | # Defining subroutines 
+# | #
+# | 
+# | def get_car_models_available(manufacturer):
+# |   mariadb_connection = mariadb.connect(user='anu', password='xxxxx', host='rhcemaster01.svr.apac.sathsang.net', database='indian_cars')
+# |   cur = mariadb_connection.cursor()
+# |   query = ("SELECT car_name FROM suv where car_manufacturer='Tata'")
+# |   cur.execute(query)
+# |   for cars in cur:
+# |     print cars
+# |   mariadb_connection.close()
+# | 
+# | #
+# | # Calling subroutine
+# | #
+# | 
+# | get_car_models_available('Tata')
+# | 
+# | #
+# | #
+# | # End
+#
+# 3. Make the query 
+# | [root@sathsang MariaDB]# python  /tmp/connect_db.py 
+# | (u'Nexon',)
+# | (u'Hexa',)
+# | (u'Tiago',)
+# | (u'Bolt',)
+# | [root@sathsang MariaDB]#
+#
+# Note : For your reference below is the actual query from database 
+#
+# | MariaDB [indian_cars]> SELECT car_name FROM suv where car_manufacturer='Tata';
+# | +----------+
+# | | car_name |
+# | +----------+
+# | | Nexon    |
+# | | Hexa     |
+# | | Tiago    |
+# | | Bolt     |
+# | +----------+
+# | 4 rows in set (0.00 sec)
+# |
+# | MariaDB [indian_cars]>
+#
+#
