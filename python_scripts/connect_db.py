@@ -21,7 +21,7 @@ current_time = datetime.now()
 #
 
 def get_car_models_available(manufacturer):
-  mariadb_connection = mariadb.connect(user='anu', password='anu275', host='rhcemaster01.svr.apac.sathsang.net', database='indian_cars')
+  mariadb_connection = mariadb.connect(user='user_name', password='pass_word', host='rhcemaster01.svr.apac.sathsang.net', database='indian_cars')
   cur = mariadb_connection.cursor()
   query = ("SELECT car_name FROM suv where car_manufacturer='Tata'")
   cur.execute(query)
