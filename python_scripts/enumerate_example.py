@@ -30,7 +30,7 @@ def get_index_numbers(file):
 #
 #
 
-if re.search(r'^4\.11.+', os_version) is not None:
+if re.search(r'^4\.11.+|^3.10.+', os_version) is not None:
     get_index_numbers(release_file)
 else:
     print "You are not running on Fedora Linux and current kernel version is : %s" %(os_version)
