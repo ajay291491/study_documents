@@ -33,16 +33,6 @@ url_to_block = {
 }
 
 #
-# Defining subroutines
-#
-
-def update_logfile(comment):
-  logfile_fh = open('/var/log/messages', 'a')
-  message    = "%s : %s : %s : %s \n" %(time_stamp, hostname, tool_name, comment)
-  logfile_fh.write(message)
-  logfile_fh.close()
-
-#
 # Declaring Class  
 #
 
@@ -55,7 +45,6 @@ class Manage_Web_Url(object):
     backup_file = '/etc/hosts.bkp.urlblocker'
     copyfile(host_file, backup_file)
     
-
   def disable_url(self, url_name):
     url_counter = 0
     disable_url_string = '127.0.0.1 www.' + url_name
@@ -73,10 +62,17 @@ class Manage_Web_Url(object):
     master_file = '/etc/hosts.master'
     if os.path.exists(master_file):
       copyfile(master_file, host_file)  
-          
+
 #
-# Definig functions
+# Defining subroutines
 #
+
+def update_logfile(comment):
+  logfile_fh = open('/var/log/messages', 'a')
+  message    = "%s : %s : %s : %s \n" %(time_stamp, hostname, tool_name, comment)
+  logfile_fh.write(message)
+  logfile_fh.close()
+  print "Message : %s" %(message)
 
 def url_manager(state):
 
@@ -85,7 +81,7 @@ def url_manager(state):
       site_url = url_to_block[site]
       site = Manage_Web_Url()
       site.disable_url(site_url)
-      update_logfile("Disbaled access to news website %s now" %(site))
+      update_logfile("Disbaled access to news website %s now" %(site_url))
   elif state == 'enable':
     url_state = Manage_Web_Url()
     url_state.enable_url()
@@ -93,12 +89,14 @@ def url_manager(state):
   else:
     update_logfile("Invlid action selected")
 
-
 #
 # Processing script
 # 
 
-url_manager(sys.argv[1])
+if sys.argv[1] is not None:
+  url_manager(sys.argv[1])
+else:
+  update_logfile("You need to pass either [ enable | disable ] as an argument along with script \n%s [enable | disable]" %(sys.argv[0]))
 
 #
 # End of script
