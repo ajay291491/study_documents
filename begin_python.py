@@ -726,7 +726,7 @@
 # We can use split function to split a string using any delimeter within the string and produce a list
 # Delimeter can be " " "," /  \  :  . or any other of these kind of symbols   
 # 
-# Syntax : string_name.split("delimeter"
+# Syntax : string_name.split("delimeter")
 #
 # Example : Below example will show us how to split a string and store it in an array
 # 
@@ -1032,7 +1032,7 @@
 # Example : Below example will tell us how to define a class with __init__ function and self argument
 #
 # | class MyClass(object):
-# |   def __ini__(self):
+# |   def __init__(self):
 # |     pass        
 #
 # Example : Lets define some additional argument along with the __init__ function and see how it gets processed
@@ -1279,6 +1279,103 @@
 # | vaiga.kids_school_transportation()
 # |
 #
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 11 - File Input and output 
+#-------------------------------------------------------------------------------------------------------------
+# You can read and write contents to the file using file objects in python, this will help you to read from and write to a file. 
+#
+# * File objects 
+# File objects will help us to manipulate the files for reading and writing. 
+# This will also raise an IOException when there is a problem with reading or writing to a file. 
+#
+# Syntax  : file_object_variable = open('file_name', operation_mode)
+# 
+# Example : my_file = open('/etc/passwd', 'r')
+#
+# * Various methods in handling files in python
+# There are various methods available in python while handling the files using the file objects. 
+#
+# . open()  : This function will help to open the file for manipulation, there are various 'operation modes' available to open a file and details given below. 
+#   - r     : This will help to open a file for reading 
+#   - r+    : This will help to open a file for reading and writing 
+#   - w     : This will help to open a new file for writing, if its a existing file then it will overwrite that file. 
+#   - w+    : This will help to write and read file, while writing existing files will be overwritten 
+#   - a     : This will append a file, if you are going to work with a existing file then append is the option to go. 
+#   - a+    : This will help to open a file for reading as well as for appending. 
+#  
+# NOTE : When you add 'b' along with the operation mode then it will help you to open binary files instead of the text files. 
+#
+# . close() : This will help you to close an open file, it is important to close an opened file because it will help to release memory which used to handle the file. 
+#
+# Example : Below example will tell you how to perform an open and close function on a file 
+#
+# | host_file = open('/etc/hosts', 'r')
+# | host_file.close()
+#
+# . read()  : This function will help you to read entire file as a string and return. 
+#           : If we have given size along with the read function then it read the content as a string until that index number. 
+#           : If the size of the file is more than the content of the file, then its stops at the EOF. 
+#           : Same case applies with the size with the negative number, then also it goes until the EOF. 
+#
+# Syntax : read([size]) 
+#
+# Example : Below example will show how perform a simple read on a file 
+#
+# | host_file = open('/etc/hosts', 'r')
+# | print host_file.read()
+# | host_file.close()
+#
+# Example : Below example will show how perform a read operation with size arguments
+#
+# | dns_file = open('/etc/resolv.conf', 'r')
+# | print dns_file.read(10)
+# | print dns_file.read(-5)
+# | dns_file.close()
+#
+# . readline() : This will read the first line of the file.
+#              : In case there is no size mentioned, then it will return the entire the line.
+#              : If there is a size parameter mentioned, it will return the string until that index number. 
+#              : If there is a size parameter mentioned which is negative or more than line, then it goes until the end of line 
+#
+# Example : Below example will how to read a file by line
+#
+# | host_file = open('/etc/hosts', 'r')
+# | print host_file.readline()
+# | host_file.close()
+#
+# Example : Below example will show how to read a file by line with size 
+#
+# | dns_file = open('/etc/resolv.conf', 'r')
+# | print dns_file.readline(5)
+# | dns_file.close()
+#
+# . readlines() : This function will read the file line by line and retuns each line into a list.
+#               : 
+# | host_file = open('/etc/hosts', 'r')
+# | print host_file.readlines()
+# | host_file.close()
+#
+# | dns_file = open('/etc/resolv.conf', 'r')
+# | print dns_file.readlines(1)
+# | dns_file.close()
+#
+# * write ()
+#
+#  To Continue study : https://www.geeksforgeeks.org/file-objects-python/
+#
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 12 - Remaining Chapters 
+#-------------------------------------------------------------------------------------------------------------
+# * Read about importing module with alias name 
+# * Study detail about the logger module - https://docs.python.org/2/howto/logging.html
+# * Read about perl regular expressions 
+#
+#
+#
+#
+#
+#
+# NOTE : Read a chapter about regular expression in Python
 #
 #
 #
@@ -1292,16 +1389,4 @@
 #
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-
 #
