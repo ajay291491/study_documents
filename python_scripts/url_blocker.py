@@ -21,6 +21,7 @@ import sys
 time_stamp   = datetime.now()
 current_time = str(time_stamp.time()).split(':')[0]
 host_file    = '/etc/hosts'
+backup_file  = '/etc/hosts.bkp.urlblocker'
 hostname     = platform.node()
 tool_name    = 'url_manager'
 url_to_block = {
@@ -41,9 +42,8 @@ class Manage_Web_Url(object):
   def __init__(self):
     pass
 
-  def take_backup(self):
-    backup_file = '/etc/hosts.bkp.urlblocker'
-    copyfile(host_file, backup_file)
+  def take_backup(self, bkp_file_name):
+    copyfile(host_file, bkp_file_name)
     
   def disable_url(self, url_name):
     url_counter = 0
@@ -51,7 +51,7 @@ class Manage_Web_Url(object):
     if os.path.exists(host_file):
       read_file = open(host_file, 'a+')
       for line in read_file.readlines():
-        if re.search(r'^\d.+url_name$', line) is not None:
+        if re.search(r"^\d.+url_name$", line) is not None:
           url_counter += 1
       if url_counter == 0 :
         read_file.write(disable_url_string)
@@ -75,11 +75,11 @@ def update_logfile(comment):
   print "Message : %s" %(message)
 
 def url_manager(state):
-
   if state == 'disable':
     for site in url_to_block.keys():
       site_url = url_to_block[site]
       site = Manage_Web_Url()
+      site.take_backup(backup_file)
       site.disable_url(site_url)
       update_logfile("Disbaled access to news website %s now" %(site_url))
   elif state == 'enable':

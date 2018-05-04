@@ -1295,7 +1295,7 @@
 # * Various methods in handling files in python
 # There are various methods available in python while handling the files using the file objects. 
 #
-# . open()  : This function will help to open the file for manipulation, there are various 'operation modes' available to open a file and details given below. 
+# . open()  : This method will help to open the file for manipulation, there are various 'operation modes' available to open a file and details given below. 
 #   - r     : This will help to open a file for reading 
 #   - r+    : This will help to open a file for reading and writing 
 #   - w     : This will help to open a new file for writing, if its a existing file then it will overwrite that file. 
@@ -1312,7 +1312,7 @@
 # | host_file = open('/etc/hosts', 'r')
 # | host_file.close()
 #
-# . read()  : This function will help you to read entire file as a string and return. 
+# . read()  : This method will help you to read entire file as a string and return. 
 #           : If we have given size along with the read function then it read the content as a string until that index number. 
 #           : If the size of the file is more than the content of the file, then its stops at the EOF. 
 #           : Same case applies with the size with the negative number, then also it goes until the EOF. 
@@ -1349,7 +1349,7 @@
 # | print dns_file.readline(5)
 # | dns_file.close()
 #
-# . readlines() : This function will read the file line by line and retuns each line into a list.
+# . readlines() : This method will read the file line by line and retuns each line into a list.
 #               : 
 # | host_file = open('/etc/hosts', 'r')
 # | print host_file.readlines()
@@ -1359,16 +1359,95 @@
 # | print dns_file.readlines(1)
 # | dns_file.close()
 #
-# * write ()
+# . write ()    : This method will help you to write content  as a string into the file. 
+#               : Due to buffering you wont be able to see the content inside the file until you call the close() or flush() method. 
+# 
+# Example : Below example will show how to use the write method using write operation mode.
 #
-#  To Continue study : https://www.geeksforgeeks.org/file-objects-python/
+# | my_file = open('/tmp/testfile', 'a+')
+# | print my_file.readlines()
+# | my_file.write('This is a test file' "\n")
+# | my_file.close()
+#
+# . writelines() : This method will help you write a list of string into the file. 
+#
+# Example : Below example will tell you how to write a file using writelines() method 
+#
+# | my_file = open('/tmp/testfile', 'w+')
+# | my_file.writelines('This file is now tested for another method' 'This is the second string')
+# | my_file.close()
+#
+# . tell()      : This method will tell us what is the position of the cursor from the beginning of the file 
+#
+# Example : Below is an example for tell method 
+#
+# | host_file = open('/etc/hosts', 'r')
+# | print host_file.readline(7)
+# | print host_file.tell()
+# | host_file.close()
+#
+# . seek(offset, from_where) : This method will change the file's object position. 
+#                            : Here 'offset' indicates the number of bytes to be moved. 
+#                            : 'from_where' indicates from which position this needs to be moved. 
+#
+# Example : Below example will show us about the seek method 
+#
+# | with open('/etc/hosts', 'r') as host_file:
+# |   print host_file.read(30)
+# |   print host_file.seek(25)
+# |   print host_file.read(30)
+#
+# . flush()     : Flush the internal buffer. close() automatically flushes the data but if you want to flush the data before closing the file then you can use this method.
+#
+# Example :  Clearing the internal buffer before closing the file
+#
+# | with open('/tmp/testfile', 'w+') as test_file:
+# |   print test_file.write('This is a test message')
+# |   test_file.flush()
+# |   print test_file.read()
+#
+# . closed ()  : This method can be used to test whether you file is already closed or not 
+#
+# Example : Below example will show how to test whether the file is closed or not. 
+#
+# | with open('/tmp/testfile', 'r') as test_file:
+# |  print test_file.read(10)
+# | 
+# | if not test_file.closed:                #  => Note that we did not use '()' here for testing 
+# |   test_file.close()
+# | else:
+# |   print "test_file already close"
+#
+# * How to close a file object automatically (with .. as method)
+# There are two methods actually used by python when you call the file objects. 
+# When you call open it actually invokes the _enter_() function and when you close the file it call the __exit__() function. 
+# So using the 'with ..as' method you can let python to automatically close the file rather than you invoke the close() function.
+# 
+# Example : Below example will show the with as method. 
+#
+# | with open('/etc/hosts', 'r') as host_file:
+# |   print host_file.readline(10)
 #
 #-------------------------------------------------------------------------------------------------------------
-# Chapter 12 - Remaining Chapters 
+# Chapter 12 - Regular expressions
+#-------------------------------------------------------------------------------------------------------------
+#
+# . Try to complete the try and except method before moving here 
+#
+# . Purchase the python regular expression course and start 
+#
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 13 - How to work with API
+#-------------------------------------------------------------------------------------------------------------
+#
+# . How to work with API, search for a best course and then practice
+#
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 14 - Misc Chapters 
 #-------------------------------------------------------------------------------------------------------------
 # * Read about importing module with alias name 
+# * How to use the try and except methods
 # * Study detail about the logger module - https://docs.python.org/2/howto/logging.html
-# * Read about perl regular expressions 
 #
 #
 #
