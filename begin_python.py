@@ -1429,42 +1429,174 @@
 # |   print host_file.readline(10)
 #
 #-------------------------------------------------------------------------------------------------------------
-# Chapter 12 - Regular expressions
+# Chapter 12 - Python best practices
 #-------------------------------------------------------------------------------------------------------------
 #
-# . Try to complete the try and except method before moving here 
+# * space and tabs
+#  . Always try to use space rather than tab for intendation. 
+#  . Do not mix space and tab for programming, python 3 disallows mixing both space and tab in the same program.
 #
-# . Purchase the python regular expression course and start 
+# * Intentation
+#  . Use 4 spaces per indentation level. 
+#  . Continuation lines should align wrapped elements either vertically using Python's implicit line joining inside parentheses, brackets and braces, or using a hanging indent.
+#
+# * Maximum Line Length
+#  . Limit all lines to a maximum of 79 characters.
+# 
+# * Imports
+#  . Imports should be normally on seperate lines, multiple import on the same line is not recomended. 
+#  . Imports should be grouped in the following order 
+#    1. standard library imports
+#    2. Third party imports 
+#    3. Local application or library specific imports
+#  . Import only what you need with its absolute name, rather than loading all the module. 
+#
+# Example : Below example show the style of imports 
+#
+# | import sys
+# | import os
+# | import re 
+# | from datetime import datetime
+#
+# * Whitespaces in Expression and statements
+#  . Avoid white spaces as much as possible under paranthesis, lists, dictionry etc. 
+#  . One white space after the comma should be fine 
+#  . Also avoid trailing white spaces. 
+#
+# NOTE : For more details on python styling guide refer : https://www.python.org/dev/peps/pep-0008/
 #
 #-------------------------------------------------------------------------------------------------------------
-# Chapter 13 - How to work with API
+# Chapter 13 - Regular expressions
+#-------------------------------------------------------------------------------------------------------------
+# In Python regular expressions are used for processing text. 
+# That means, for finding a pattern of text using various regular expression patterns. 
+# 
+# In python regular expressions are processed using the 're' module, to start with processing regular expression you will need to import this module.
+# There are mainly two methods used within regular expression matching and one additional method for substituion. 
+#
+# - re.match()  : This will search for the string within the beginning of the string. 
+# - re.search() : This will search within the entire text and will create a tuple out of the matched list.
+# - re.sub()    : This is used for substituting the values: 
+#
+# NOTE : If you are looking for a perl way of dealing with regular expression then you should go for 're.search'
+#
+# We will see each topic in detail later, before that we will see most common patterns which we will use in regular expressions 
+#
+# * re.match()
+# re.match will only will try to match the string at the beginning of the string.
+# Mostly when it comes to multi line strings it might ignore the multi lines after the first new line. 
+# This usage will be good especially when you want to match only at begininging of the line. 
+#
+# Syntax : re.match(pattern, string, optional_flag)
+#
+#        > pattern       : This is the regular expression pattern to be matched.
+#        > string        : This is the string which you are processing or you are searching for a pattern at the beginning of the string
+#        > optional_flag : These are optional flags which which provided to modify some patterns, these are also called 'modifiers'. 
+#
+# re.match() function will match a object on success and none on failure. we use group or groups function to retrun the result of the matched object.
+#
+# . group(num=index_number) : This will be able to return the contents based on the index number in the matched list returned.
+# . groups()   : This will be able to retun all matched contents in the list  
+#
+# Example : Below code will help us to understand about the re.match() 
+#
+# | import re
+# | text  = "God made this wonderful world with lot of puzzles"
+# | match = re.match(r'(\s\wo\w.+)', text, re.I)               # Here we are trying to match the string 'wonderful world with lot of puzzles'
+# | if match: print match.groups()                                   # We are printing all possible matches with match.groups()
+# | else    : print "Nothing found"
+#
+# NOTE : It is always better before you print the contents of the object make sure the matched object really exist or not, else it will throw an error. 
+#      : re.I - This  is the flag and makes the pattern to be case insensitive
+#
+# * re.search() 
+# re.search will help you to search for a pattrn anywere in the string where re.match() help you to search only at the begining of the line. 
+#
+# syntax : re.search(pattern, string, optional_flag)
+#
+#       > pattern       : This is the regular expression pattern to be matched
+#       > string        : This is the string wich you are processing to find your pattern, here the entire string will be processed for matches. 
+#       > optional_flag : These are optional flags which called as 'modifiers', which will help you to modify the default behaviour of patterns. 
+#
+# re.search() function will retrun a match object on success and none on failure. 
+# We uses the group(num) or groups() method of the matched object to find the matched strings
+#
+# . group(num=index_number)  : This will return the contents of the string based on the index number from the tuple it produces
+# . groups()  : This will be able to return all matching subgroups in the tuple.
+#
+# Example : Below examplw will demonstrate the usage of re.search
+#
+# |
+# | import re
+# | with open('/etc/hosts', 'r') as host_file:
+# |   for line in host_file.readlines():
+# |     match = re.search(r'\.\w{3}.+m$', line, re.I)
+# |     if match: print match.group()
+# |     else: print 'No match found'
+# | 
+#
+# * re.search() VS re.match()
+# Python provides two primitive regular expressions. 
+# re.match  : match checks for any match at the beginning of the string.
+# re.search : search checks for match anywere in the string 
+#
+# Example : Below example will demonstrate the difference between match and search 
+#
+# |
+# | import re
+# | line = 'when you com in this world, you are jumping into a very busy world which you cannot stand alone'
+# | match_obj  = re.match(r'(\w{4}\s\w{5})', line, re.I|re.M)                   # => This pattern will not return anything since the match is not at the beginning 
+# | search_obj = re.search(r'(\w{4}\s\w{5})', line, re.I|re.M)                  # => This pattern will retrun since we used the search method 
+# | if match_obj: print match_obj.group()
+# | else: print "Regex Error : There is no match found"
+# | if search_obj: print search_obj.group()
+# | else: print "Regex Error : There is no search found"
+# |
+#
+# * re.sub() - search and replace 
+# One of the effective feature of the re module is its ability to provide substitution. 
+# re.sub() module will provide an ability perform substitution operations.
+#
+# Syntax : re.sub(pattern_to_search, replacing_value, string_to_process, max=<count>)
+#
+# pattern_to_search : This is the pattern you are going to search with in the string
+# replacing value   : This is the value you are going to replace aginst the pattern
+# string_to_process : This is the string which you are going to process 
+# max               : By default re.sub() will replace all matching pattern, if you give max=count, only that many first matches will only get replaced. 
+#
+# Example : Below example will show the usage of re.sub
+#
+# |
+# | import re
+# | quote = 'Do not dwell in the past, do not think in the future, just live in the present !!!'
+# | modified_quote = re.sub(r'\w{7}\s!{3}', 'moment ....', quote)                   # => Here 'present !!!' will change to moment ....'
+# | print modified_quote
+# |
+#
+# * Things to clarity
+#
+# . Where to use group and groups 
+# . where to use raw format and normal
+#
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 14 - Common untilities and its use 
 #-------------------------------------------------------------------------------------------------------------
 #
-# . How to work with API, search for a best course and then practice
+# . https://developers.google.com/edu/python/utilities
+# . https://docs.python.org/2/howto/logging.html
+# . Try and exception method
 #
 #-------------------------------------------------------------------------------------------------------------
-# Chapter 14 - Misc Chapters 
+# Chapter 15 - How to work with API
 #-------------------------------------------------------------------------------------------------------------
-# * Read about importing module with alias name 
-# * How to use the try and except methods
-# * Study detail about the logger module - https://docs.python.org/2/howto/logging.html
 #
+# https://www.codecademy.com/en/tracks/npr
 #
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 16 - Python and database
+#-------------------------------------------------------------------------------------------------------------
 #
-#
-#
-#
-# NOTE : Read a chapter about regular expression in Python
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+# 
 #
 #
 #
