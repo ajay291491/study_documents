@@ -1573,6 +1573,36 @@
 # | print modified_quote
 # |
 #
+# Example : Below example will show replacing multiple string 
+#
+# |
+# | import re 
+# | with open('/etc/hosts', 'r') as host_file:
+# |   for line in host_file.readlines():
+# |     corrected_url = re.sub(r'(\.com|\.net)', '.org', line)
+# |     print corrected_url
+# |
+#
+# * Regular expression modifiers - Optional flags 
+# Regular expression modifiers are used to modify the literal meaning of regular expression patterns. 
+# These are passed as the optional flag along with the regular expressions and need to use only when required to be mentioned.
+# Below are the expression modifiers available in python
+# 
+# re.I : This will enable case insensitive matching when you pass along with 
+# re.L : This interprets the words according to the current locale, but this interpretation will affect the alphbatic word and word boundaries 
+# re.M : This will mark the ^ matching at the start of the line rather than string and $ at the end of the line rather than end of the string.
+# re.S : Makes a period (dot) match any charector including new line.
+# re.U : This interprets the letters according to the charector set, This affects the behavior of the \w, \W, \b and \B
+# re.X : This enabled cuter regular expressions, it ignores white spaces (except inside a set [] or escaped by backslash and it treats unescaped '#' as a comment marker 
+#
+# NOTE : re.I, re.M , re.S and re.X are the common pattern 
+#
+# * Regular expression Patterns 
+#
+# > > Start with simple one and the later with complex . All with examples
+#
+# NOTE : FInal day of regular expression look at the google video
+#
 # * Things to clarity
 #
 # . Where to use group and groups 
