@@ -1474,9 +1474,10 @@
 # In python regular expressions are processed using the 're' module, to start with processing regular expression you will need to import this module.
 # There are mainly two methods used within regular expression matching and one additional method for substituion. 
 #
-# - re.match()  : This will search for the string within the beginning of the string. 
-# - re.search() : This will search within the entire text and will create a tuple out of the matched list.
-# - re.sub()    : This is used for substituting the values: 
+# - re.match()   : This will search for the string within the beginning of the string. 
+# - re.search()  : This will search within the entire text and will create a tuple out of the matched list, only the first macth from the left will be stored. 
+# - re.findall() : This will help you to search all matching string from left to right when processing a line, where re.search() stops at the first one 
+# - re.sub()     : This is used for substituting the values: 
 #
 # NOTE : If you are looking for a perl way of dealing with regular expression then you should go for 're.search'
 #
@@ -1511,6 +1512,7 @@
 #
 # * re.search() 
 # re.search will help you to search for a pattrn anywere in the string where re.match() help you to search only at the begining of the line. 
+# This will perform the search from left to right, but when it finds the very first match its just stops there.
 #
 # syntax : re.search(pattern, string, optional_flag)
 #
@@ -1552,6 +1554,23 @@
 # | if search_obj: print search_obj.group()
 # | else: print "Regex Error : There is no search found"
 # |
+#
+# * re.findall() - Search all matching patterns
+# re.findall() method will help you to find all available matched strings from left to right and it cretaes a list out of it. 
+#
+# Syntax : re.findall(regex_pattern, string_to_process, optional_flag)
+#
+# Example : Below example will tell you how to match a regular expression pattern using re.findall()
+#
+# |
+# | import re
+# | def find_all_patterns(pattern, string):
+# |   match = re.findall(pattern, string, re.I)
+# |   if match: print match                                                                    # => here you are not using any group, you are just printing the list
+# |   else : print 'No match found !!!'
+# | 
+# | find_all_patterns(r'(\w+@\w+)', 'ajay291491@gmail.com sent an email to anu275@gmail.com')  # => This will find all email address as part of the strings
+# | 
 #
 # * re.sub() - search and replace 
 # One of the effective feature of the re module is its ability to provide substitution. 
@@ -1597,6 +1616,25 @@
 #
 # NOTE : re.I, re.M , re.S and re.X are the common pattern 
 #
+# * Raw string(r) notation
+# In short, to match a literal backslash, one has to write '\\' as the RE string, because the regular expression must be \\, and each backslash must be expressed as \\ inside a regular Python string literal. 
+# In REs that feature backslashes repeatedly, this leads to lots of repeated backslashes and makes the resulting strings difficult to understand.
+#
+# The solution is to use Python’s raw string notation for regular expressions; backslashes are not handled in any special way in a string literal prefixed with 'r', 
+# so r"\n" is a two-character string containing '\' and 'n', while "\n" is a one-character string containing a newline. Regular expressions will often be written in Python code using this raw string notation.
+# 
+# In addition, special escape sequences that are valid in regular expressions, but not valid as Python string literals, now result in a DeprecationWarning and will eventually become a SyntaxError, 
+# which means the sequences will be invalid if raw string notation or escaping the backslashes isn’t used.
+#
+# |
+# | Regular_String 	|        Raw_string
+# | -----------------------------------------
+# |   "ab*" 	        =	  r"ab*"
+# |   "\\section"       =	  r"\section"
+# |   "\\w+\\s+\\1"     =	  r"\w+\s+\1"
+# | -----------------------------------------
+#
+#
 # * Regular expression Patterns 
 #
 # > > Start with simple one and the later with complex . All with examples
@@ -1607,7 +1645,7 @@
 #
 # . Where to use group and groups 
 # . where to use raw format and normal
-#
+# . Grouping regular expression using paranthesis
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 14 - Common untilities and its use 
 #-------------------------------------------------------------------------------------------------------------
@@ -1615,19 +1653,23 @@
 # . https://developers.google.com/edu/python/utilities
 # . https://docs.python.org/2/howto/logging.html
 # . Try and exception method
+# . https://www.youtube.com/watch?v=uKZ8GBKmeDM
 #
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 15 - How to work with API
 #-------------------------------------------------------------------------------------------------------------
 #
-# https://www.codecademy.com/en/tracks/npr
+# . https://www.youtube.com/watch?v=Nn2KQmVF5Og
+# . https://www.codecademy.com/en/tracks/npr
 #
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 16 - Python and database
 #-------------------------------------------------------------------------------------------------------------
 #
 # 
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 17 - Writing test cases in python
+#-------------------------------------------------------------------------------------------------------------
 #
 #
-#
-#
+#-------------------------------------------------------------------------------------------------------------
