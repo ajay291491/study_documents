@@ -1617,14 +1617,13 @@
 # NOTE : re.I, re.M , re.S and re.X are the common pattern 
 #
 # * Raw string(r) notation
-# In short, to match a literal backslash, one has to write '\\' as the RE string, because the regular expression must be \\, and each backslash must be expressed as \\ inside a regular Python string literal. 
+# In short, to match a literal backslash, one has to write \\ as the RE string, because the regular expression must be \\, and each backslash must be expressed as \\ inside a regular Python string literal. 
 # In REs that feature backslashes repeatedly, this leads to lots of repeated backslashes and makes the resulting strings difficult to understand.
 #
-# The solution is to use Python’s raw string notation for regular expressions; backslashes are not handled in any special way in a string literal prefixed with 'r', 
+# The Solution is to use raw string notation for regular expressions, backslashes are not handled in any special way in a string literal. 
 # so r"\n" is a two-character string containing '\' and 'n', while "\n" is a one-character string containing a newline. Regular expressions will often be written in Python code using this raw string notation.
 # 
-# In addition, special escape sequences that are valid in regular expressions, but not valid as Python string literals, now result in a DeprecationWarning and will eventually become a SyntaxError, 
-# which means the sequences will be invalid if raw string notation or escaping the backslashes isn’t used.
+# In addition, special escape sequences that are valid in regular expressions, but not valid as Python string literals, now result in a DeprecationWarning and will eventually become a SyntaxError
 #
 # |
 # | Regular_String 	|        Raw_string
@@ -1637,17 +1636,208 @@
 #
 # * Regular expression Patterns 
 #
-# > > Start with simple one and the later with complex . All with examples
+# ^         : Matches at the begining of the line
+# $         : Matches at the end of the line 
+# .         : This will allow any charector except the new line character, if we are using re.M and optional flag, then it can match new line as well. 
+# [...]     : Matches any single character in bracket
+# [^...]    : Matches any single character not in bracket
+# re*       : Matches 0 or more occurence of the preceeding expression
+# re+       : Matches 1 or more of the preceeding expression
+# re?       : Matches 0 or 1 occurence of the preceeding expressions 
+# re{n}     : Matches exatcly 'n' number of occurence of the preceeding expression
+# re{n,}    : Matches 'n' or more than occurence of the preceeding expression
+# re{n,m}   : Matches minimum 'n' number of occurence and maximum of 'm' number of occurence
+# a|b       : Matches a or b 
+# (re)      : groups regular expresions and remembers matched text
+# \w        : Matches word character 
+# \W        : Matches non word character
+# \s        : Matches whitespace 
+# \S        : matches non white spaces 
+# \d        : Matches digits 
+# \D        : matches non-digits 
+# \A        : Matches beginning of the string
+# \Z        : Matches at the end of the string, if new line exist it ignores the new line
+# \z        : Matches end of a string
+# \G        : Matches point where last match finished
+# \b        : Matches word boundaries where outside brackets, matches backpspace when inside brackets
+# \B        : Matches non-word boundaries 
+# \n        : Matches new line and carriage return
+# \t        : Matches tabs 
+# 
+# Note      : To understand more pattern and example please visit  below url 
+#           https://www.tutorialspoint.com/python/python_reg_expressions.htm
 #
-# NOTE : FInal day of regular expression look at the google video
+# NOTE : Final day of regular expression look at the google video
 #
-# * Things to clarity
-#
-# . Where to use group and groups 
-# . where to use raw format and normal
-# . Grouping regular expression using paranthesis
 #-------------------------------------------------------------------------------------------------------------
-# Chapter 14 - Common untilities and its use 
+# Chapter 14 - How to work with API
+#-------------------------------------------------------------------------------------------------------------
+# * HTTP verbs
+# There are four http verbs mainly used, their details given below 
+#
+# - GET           : This retrieves infromation from the specified source.
+# - POST          : This sends a new information to the specified source. 
+# - PUT           : This updates existing information of a current resource. 
+# - DELETE        : Removes existing information from a specified resource. 
+# - URI           : Resource name
+# - HTTP RESPONSE : status or body
+#
+# * REST (Representational state transfer)
+# REST is an architectural styles that defines a set of constrains and properties.
+# REST can be used with any protocols but it generally takes the advantage of the HTTP protocol.
+# REST is mainly a resource based rather than action based. 
+#
+# Below are the 6 main constrains of REST
+# - Uniform Interface 
+# - Stateless 
+# - clinet server
+# - Cachable 
+# - Layered System
+# - Code on demans 
+#
+# Those API which follows this priciples are called restful api. 
+#
+# To Study more details about or to understand about the 6 constrains follow below resources 
+# URL  : http://www.restapitutorial.com/lessons/whatisrest.html
+# Book : 'Undisturbed REST'
+#
+# * HTTP status codes 
+# Before we start dwelling into the deeper aspect of the web modules it is good to understand aboout the https status codes. 
+#
+# .    100 Continue
+# .    101 Switching Protocols
+# .    102 Processing
+# .
+# .    2** Success
+# .    200 OK
+# .    201 Created
+# .    202 Accepted
+# .    203 Non-authoritative Information
+# .    204 No Content
+# .    205 Reset Content
+# .    206 Partial Content
+# .    207 Multi-Status
+# .    208 Already Reported
+# .    226 IM Used
+# .
+# .    3** Redirection
+# .    300 Multiple Choices
+# .    301 Moved Permanently
+# .    302 Found
+# .    303 See Other
+# .    304 Not Modified
+# .    305 Use Proxy
+# .    307 Temporary Redirect
+# .    308 Permanent Redirect
+# .
+# .    4** Client Error
+# .    400 Bad Request
+# .    401 Unauthorized
+# .    402 Payment Required
+# .    403 Forbidden
+# .    404 Not Found
+# .    405 Method Not Allowed
+# .    406 Not Acceptable
+# .    407 Proxy Authentication Required
+# .    408 Request Timeout
+# .    409 Conflict
+# .    410 Gone
+# .    411 Length Required
+# .    412 Precondition Failed
+# .    413 Payload Too Large
+# .    414 Request-URI Too Long
+# .    415 Unsupported Media Type
+# .    416 Requested Range Not Satisfiable
+# .    417 Expectation Failed
+# .    418 I'm a teapot
+# .    421 Misdirected Request
+# .    422 Unprocessable Entity
+# .    423 Locked
+# .    424 Failed Dependency
+# .    426 Upgrade Required
+# .    428 Precondition Required
+# .    429 Too Many Requests
+# .    431 Request Header Fields Too Large
+# .    444 Connection Closed Without Response
+# .    451 Unavailable For Legal Reasons
+# .    499 Client Closed Request
+# .
+# .    5** Server Error
+# .    500 Internal Server Error
+# .    501 Not Implemented
+# .    502 Bad Gateway
+# .    503 Service Unavailable
+# .    504 Gateway Timeout
+# .    505 HTTP Version Not Supported
+# .    506 Variant Also Negotiates
+# .    507 Insufficient Storage
+# .    508 Loop Detected
+# .    510 Not Extended
+# .    511 Network Authentication Required
+# .    599 Network Connect Timeout Error
+#
+# * General authentication methods available to connect to API
+# When you connect to a public API or website, then you do not need to provide an authentication mechanism to connect to an API. 
+# But that is normal case when you do with in your organization, so there are several methods you will need to be aware of. 
+# Key authentication methods are 
+# 
+# 1. HTTP Basic authentication 
+#    => This is the normal web based authentication mechansim. 
+#    => Without SSL support this method is highly insecure. 
+#    => With SSL this method can slowdown the process.
+#
+# 2. API Keys
+#   => This is one of the widely used authentication mechanism.
+#   => This also has the concern of sending keys as plane text if SSL is not enabled.
+#   => This is much faster option compare with the basic http authentication
+#   => This is mostly used as an authentiction mechanism ratherthan authorisation
+#
+# 3. OAuth and OpenID connect 
+#   => This is the most secure method available for API standards
+#   => This can handle both authentication and authorization
+#   => Clearly superior with respect to the security standards compare to other methods
+#   => Detailed tutorial available at : https://www.youtube.com/watch?v=CPbvxxslDTU
+# 
+# To Understand more about these authentication refer : https://nordicapis.com/3-common-methods-api-authentication-explained/
+#
+# * Key modules to look at when dealing an API from python 
+# There are mainly three modules which used in python when it comes to dealing with an API, they are 
+# All these modules will try to help you in the same way in the generic concept. 
+#
+# - urllib  : Module which commonly used in python 3
+# - urllib2 : Module which used in python 2, this module is replaced with request module in 2.7
+# - request : This is also a module which used in python 2.7
+#
+# In this chapter we will go through a detailed study only on the 'requests' module since it is the easiest and more efficient tool available 
+#
+# * Requests()
+# Requests is an elegant and simple HTTP library for Python, built for human being
+# Requests module is created with few 'PEP 20' idioms which are called as the 'zen of python'. 
+# Requests uses 'apache2' licen, that allow your open-source software to be used freely in proprietary, closed-source software.
+#
+# * How to install 'request' package 
+# To install 'request' module, simply run below command in your system. 
+#
+# | $ pip install requests
+#
+# * How to make a request
+# To make a request, first we will need to import the 'requests' module, once the module is imported then you can perform various operations on this.
+# Below is the simple example for making a request.
+#
+# | import requests
+# | connection = requests.get('https://api.github.com/events')
+# | print connection.json()
+#
+# * Making various different type of action with API
+# Continue from : http://docs.python-requests.org/en/master/user/quickstart/
+#
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 15 - Python and database
+#-------------------------------------------------------------------------------------------------------------
+#
+# 
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 16 - Common untilities and its use 
 #-------------------------------------------------------------------------------------------------------------
 #
 # . https://developers.google.com/edu/python/utilities
@@ -1655,18 +1845,6 @@
 # . Try and exception method
 # . https://www.youtube.com/watch?v=uKZ8GBKmeDM
 #
-#-------------------------------------------------------------------------------------------------------------
-# Chapter 15 - How to work with API
-#-------------------------------------------------------------------------------------------------------------
-#
-# . https://www.youtube.com/watch?v=Nn2KQmVF5Og
-# . https://www.codecademy.com/en/tracks/npr
-#
-#-------------------------------------------------------------------------------------------------------------
-# Chapter 16 - Python and database
-#-------------------------------------------------------------------------------------------------------------
-#
-# 
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 17 - Writing test cases in python
 #-------------------------------------------------------------------------------------------------------------
