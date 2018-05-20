@@ -1872,9 +1872,9 @@
 # | import re 
 # | 
 # | main_url = 'http://httpbin.org'
-# | single_date = {'name': 'Ajay'}
-# | couples = {'husband': 'Ajay' , 'wife': 'Aparna'}
-# | family  = {'father': 'Ajay', 'mother': 'Aparna', 'kids': ['Vaiga', 'Rishi']}
+# | single   = {'name': 'Ajay'}
+# | couple   = {'husband': 'Ajay' , 'wife': 'Aparna'}
+# | family   = {'father': 'Ajay', 'mother': 'Aparna', 'kids': ['Vaiga', 'Rishi']}
 # | 
 # | def process_post_requests(input_data):
 # |   post_url = main_url + '/post'
@@ -1911,8 +1911,8 @@
 # |   process_post_requests(input_data)
 # |   process_get_requests(input_data)
 # |
-# | process_requests(single_date)
-# | process_requests(couples)
+# | process_requests(single)
+# | process_requests(couple)
 # | process_requests(family)
 # |
 #

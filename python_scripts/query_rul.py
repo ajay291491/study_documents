@@ -12,9 +12,9 @@ import re
 #
 
 main_url = 'http://httpbin.org'
-single_date = {'name': 'Ajay'}
-couples = {'husband': 'Ajay' , 'wife': 'Aparna'}
-family  = {'father': 'Ajay', 'mother': 'Aparna', 'kids': ['Vaiga', 'Rishi']}
+single   = {'name': 'Ajay'}
+couple   = {'husband': 'Ajay' , 'wife': 'Aparna'}
+family   = {'father': 'Ajay', 'mother': 'Aparna', 'kids': ['Vaiga', 'Rishi']}
 
 #
 # Delaring subroutines 
@@ -59,7 +59,7 @@ def process_requests(input_data):
 # Invoking subroutines
 #
 
-process_requests(single_date)
-process_requests(couples)
+process_requests(single)
+process_requests(couple)
 process_requests(family)
 
