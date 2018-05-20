@@ -1829,7 +1829,94 @@
 # | print connection.json()
 #
 # * Making various different type of action with API
-# Continue from : http://docs.python-requests.org/en/master/user/quickstart/
+# Below are the syntax of using various request types which you can make with the 'requests' module
+#
+# object = request.get('http://api.github.com/events')
+# object = request.post('http://httpbin.org/post', data = {'key': 'value'})
+# object = request.put('http://httpbin.org/put', data = {'key': 'value'})
+# object = request.delete('http://httpbin.org/delete')
+# object = request.head('http://httpbin.org/get')
+# object = request.options('http://httpsbin.org/get')
+#
+# * Passing parameter to the URL
+#
+# . Passing single parameter
+# When you are constructing an url, you can add content to that url in a key value pair and also can retrieve the same using ? and = format
+# 
+# Syntax : data = {'key': 'value'}
+#          requests.post('https://sample_url.com/post', data)
+#          requests.get('https://sample_url.com/get?key=value')
+#
+# . Passing multiple parameter 
+# When you are constructing an url with multiple paramter to pass as an argument then you can use below syntax. 
+# While retrieving you can use '?' and '=' to join multiple keys values you can use '&' .
+#
+# Syntax : data = {'key1': 'value1', 'key2': 'value2'}
+#          requests.post('https://sample_url.com/post' data)
+#          requests.get('https://sample_url.com/get?key1=value1&key2=value2')
+#
+# . Passing paramater as a list
+# You can also pass parameter as a list too, for that you need to follow below syntax. 
+# To get the values you will need to use '?' and '=' to construct and '&' to join multiple keys value pairs.
+# Also, if multiple values are passed as a list from a key then you need to construct url with multiple '&' on the same key with multiple value
+# 
+# Syntax : data = {'key1': 'value1', 'key2': ['value2', 'value3']
+#          requests.post('https://sample_url.com/post', data)
+#          requests.get('https://sample_url.com/get?key1=value1&key2=value2&key2=value3')
+# 
+# Example : Below example will show us an example about post requests
+#
+# | 
+# | from pprint import pprint 
+# | import requests 
+# | import re 
+# | 
+# | main_url = 'http://httpbin.org'
+# | single_date = {'name': 'Ajay'}
+# | couples = {'husband': 'Ajay' , 'wife': 'Aparna'}
+# | family  = {'father': 'Ajay', 'mother': 'Aparna', 'kids': ['Vaiga', 'Rishi']}
+# | 
+# | def process_post_requests(input_data):
+# |   post_url = main_url + '/post'
+# |   data_post = requests.post(post_url, input_data)
+# |   status = data_post.status_code
+# |   if status == 200:
+# |    print "Info (post) : Content posted successfully %s" %(input_data)
+# |  else: 
+# |    print "Fail (post) : Unable to post data"
+# |
+# | def process_get_requests(input_data):
+# |   get_url = main_url + '/get'
+# |   sub_url_raw = ""
+# |   pair = ""
+# |   for keys in input_data:
+# |    if type(input_data[keys]) is list:
+# |       for element in input_data[keys]:
+# |         pair = pair + '&'  + keys + '=' + element  
+# |      sub_url_raw = pair + '&'
+# |    else:
+# |      pair = keys + '=' + input_data[keys] 
+# |    sub_url_raw = sub_url_raw + pair + '&'
+# |  sub_url = re.sub(r'\&$','', sub_url_raw)
+# |  content = requests.get(get_url + '?' + sub_url)
+# |  status = content.status_code
+# |  print status
+# |  if int(status) == 200:
+# |    print "Info (get) : Query was successful and content is below **\n"
+# |    pprint (content.json())
+# |  else:
+# |    print "Fail (get) : Query was not successful"
+# |
+# | def process_requests(input_data):
+# |   process_post_requests(input_data)
+# |   process_get_requests(input_data)
+# |
+# | process_requests(single_date)
+# | process_requests(couples)
+# | process_requests(family)
+# |
+#
+# NOTE : Continue from http://docs.python-requests.org/en/master/user/quickstart/#
 #
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 15 - Python and database
@@ -1839,6 +1926,35 @@
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 16 - Common untilities and its use 
 #-------------------------------------------------------------------------------------------------------------
+#
+# * pprint - pretty printer 
+# pprint() module is normally used to print raw data in formatted syntax, so that it is much more readable than the raw data 
+#
+# Syntax : from pprint import pprint 
+#          pprint ("data_to_print")
+#
+# Example : Below is an example for pprint 
+#
+# | from pprint import pprint
+# | import requests
+# |
+# | def get_data(url):
+# | 
+# |   counter = 0
+# |   connection = requests.get(url)
+# |   data_snap = connection.json()
+# |   for item in data_snap:
+# |     counter += 1
+# |     if counter < 2:
+# |       data_one = {}
+# |       data_one = item
+# |       for key in data_one.keys():
+# |         pprint (data_one[key])
+# | 
+# | get_data('https://api.github.com/events')
+# |
+#
+#
 #
 # . https://developers.google.com/edu/python/utilities
 # . https://docs.python.org/2/howto/logging.html
