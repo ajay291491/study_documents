@@ -204,13 +204,13 @@
 #    . Identity Operators
 # 
 # Let us have a look on all operators one by one.
-# * Python Arithmetic Operators
-# Assume variable a holds 10 and variable b holds 20, then −
+#
+# * Python arithamatic operator
 # 
 # [ Show Example ]
 # Operator 		Description 								Example
 # + Addition 		Adds values on either side of the operator. 				a + b = 30
-# - Subtraction 		Subtracts right hand operand from left hand operand. 			a – b = -10
+# - substraction        substracts right hand operand from left hand operand                    a - b = -10
 # * Multiplication 	Multiplies values on either side of the operator 			a * b = 200
 # / Division 		Divides left hand operand by right hand operand 			b / a = 2
 # % Modulus 		Divides left hand operand by right hand operand and returns remainder 	b % a = 0
@@ -218,7 +218,7 @@
 # 
 # These operators compare the values on either sides of them and decide the relation among them. They are also called Relational operators.
 # 
-# Assume variable a holds 10 and variable b holds 20, then −
+# Assume variable a holds 10 and variable b holds 20, then
 # 
 # [ Show Example ]
 # Operator 	Description 	Example
@@ -232,7 +232,7 @@
 # 
 # 
 # * Python Assignment Operators
-# Assume variable a holds 10 and variable b holds 20, then −
+# Assume variable a holds 10 and variable b holds 20, then
 # 
 # [ Show Example ]
 # Operator 			Description 											Example
@@ -246,7 +246,7 @@
 # //= Floor Division 		It performs floor division on operators and assign value to the left operand 			c //= a is equivalent to c = c // a
 # 
 # * Python Bitwise Operators
-# Bitwise operator works on bits and performs bit by bit operation. Assume if a = 60; and b = 13; Now in binary format they will be as follows −
+# Bitwise operator works on bits and performs bit by bit operation. Assume if a = 60; and b = 13; Now in binary format they will be as follows
 # a = 0011 1100
 # b = 0000 1101
 # -----------------
@@ -277,7 +277,7 @@
 # not Logical NOT 	Used to reverse the logical state of its operand. 			Not(a and b) is false.
 # 
 # * Membership Operators
-# Python’s membership operators test for membership in a sequence, such as strings, lists, or tuples. There are two membership operators as explained below −
+# Python's membership operators test for membership in a sequance, such as strings, lists, or tuples. There are two memebership operators as explained below 
 # 
 # [ Show Example ]
 # Operator 	Description 											Example
@@ -285,7 +285,7 @@
 # not in 		Evaluates to true if it does not finds a variable in aspecified sequence and false otherwise.	x not in y, here not in results in a 1 if x is not a member of sequence y.
 # 
 # * Python Identity Operators
-# Identity operators compare the memory locations of two objects. There are two Identity operators explained below −
+# Identity operators compare the memory locations of two objects. There are two Identity operators explained below
 # 
 # [ Show Example ]
 # Operator 	Description 														Example
@@ -2121,6 +2121,50 @@
 # | print connect.content
 #
 # - Json format - [ Continue from there ] 
+# When you are dealing with key value pairs or dictionaries, ratherthan you are formatting the data you can always use json to format the data. 
+# For using that method you can 'import json' module and then you can use the 'json.dumps' method to process and send the data. 
+# While representaing the data to the post request, you can use the 'json' keyword instead of the 'data' or 'files'. 
+# Incase you are using 'data' or 'files' argument to pass the dictionary then the json formatting will be lost.
+#
+# Syntax : Below is the syntax for json format
+# 
+# import requests 
+# import json
+# content = {'key' : 'value'}
+# connection = requests.post('https://api.github.com/some/endpoint', json=content)
+# 
+# Example : Below is an example for handling json
+#
+# | import requests
+# | import json
+# | 
+# | my_url = 'http://httpbin.org'
+# | my_dict = { 'name' : 'Rajesh',
+# |            'town' : 'kattakada',
+# |             'city' : 'Trivandrum',
+# |            }
+# | 
+# | class MyPost(object):
+# |
+# |  def __init__(self, url, json_data):
+# |    self.url = url
+# |    self.json_data = json_data
+# |
+# |   def post_data(self):
+# |    connection = requests.post(self.url, json=self.json_data)
+# |    if connection.status_code > 200 and connection.status_code < 300:
+# |        print "Data uploaded successfully \n %s" %(self.json_data)
+# |    else:
+# |        print connection.status_code
+# |        print "Unable to process data, contact developer"
+# |
+# | upload = MyPost(my_url, my_dict)
+# | upload.post_data()
+#
+# - Files - Sending a multiparted encoded file 
+#
+# NOTE : Continue here 
+#
 #
 # NOTE : Continue from http://docs.python-requests.org/en/master/user/quickstart/#
 #
