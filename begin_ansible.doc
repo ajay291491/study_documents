@@ -1,0 +1,135 @@
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# | Chapter 01 : Ansible Installation and Configurations
+# ----------------------------------------------------------------------------------------------------------------------------------------
+#
+# * Ansible requirements 
+# Ansible is a configuration management tool which developed on top of python. 
+# Stable versions are available with Python2 and active development is happening in the python3 branch.
+# This course is mainly focused on the python 2 based ansible. 
+#
+# * Ansible supported platforms 
+# Ansible is cross platform configuration management tool which supports 
+#
+# . Different distributions of Linux such as Redhat, ubuntu, CentOS etc 
+# . Mac
+# . Windows 
+#
+# On all these platforms you can use either platform specific package manager or python's pip utility to install ansible 
+#
+# * Ansible environment setup
+# Our Lab setup throughout the course will be as follows
+#
+# Master   : ansiblemaster01.svr.apac.sathsang.net [ CentOS 6.9 ]
+# client 1 : clientnode01.svr.apac.sathsang.net    [ CentOS 7.3 ]
+# client 2 : clientnode02.svr.apac.sathsang.net    [ CentOS 7.3 ]
+# client 3 : clientnode03.svr.apac.sathsang.net    [ CentOS 7.3 ]
+#
+# * Installing ansible master 
+# To install ansisble master server, you will need to just install the ansible packe from the epel repo 
+#
+# Example : Sample procedure to install ansible master
+#
+# | [root@ansiblemaster01 .ssh]# yum -q install ansible --enablerepo=epel
+# | Package ansible-2.5.3-1.el6.noarch already installed and latest version
+# | [root@ansiblemaster01 .ssh]# rpm -qa| grep -i ansible
+# | ansible-2.5.3-1.el6.noarch
+# | [root@ansiblemaster01 .ssh]#
+#
+# * Configuration file  
+# This will holds the key config parameters or variables required for ansible to work. 
+# In case you need any customization to default config parameters, then you will need to make the change in this file 
+#
+# Default location : /etc/ansible/ansible.cfg
+#
+# Example : sample config details 
+# 
+# | [root@ansiblemaster01 .ssh]# grep -C1 hosts /etc/ansible/ansible.cfg
+# | inventory      = /etc/ansible/hosts
+# | library        = /usr/share/my_modules/
+# | [root@ansiblemaster01 .ssh]#
+# 
+# * Inventory file
+# This will the key file which Ansible uses to store its client information. 
+# There are multiple ways you can store the client information on this file, either by doing the grouping or the  yaml method. 
+# We will see details on this file at later part of the course. 
+#
+# Default loation :  /etc/ansible/hosts
+#
+# Example : Below example will show details about our clients from inventory file 
+#
+# | [root@ansiblemaster01 .ssh]# tail -8 /etc/ansible/hosts
+# | #
+# | # Sathsang infra clients
+# | #
+# | [sathsang_hosts]
+# | clientnode01.svr.apac.sathsang.net
+# | clientnode02.svr.apac.sathsang.net
+# | clientnode03.svr.apac.sathsang.net
+# | #
+# | [root@ansiblemaster01 .ssh]#
+# 
+# * Setting up a client
+# Setting up a client will involve 4 different steps
+#
+# 1. Update the client information in the inventory file '/etc/ansible/hosts'
+# 2. Setup master server's ssh key 
+# 3. Copy it over to the clients 
+# 4. Test the communication using the ping module
+# 
+# Example : Please see below walkthrough to understand above procedure 
+#
+# 1. Updating inventory file 
+# 
+# | [root@ansiblemaster01 .ssh]# tail -8 /etc/ansible/hosts
+# | # 
+# | # Sathsang infra clients 
+# | #
+# | [sathsang_hosts]
+# | clientnode01.svr.apac.sathsang.net
+# | clientnode02.svr.apac.sathsang.net
+# | clientnode03.svr.apac.sathsang.net
+# | #
+# | [root@ansiblemaster01 .ssh]# 
+# 
+# 2. Making sure already an ssh key available
+# 
+# | [root@ansiblemaster01 ansible]# ssh-keygen -t rsa
+# | Generating public/private rsa key pair.
+# | Enter file in which to save the key (/root/.ssh/id_rsa): 
+# | /root/.ssh/id_rsa already exists.
+# | Overwrite (y/n)? n
+# | [root@ansiblemaster01 ansible]# 
+# | [root@ansiblemaster01 ansible]# cd ~
+# | [root@ansiblemaster01 ~]# cd .ssh/
+# | [root@ansiblemaster01 .ssh]# pwd
+# | /root/.ssh
+# | [root@ansiblemaster01 .ssh]# 
+# | [root@ansiblemaster01 .ssh]# ls
+# | authorized_keys  id_rsa  id_rsa.pub  known_hosts
+# | [root@ansiblemaster01 .ssh]#
+# 
+# 
+# 3. Copy the Master's ssh key over to the clients using 'ssh-copy-id'
+# 
+# | [root@ansiblemaster01 .ssh]#ssh-copy-id clientnode01.svr.apac.sathsang.net
+# | 
+# | Now try logging into the machine, with "ssh 'clientnode01.svr.apac.sathsang.net'", and check in:
+# | 
+# |   .ssh/authorized_keys
+# | 
+# | to make sure we haven't added extra keys that you weren't expecting.
+# | 
+# | [root@ansiblemaster01 .ssh]# 
+# 
+# 
+# 4. Test the connectivity using the ansible ping module 
+# 
+# | [root@ansiblemaster01 .ssh]# ansible clientnode01.svr.apac.sathsang.net -m ping 
+# | 
+# | clientnode01.svr.apac.sathsang.net | SUCCESS => {
+# |    "changed": false, 
+# |    "ping": "pong"
+# | }
+# | [root@ansiblemaster01 .ssh]
+#
+
