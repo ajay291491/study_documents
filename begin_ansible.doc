@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------------------------------------------------------------------
-# | Chapter 01 : Ansible Installation and Configurations
+#  Chapter 01 : Ansible Installation and Configurations
 # ----------------------------------------------------------------------------------------------------------------------------------------
 #
 # * Ansible requirements 
@@ -132,4 +132,423 @@
 # | }
 # | [root@ansiblemaster01 .ssh]
 #
-
+#
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# Chapter 02:01 : Ansible architecure and design - Inventory
+# ----------------------------------------------------------------------------------------------------------------------------------------
+#
+# * Ansible Inventory
+# Ansible maintain its host inventory via file '/etc/ansible/hosts'. 
+# To manage inventory you should be knowing about various methods available to manage hosts for various requirements. 
+#
+# * Connecting via different port number 
+# Normally ssh connections which established through ansible will be connected via the default port number 22. 
+# But there will be scenarios where you might need to connect via different port number, there are i two methods for connecting clients via different port number 
+#
+# - Method 1 : You can connect port using parameter 'ansible_port = <port_number>'
+#   Syntax : client01.example.com ansible_port = <port_number>
+#
+# - Method 2 : You can connect port using traditional unix ':' method 
+#   Syntax : client01.example.com:<port>
+# 
+# Example : Below example will show how to connect to client via different port
+#
+# | $ more /etc/ansible/hosts
+# | [sathsang_one_infra]
+# | clientnode01.svr.apac.sathsang.net
+# | clientnode02.svr.apac.sathsang.net:22			==> This is one way connecting via port
+# | 
+# | [sathsang_two_infra]
+# | clientnode03.svr.apac.sathsang.net ansible_port=2222	==> This is another way of connecting using parameter 'ansible_port'
+# | $
+# | $ ansible '*' -m ping -o
+# | clientnode01.svr.apac.sathsang.net | SUCCESS => {"changed": false, "ping": "pong"}
+# | clientnode03.svr.apac.sathsang.net | SUCCESS => {"changed": false, "ping": "pong"}
+# | clientnode02.svr.apac.sathsang.net | SUCCESS => {"changed": false, "ping": "pong"}
+# | $
+#
+# * Connecting via user
+# When you try to connect to clients from ansible it normally try to connect to client as the current user via ssh and runs the command. 
+# User which ansible trying to login on the remote host must be available in the client host. 
+# In case you want ansible to connect the client via some specific 'user' or 'su' or for 'sudo' there are few methods.
+#
+# - Connect via specific user  : You can use 'ansible_user=<user>' paramater to connect via an user
+#                                This user can be either root or normal user, based on the level of trust it created it will make the connection. 
+# Syntax : client.example.com ansible_user=root
+#   
+# Example : Below example will show us the usage of running as a specific user
+#
+# | $ tail -2 /etc/ansible/hosts
+# | [sathsang_two_infra]
+# | clientnode03.svr.apac.sathsang.net ansible_port=2222 ansible_user=root
+# | [root@ansiblemaster01 .ssh]# ansible clientnode03.svr.apac.sathsang.net -m ping -o
+# | clientnode03.svr.apac.sathsang.net | SUCCESS => {"changed": false, "ping": "pong"}
+# | $
+#
+# - Conneting and sudo to root  : This method will will login remotely and swicth to sudo, here we will need to provide the parameter for password too
+#   Syntax : client.example.com ansible_become=true ansible_password=<password>
+#
+# NOTE : To store password there are options like vault which provided by ansible, that we will take a look at later 
+#
+# Example : Below example will show the details about how to connect to different host via specific user
+#
+# | $ head -2  /etc/ansible/hosts
+# | [sathsang_one_infra]
+# | clientnode01.svr.apac.sathsang.net ansible_become=true ansible_become_pass=Appu@725
+# | [root@ansiblemaster01 .ssh]# ansible clientnode01.svr.apac.sathsang.net -m ping -o
+# | clientnode01.svr.apac.sathsang.net | SUCCESS => {"changed": false, "ping": "pong"}
+# | $
+#
+# * Using Ranges
+# Ratherthan defining the whole hostname you can specify the hostnames with some matching patterns. 
+# You can use ranges like '[0:9]' '[a:z]' for this 
+#
+# Example : Below example will show how to use range
+#
+# | $ head -2 /etc/ansible/hosts
+# | [sathsang_one_infra]
+# | clientnode0[1:2].svr.apac.sathsang.net
+# | $
+# | $ ansible sathsang_one_infra -m ping -o
+# | clientnode01.svr.apac.sathsang.net | SUCCESS => {"changed": false, "ping": "pong"}
+# | clientnode02.svr.apac.sathsang.net | SUCCESS => {"changed": false, "ping": "pong"}
+# | $
+# | $ ansible all --list-hosts
+# |   hosts (3):
+# |    clientnode03.svr.apac.sathsang.net
+# |    clientnode01.svr.apac.sathsang.net
+# |    clientnode02.svr.apac.sathsang.net
+# | $ 
+#
+# * Using variable delcarations 
+# In above topics we have seen assigning few custom variables along with hostname to change the default behavior. 
+# Just like using 'ansible_become', 'ansible_become_pass' or 'ansible_user' . 
+# Similar to grouping our clients in 'hosts' file, we can also group the variables needed for that host group using 'vars'
+#
+# Syntax : Below is the syntax for using variables 
+# 
+# [host_group]
+# client1.example.com
+# client2.example.com
+#
+# [host_group:vars]
+# variable_one=value_one
+# variable_two=value_two
+#
+# Example : In below example we are separating the variables for 'sathsang_two_infra'
+#
+# | $ tail -6  hosts
+# | [sathsang_two_infra]
+# | clientnode03.svr.apac.sathsang.net
+# | 
+# | [sathsang_two_infra:vars]
+# | ansible_port=2222
+# | ansible_user=root
+# | $ ansible clientnode03.svr.apac.sathsang.net -m ping -o
+# | clientnode03.svr.apac.sathsang.net | SUCCESS => {"changed": false, "ping": "pong"}
+# | $ 
+#
+# * Children declaration
+# In ansible there is way to declare the children classification which is a way to group together similar node definitions in the inventory. 
+# When few host definitions under the  child definition are brought under a single parent, then all those children can inherit the property of the parent.
+# That means when you assign an attribute for the parent then you will be able to get that inhertited in the children definitions. 
+#
+# Syntax : Below example will show you how to manage a child declaration
+#
+# [parent_group:children]
+# child_group_one
+# child_group_two
+#
+# Example : Below is an example for defining children classification 
+#
+# | root@ansiblemaster01 ~]# tail -7 /etc/ansible/hosts
+# | [sathsang_infra:children]
+# | sathsang_one_infra
+# | sathsang_two_infra
+# | 
+# | [backend_hosts]
+# | dnsserver01.svr.apac.sathsang.net
+# | dockerstation01.svr.apac.sathsang.net
+# | [root@ansiblemaster01 ~]# 
+# | [root@ansiblemaster01 ~]# ansible -m ping backend_hosts -o
+# | dnsserver01.svr.apac.sathsang.net | SUCCESS => {"changed": false, "ping": "pong"}
+# | dockerstation01.svr.apac.sathsang.net | SUCCESS => {"changed": false, "ping": "pong"}
+# | [root@ansiblemaster01 ~]# 
+# | [root@ansiblemaster01 ~]# ansible -m ping sathsang_infra -o
+# | clientnode01.svr.apac.sathsang.net | SUCCESS => {"changed": false, "ping": "pong"}
+# | clientnode02.svr.apac.sathsang.net | SUCCESS => {"changed": false, "ping": "pong"}
+# | clientnode03.svr.apac.sathsang.net | SUCCESS => {"changed": false, "ping": "pong"}
+# | [root@ansiblemaster01 ~]#
+#
+# NOTE : When you assign an attribute for parent definition incase that attribute already defined under clild definition then the child definition will take over the precedence.
+#        
+# Example : For demonstration purpose we will try to add a ansible_port for sathsang definition
+#
+# [root@ansiblemaster01 ~]# more /etc/ansible/hosts
+# | [sathsang_one_infra]
+# | clientnode0[1:2].svr.apac.sathsang.net
+# | 
+# | [sathsang_two_infra]
+# | clientnode03.svr.apac.sathsang.net
+# | 
+# | [sathsang_two_infra:vars] 
+# | ansible_port=2222
+# | ansible_user=root
+# | 
+# | [sathsang_infra:children]
+# | sathsang_one_infra
+# | sathsang_two_infra
+# | 
+# | [sathsang_infra:vars]			==> Here we are trying to assign a port number for parent 'sathsang_infra' where 'sathsang_two_infra' already has the same attribute defined.
+# | ansible_port=1234
+# | 
+# | [backend_hosts] 
+# | dnsserver01.svr.apac.sathsang.net
+# | dockerstation01.svr.apac.sathsang.net
+# | [root@ansiblemaster01 ~]# 
+# | [root@ansiblemaster01 ~]# ansible -m ping sathsang_infra -o
+# | clientnode01.svr.apac.sathsang.net | UNREACHABLE!: Failed to connect to the host via ssh: ssh: connect to host clientnode01.svr.apac.sathsang.net port 1234: No route to host
+# | clientnode02.svr.apac.sathsang.net | UNREACHABLE!: Failed to connect to the host via ssh: ssh: connect to host clientnode02.svr.apac.sathsang.net port 1234: No route to host
+# | clientnode03.svr.apac.sathsang.net | SUCCESS => {"changed": false, "ping": "pong"}
+# | [root@ansiblemaster01 ~]# 
+#
+# On the above example you will see clientnode01 and 02 tried communicate via port number 1234 and failed, where 03 was able to be success it has a explict definition in its child declaration
+#
+# * YAML - based host inventory
+# You can also represent your inventory in YAML format, For that you will need to update the inventory variable in the '/etc/ansible/ansible.cfg' file. 
+# You will need to change the variable from '/etc/ansible/hosts' to '/etc/ansible/hosts.yml' to represent it as in yaml format.
+# 
+# Example : Below is the sample configuration for ansible.cfg, hosts.yml and a test command using a ping module
+#
+# | [root@ansiblemaster01 ~]# grep inventory /etc/ansible/ansible.cfg|head -2
+# | #inventory      = /etc/ansible/hosts
+# | inventory      = /etc/ansible/hosts.yml
+# | [root@ansiblemaster01 ~]# more /etc/ansible/hosts.yml
+# | ---
+# |   sathsang_one_infra:
+# |     hosts:
+# |       clientnode0[1:2].svr.apac.sathsang.net:
+# | 
+# |   sathsang_two_infra:
+# |     hosts: 
+# |       clientnode03.svr.apac.sathsang.net:
+# |     vars:
+# |       ansible_port: 2222
+# |       ansible_user: root
+# | 
+# |   sathsang_infra:
+# |     children:
+# |       sathsang_one_infra:
+# |       sathsang_two_infra:
+# |     vars:
+# |       ansible_port: 12345
+# | 
+# |   backend_hosts:
+# |     hosts:
+# |       dnsserver01.svr.apac.sathsang.net:
+# |       dockerstation01.svr.apac.sathsang.net:
+# | ...
+# | [root@sathsang Ansible]#
+# | [root@ansiblemaster01 ~]# ansible -m ping sathsang_infra -o
+# | clientnode02.svr.apac.sathsang.net | UNREACHABLE!: Failed to connect to the host via ssh: ssh: connect to host clientnode02.svr.apac.sathsang.net port 12345: No route to host
+# | clientnode01.svr.apac.sathsang.net | UNREACHABLE!: Failed to connect to the host via ssh: ssh: connect to host clientnode01.svr.apac.sathsang.net port 12345: No route to host
+# | clientnode03.svr.apac.sathsang.net | SUCCESS => {"changed": false, "ping": "pong"}
+# | [root@ansiblemaster01 ~]# 
+# | [root@sathsang Ansible]# 
+# |
+#
+# NOTE : You can see the difference with the earlier hosts file and this hosts.yml to understand the difference in definitions 
+#
+# * JSON - based inventory
+# Similar to YAML you can host your inventory in JSON also, to do that you will need to update the 'inventory' paramter in the 'ansible.cfg'. 
+# Also you will need to format your hosts.json file according to the JSON markup notations. 
+#
+# Example : Below example will give you an idea bout how to work with JSON inventory
+#
+# | [root@ansiblemaster01 ~]# more /etc/ansible/hosts.json 
+# | {
+# |   "sathsang_one_infra": {
+# |     "hosts": {
+# |        "clientnode0[1:2].svr.apac.sathsang.net": null,
+# |      },
+# |   },
+# | 
+# |   "sathsang_two_infra": {
+# |     "hosts": {
+# |       "clientnode03.svr.apac.sathsang.net": null,
+# |     },
+# |     "vars": {
+# |       "ansible_port": "2222",
+# |       "ansible_user": "root",
+# |     },
+# |   },
+# | 
+# |   "sathsang_infra" : {
+# |     "children": {
+# |       "sathsang_one_infra",
+# |       "sathsang_two_infra",
+# |     },
+# |   },
+# | 
+# |   "sathsang_infra": {
+# |     "vars": {
+# |       "ansible_port": "1234",
+# |     },
+# |   },
+# | 
+# |   "backend_hosts": {
+# |     "hosts": {
+# |       "dnsserver01.svr.apac.sathsang.net": null,
+# |       "dockerstation01.svr.apac.sathsang.net": null,
+# |     },
+# |   },
+# | }
+# | [root@ansiblemaster01 ~]# ansible -m ping backend_hosts
+# |  [WARNING]: While constructing a mapping from /etc/ansible/hosts.json, line 1, column 1, found a duplicate dict key (sathsang_infra). Using last defined value only.
+# | 
+# | dnsserver01.svr.apac.sathsang.net | SUCCESS => {
+# |     "changed": false, 
+# |     "ping": "pong"
+# | }
+# | dockerstation01.svr.apac.sathsang.net | SUCCESS => {
+# |     "changed": false, 
+# |     "ping": "pong"
+# | }
+# | [root@ansiblemaster01 ~]# 
+# | 
+#
+# NOTE : Details description for host inventory available at url 
+# URL  : https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html
+#
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# Chapter 02:02 : Ansible architecure and design - Modules
+# ----------------------------------------------------------------------------------------------------------------------------------------
+#
+# * Idempotency
+# Ansible always possess idempotency, that means if a resource is already implemented and it doesn't neeed any further changes then ansible won't make any changes. 
+# Regardless how many times you run the same, end state will remain same, but if anytime it finds a change from its source code then it will make the change. 
+#
+# * Color codes 
+# Ansible posses three difefrent color codes to understand its various states and details given below. 
+#
+# Green  : Success and no changes taken place 
+# Yellow : Success with changes taken place 
+# Red    : Failed 
+#
+# * Module - Setup()
+# Setup module is responsible to get the facter information from the client. 
+# Facter informations are set of variables which provides the current state of the system. 
+# Facters can be used in playbooks to deal with wide variety of conditions according to system state. 
+#
+# Example : Below is a sample output of collecting facts from system using the setup modules 
+#
+# | [root@ansiblemaster01 ~]# ansible dnsserver01.svr.apac.sathsang.net -m setup
+# | dnsserver01.svr.apac.sathsang.net | SUCCESS => {
+# |     "ansible_facts": {
+# |         "ansible_all_ipv4_addresses": [
+# |             "192.168.122.20"
+# |         ],
+# |         "ansible_all_ipv6_addresses": [
+# |             "fe80::5054:ff:fea5:ab7c"
+# |         ],
+# |         "ansible_apparmor": {
+# |             "status": "disabled"
+# |         },
+# |         "ansible_architecture": "x86_64",
+# |         "ansible_bios_date": "04/01/2014",
+# |         "ansible_bios_version": "1.9.3-1.fc25",
+# |         "ansible_cmdline": {
+# |             "KEYBOARDTYPE": "pc",
+# |             "KEYTABLE": "us",
+# |             "LANG": "en_US.UTF-8",
+# |             "SYSFONT": "latarcyrheb-sun16",
+# |             "quiet": true,
+# |             "rd_LVM_LV": "vg_dnsserver01/lv_swap",
+# |             "rd_NO_DM": true,
+# |             "rd_NO_LUKS": true,
+# |             "rd_NO_MD": true,
+# |             "rhgb": true,
+# |             "ro": true,
+# |             "root": "/dev/mapper/vg_dnsserver01-lv_root"
+# |
+#
+# * Module - Command()
+# Command module is the default module used in ansible, that means it can be run along with the ansible command without even specifying the '-m' keyword.
+# This will help you to fetch the command output from a remote system. 
+#
+# URL : https://docs.ansible.com/ansible/latest/modules/command_module.html#command-module
+#
+# Syntax : ansible <hostname|host_group> command 'command_to_execute'
+#
+# Example : See below example for command module 
+#
+# | [root@ansiblemaster01 ~]# ansible all -m command -a  'uname -a' -o
+# | clientnode02.svr.apac.sathsang.net | CHANGED | rc=0 | (stdout) Linux clientnode02.svr.apac.sathsang.net 3.10.0-514.16.1.el7.x86_64 #1 SMP Wed Apr 12 15:04:24 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+# | clientnode01.svr.apac.sathsang.net | CHANGED | rc=0 | (stdout) Linux clientnode01.svr.apac.sathsang.net 3.10.0-514.16.1.el7.x86_64 #1 SMP Wed Apr 12 15:04:24 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+# | dockerstation01.svr.apac.sathsang.net | CHANGED | rc=0 | (stdout) Linux dockerstation01.svr.apac.sathsang.net 2.6.32-696.1.1.el6.x86_64 #1 SMP Tue Apr 11 17:13:24 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+# | dnsserver01.svr.apac.sathsang.net | CHANGED | rc=0 | (stdout) Linux dnsserver01.svr.apac.sathsang.net 2.6.32-696.1.1.el6.x86_64 #1 SMP Tue Apr 11 17:13:24 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+# | clientnode03.svr.apac.sathsang.net | CHANGED | rc=0 | (stdout) Linux clientnode03.svr.apac.sathsang.net 3.10.0-514.16.1.el7.x86_64 #1 SMP Wed Apr 12 15:04:24 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+# | [root@ansiblemaster01 ~]#
+#
+#
+# * Module - File
+# File moduls will help to create files on a remote system, for that matter you can create files in the same system too. 
+#
+# URL : https://docs.ansible.com/ansible/2.5/modules/file_module.html#file-module
+# Syntax : Below is an example of using Ansible file module along with file resource 
+#        : ansible <hostname|hostgroup> -m file -a "path=</<file_name> state=<desired_state> mode=<permission>"
+#
+# Example : Below example will show how to create a file 
+# 
+# | [root@ansiblemaster01 ~]# ansible dockerstation01.svr.apac.sathsang.net -m file -a 'path='/tmp/test' state=touch mode='755''
+# | dockerstation01.svr.apac.sathsang.net | SUCCESS => {
+# |     "changed": true,
+# |     "dest": "/tmp/test",
+# |     "gid": 0,
+# |     "group": "root",
+# |     "mode": "0755",
+# |     "owner": "root",
+# |     "secontext": "unconfined_u:object_r:user_tmp_t:s0",
+# |     "size": 0,
+# |     "state": "file",
+# |     "uid": 0
+# | }
+# | [root@ansiblemaster01 ~]#
+# |
+#
+# * Module - Copy
+# Copy modules will help to create files to a remote system as well as a local. 
+# 
+# URL : https://docs.ansible.com/ansible/2.5/modules/copy_module.html#copy-module
+# Syntax : Below is an example of using Ansible copy module 
+#        : ansible <hostname|hostgroup> -m copy 'remote_src=<yes|no> src=<file> dest=<file_location>'
+#
+# Example : Below is the example of copying a file to remore host 
+#
+# | [root@ansiblemaster01 ~]# ansible dockerstation01.svr.apac.sathsang.net -m copy -a 'remote_src=yes src=/tmp/test dest=/tmp/test'
+# | dockerstation01.svr.apac.sathsang.net | SUCCESS => {
+# |    "changed": false,
+# |    "checksum": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+# |    "dest": "/tmp/test",
+# |     "gid": 0,
+# |     "group": "root",
+# |     "md5sum": "d41d8cd98f00b204e9800998ecf8427e",
+# |    "mode": "0755",
+# |    "owner": "root",
+# |    "secontext": "unconfined_u:object_r:user_tmp_t:s0",
+# |    "size": 0,
+# |    "src": "/tmp/test",
+# |    "state": "file",
+# |    "uid": 0
+# | }
+# | [root@ansiblemaster01 ~]#
+#
+# * Ansible-doc (documentation for modules)
+# Anisble-doc utility provides a documentation link to the ansible modules. 
+# This will provide you both command line as well as the playbook related examples too, so that you can have reference. 
+#
+# Syntax : ansible-playbook <module_name>
+#
+#
+#
+#
