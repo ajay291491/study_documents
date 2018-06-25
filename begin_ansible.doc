@@ -703,11 +703,352 @@
 # ----------------------------------------------------------------------------------------------------------------------------------------
 # Chapter 02:04 : Ansible playbook and structuring
 # ----------------------------------------------------------------------------------------------------------------------------------------
+# In this secton, we will talk about various different things in ansible playbook such as, 
 #
+# . The different sections in ansible playbook 
+# . How to use the target section 
+# . How to make use of the task section 
+# . How to make use of the vars section 
+# . How to make use of the handlers 
 #
+# * Different sections in ansibe playbook 
+# Below are the different sections in an Ansible YAML playbook 
 #
+# ---			=> Ansible playbooks are written in YAML, so they starts always with the '---' to indicate the beginiing of the document
+#   -   		=> Dash indicates the following is a list, Ansible playbook contains a list of tasks 
+#     Target: 		=> Target section indicates where our play will run and the options it will run with 
+#       Variable: 	=> Variable that will apply to play on all target systems
+#       Task:		=> List of tasks that will be executed within the playbook
+#       Handlers:	=> Handlers that are executed as a notify key from a task 
+#       Roles:		=> List of roles that need to be executed from play
+# ...			=> An ansible YAML playbook always ends with ...
 #
+# NOTE : To know more about the ansible playbook sections, you can refer below link 
 #
+# URL : https://docs.ansible.com/ansible/2.5/reference_appendices/playbooks_keywords.html
 #
+# * Using Target and tasks section
+# Below playbook will help us to understand about how to use the Target and taks sections 
 #
+# Example : Below play will be useful to pusj motd file into sathsang_one_infra
 #
+# NOTE : playbook 
+#
+# | [root@ansiblemaster01 motd]# more motd_playbook.yml 
+# | ---
+# |   # Target section : Defines where and who will run
+# | - hosts: sathsang_one_infra
+# |   user: root 
+# | 
+# |   # Tasks section : What action to be performed 
+# |   tasks: 
+# |     - name: To update MOTD message in the sathsang_infra_one
+# |       copy: 
+# |         src: motd_sathsang_infra_one
+# |         dest: /etc/motd
+# | ...
+# | [root@ansiblemaster01 motd]# 
+#
+# NOTE : First run  and you could see changed = 1 
+#
+# | root@ansiblemaster01 motd]# ansible-playbook motd_playbook.yml 
+# |
+# | PLAY [sathsang_one_infra] ***********************************************************************************************************************************************************************************
+# | 
+# | TASK [Gathering Facts] **************************************************************************************************************************************************************************************
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | 
+# | TASK [To update MOTD message in the sathsang_infra_one] *****************************************************************************************************************************************************
+# | changed: [clientnode02.svr.apac.sathsang.net]
+# | changed: [clientnode01.svr.apac.sathsang.net]
+# | 
+# | PLAY RECAP **************************************************************************************************************************************************************************************************
+# | clientnode01.svr.apac.sathsang.net : ok=2    changed=1    unreachable=0    failed=0   
+# | clientnode02.svr.apac.sathsang.net : ok=2    changed=1    unreachable=0    failed=0   
+# | 
+# | [root@ansiblemaster01 motd]#
+#
+# NOTE : This is the second run and you could see changed = 0 since its found the file already in desired state 
+#
+# | [root@ansiblemaster01 motd]# ansible-playbook motd_playbook.yml 
+# | 
+# | PLAY [sathsang_one_infra] ******************************************************************************************************************************************************************
+# | 
+# | TASK [Gathering Facts] *********************************************************************************************************************************************************************
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | 
+# | TASK [To update MOTD message in the sathsang_infra_one] ************************************************************************************************************************************
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | 
+# |PLAY RECAP **********************************************************************************************************************************************************************************
+# | clientnode01.svr.apac.sathsang.net : ok=2    changed=0    unreachable=0    failed=0   
+# | clientnode02.svr.apac.sathsang.net : ok=2    changed=0    unreachable=0    failed=0   
+# | 
+# | [root@ansiblemaster01 motd]#
+#
+# * Using variables in playbook
+# Variables are used in the playbook
+# Below we will modify the same playbook which we seen above using the vars section, here we will not use the 'copy' module copy file, rather than we will content to access the variable 
+#
+# NOTE : In below play book couple of things to note 
+#        . We have switched off facts collection using 'gather_facts' since this doesnot have much relevance in this playbook requirement
+#        . We have introduced variable, here we have defined a global variable and used the vairable with 'content' parameter in the 'copy' module
+#
+# | [root@ansiblemaster01 motd]# more  motd_playbook.yml
+# | ---
+# |   # Target section: Defines where and who will run
+# | - hosts: sathsang_one_infra
+# |   user: root
+# |   gather_facts: false	
+# | 
+# |   # variable section
+# |   vars:
+# |     motd_message: "This is a MOTD message came from the vars section"
+# | 
+# |   # Tasks section : What action to be performed
+# |   tasks:
+# |    - name: To update MOTD message in the sathsang_infra_one
+# |      copy:
+# |        content: "{{ motd_message }}"
+# |        dest: /etc/motd
+# | ...
+# | [root@ansiblemaster01 motd]#
+#
+# Note : below is the execution of this playbook 
+#
+# | [root@ansiblemaster01 motd]# ansible-playbook motd_playbook.yml
+# | 
+# | PLAY [sathsang_one_infra] ************************************************************************************************************************************************
+# | 
+# | TASK [To update MOTD message in the sathsang_infra_one] ******************************************************************************************************************
+# | changed: [clientnode01.svr.apac.sathsang.net]
+# | changed: [clientnode02.svr.apac.sathsang.net]
+# | 
+# | PLAY RECAP ****************************************************************************************************************************************************************
+# | clientnode01.svr.apac.sathsang.net : ok=1    changed=1    unreachable=0    failed=0
+# | clientnode02.svr.apac.sathsang.net : ok=1    changed=1    unreachable=0    failed=0
+# | 
+# | [root@ansiblemaster01 motd]#
+#
+# * Using handlers
+# Handlers can be used to define the notify message which can be executed along with the task
+# 
+# NOTE : We will modify our sample playbook with handlers to notify the messages below 
+#
+# | [root@ansiblemaster01 motd]# more  motd_playbook.yml
+# | ---
+# |   # Target section: Defines where and who will run
+# | - hosts: sathsang_one_infra
+# |   user: root
+# |   gather_facts: false
+# |
+# |   # variable section
+# |   vars:
+# |     motd_message: "This is a MOTD message came from the variable section"
+# |
+# |   # Tasks section : What action to be performed
+# |   tasks:
+# |     - name: To update MOTD message in the sathsang_infra_one
+# |       copy:
+# |         content: "{{ motd_message }}"
+# |         dest: /etc/motd
+# |       notify: MOTD change
+# |
+# |   # Handlers will help to notify using the task section
+# |   handlers:
+# |     - name: MOTD change
+# |       debug:
+# |         msg: MOTD file successfully changed
+# | ...
+# | [root@ansiblemaster01 motd]#
+# |
+#
+# NOTE : Below output you can see handlers are getting executed when changes are made on the host, refer to 'changed = 1'
+#
+# | [root@ansiblemaster01 motd]# ansible-playbook motd_playbook.yml 
+# | 
+# | PLAY [sathsang_one_infra] **************************************************************************************************************************************************************
+# | 
+# | TASK [To update MOTD message in the sathsang_infra_one] ********************************************************************************************************************************
+# | changed: [clientnode02.svr.apac.sathsang.net]
+# | changed: [clientnode01.svr.apac.sathsang.net]
+# | 
+# | RUNNING HANDLER [MOTD change] **********************************************************************************************************************************************************
+# | ok: [clientnode02.svr.apac.sathsang.net] => {
+# |     "msg": "MOTD file successfully changed"
+# | }
+# | ok: [clientnode01.svr.apac.sathsang.net] => {
+# |     "msg": "MOTD file successfully changed"
+# | }
+# | 
+# | PLAY RECAP ****************************************************************************************************************************************************************************
+# | clientnode01.svr.apac.sathsang.net : ok=2    changed=1    unreachable=0    failed=0   
+# | clientnode02.svr.apac.sathsang.net : ok=2    changed=1    unreachable=0    failed=0   
+# | 
+#
+# NOTE : Below output you can see handlers are not getting executed since there is no changes are made on the host, refer 'changed=0'
+#
+# | [root@ansiblemaster01 motd]# ansible-playbook motd_playbook.yml 
+# | 
+# | PLAY [sathsang_one_infra] ****************************************************************************************************************************************************************
+# | 
+# | TASK [To update MOTD message in the sathsang_infra_one] **********************************************************************************************************************************
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | 
+# | PLAY RECAP ********************************************************************************************************************************************************************************
+# | clientnode01.svr.apac.sathsang.net : ok=1    changed=0    unreachable=0    failed=0   
+# | clientnode02.svr.apac.sathsang.net : ok=1    changed=0    unreachable=0    failed=0   
+# | 
+# | [root@ansiblemaster01 motd]# 
+# | 
+#                            
+# * Gathering facts from clients 
+# There will be times when we will need to take decission according to the facts variables we collect from clients. 
+# By default facts will be collected during every ansible run, and this will be a default task which will be running until you disable it with 'gather_facts =no' paramter. 
+# In case you want to collect the facts information from a node manually you could execute the setup module to retrive the information
+#
+# | $ ansible <nodename> -m setup
+#
+# Example : Below is a sample run for setup module to collect facts from the system and we are getting the fqdn value out of it 
+#
+# | [root@ansiblemaster01 motd]# ansible clientnode01.svr.apac.sathsang.net -m setup |grep fqdn 
+# |         "ansible_fqdn": "clientnode01.svr.apac.sathsang.net", 
+# |             "fqdn": "clientnode01.svr.apac.sathsang.net", 
+# | [root@ansiblemaster01 motd]# 
+#
+# * When - using decission making on playbooks
+# We can take decission making with 'when' attribute in anisble playbooks, this will help us to execute playbook only when certain conditions are met
+# 
+# NOTE : In below examplw we are modifying the playbook with the decisison making and also enabled gather facts
+#
+# | [root@ansiblemaster01 motd]# more motd_playbook.yml 
+# | ---
+# |   # Target section: Defines where and who will run
+# | - hosts: all
+# |   user: root 
+# |   gather_facts: true
+# | 
+# |   # variable section 
+# |   vars:
+# |     centos6_motd_message: "You are logging into a CentOS 6 machine in sathsang infra"
+# |     centos7_motd_message: "You are logging into a CentOS 7 machine in sathsang infra"
+# | 
+# |   # Tasks section : What action to be performed 
+# |   tasks: 
+# |     - name: To update MOTD message in CentOS 6 in the sathsang_infra_one
+# |       copy:
+# |         content: "{{ centos6_motd_message }}"
+# |         dest: /etc/motd
+# |       notify: CentOS 6 change
+# |       when: ansible_distribution_major_version == "6"
+# | 
+# |     - name: 'To update MOTD message in CentOS 7 in the sathsang_infra_one'
+# |       copy:
+# |         content: "{{ centos7_motd_message }}"
+# |         dest: /etc/motd
+# |       notify: CentOS 7 change
+# |       when: ansible_distribution_major_version == "7"
+# | 
+# |   # Handlers will help to notify using the task section 
+# |   handlers: 
+# |     - name: CentOS 6 change
+# |       debug:
+# |         msg: MOTD file successfully changed on CentOS 6 infra
+# | 
+# |     - name: CentOS 7 change
+# |       debug:
+# |         msg: MOTD file successfully changed on CentOS 7 infra
+# | ...
+# | [root@ansiblemaster01 motd]# 
+#
+# NOTE : Below is the first run where you can see motd getting applied in CentOS 6 clients and handlers are getting executed when its getting executed
+#
+# | [root@ansiblemaster01 motd]# ansible-playbook motd_playbook.yml 
+# | 
+# | PLAY [all] *********************************************************************************************************************************************************************************
+# | 
+# | TASK [Gathering Facts] *********************************************************************************************************************************************************************
+# | ok: [dnsserver01.svr.apac.sathsang.net]
+# | ok: [dockerstation01.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | ok: [clientnode03.svr.apac.sathsang.net]
+# | 
+# | TASK [To update MOTD message in CentOS 6 in the sathsang_infra_one] ***********************************************************************************************************************
+# | skipping: [clientnode03.svr.apac.sathsang.net]
+# | skipping: [clientnode01.svr.apac.sathsang.net]
+# | skipping: [clientnode02.svr.apac.sathsang.net]
+# | changed: [dnsserver01.svr.apac.sathsang.net]
+# | changed: [dockerstation01.svr.apac.sathsang.net]
+# | 
+# | TASK [To update MOTD message in CentOS 7 in the sathsang_infra_one] *************************************************************************************************************************
+# | skipping: [dnsserver01.svr.apac.sathsang.net]
+# | skipping: [dockerstation01.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | changed: [clientnode03.svr.apac.sathsang.net]
+# | 
+# | RUNNING HANDLER [CentOS 6 change] ************************************************************************************************************************************************************
+# | ok: [dnsserver01.svr.apac.sathsang.net] => {
+# |     "msg": "MOTD file successfully changed on CentOS 6 infra"
+# | }
+# | ok: [dockerstation01.svr.apac.sathsang.net] => {
+# |     "msg": "MOTD file successfully changed on CentOS 6 infra"
+# | }
+# | 
+# | RUNNING HANDLER [CentOS 7 change] ************************************************************************************************************************************************************
+# | ok: [clientnode03.svr.apac.sathsang.net] => {
+# |     "msg": "MOTD file successfully changed on CentOS 7 infra"
+# | }
+# | 
+# | PLAY RECAP ************************************************************************************************************************************************************************************
+# | clientnode01.svr.apac.sathsang.net : ok=2    changed=0    unreachable=0    failed=0   
+# | clientnode02.svr.apac.sathsang.net : ok=2    changed=0    unreachable=0    failed=0   
+# | clientnode03.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | dnsserver01.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | dockerstation01.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | [root@ansiblemaster01 motd]# 
+# | 
+#
+# NOTE : Below is the second run where you can see motd not getting changed
+#
+# | [root@ansiblemaster01 motd]# ansible-playbook motd_playbook.yml 
+# | 
+# | PLAY [all] *************************************************************************************************************************************************************************************
+# | 
+# | TASK [Gathering Facts] *************************************************************************************************************************************************************************
+# | ok: [dnsserver01.svr.apac.sathsang.net]
+# | ok: [dockerstation01.svr.apac.sathsang.net]
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | ok: [clientnode03.svr.apac.sathsang.net]
+# | 
+# | TASK [To update MOTD message in CentOS 6 in the sathsang_infra_one] ****************************************************************************************************************************
+# | skipping: [clientnode03.svr.apac.sathsang.net]
+# | skipping: [clientnode01.svr.apac.sathsang.net]
+# | skipping: [clientnode02.svr.apac.sathsang.net]
+# | ok: [dockerstation01.svr.apac.sathsang.net]
+# | ok: [dnsserver01.svr.apac.sathsang.net]
+# | 
+# | TASK [To update MOTD message in CentOS 7 in the sathsang_infra_one] ****************************************************************************************************************************
+# | skipping: [dnsserver01.svr.apac.sathsang.net]
+# | skipping: [dockerstation01.svr.apac.sathsang.net]
+# | ok: [clientnode03.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | 
+# | PLAY RECAP *************************************************************************************************************************************************************************************
+# | clientnode01.svr.apac.sathsang.net : ok=2    changed=0    unreachable=0    failed=0   
+# | clientnode02.svr.apac.sathsang.net : ok=2    changed=0    unreachable=0    failed=0   
+# | clientnode03.svr.apac.sathsang.net : ok=2    changed=0    unreachable=0    failed=0   
+# | dnsserver01.svr.apac.sathsang.net : ok=2    changed=0    unreachable=0    failed=0   
+# | dockerstation01.svr.apac.sathsang.net : ok=2    changed=0    unreachable=0    failed=0   
+# | 
+# | [root@ansiblemaster01 motd]# 
+# | 
+
+# 
