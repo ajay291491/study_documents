@@ -730,7 +730,7 @@
 # * Using Target and tasks section
 # Below playbook will help us to understand about how to use the Target and taks sections 
 #
-# Example : Below play will be useful to pusj motd file into sathsang_one_infra
+# Example : Below play will be useful to push motd file into sathsang_one_infra
 #
 # NOTE : playbook 
 #
@@ -1050,5 +1050,223 @@
 # | 
 # | [root@ansiblemaster01 motd]# 
 # | 
+#
+# NOTE : Roles will be discussed later 
+#
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# Chapter 02:05 : Ansible Playbooks, Breakdown of Sections
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# * Variables - Handling variables in an advance ways
+# When it comes to variables you will be able to handle many different formats such as list, dictionary and string variables in an YAML playbook.
+# Here we will discuss how to handle such different data types in Ansible. 
+#
+# * String Variables 
+# We have seen this already earlier how to handle a string variable, here we will assign the value to a variable and that can used with the playbook
+#
+# Syntax : variable_name : "value of the string"
+#
+# NOTE : Below example will tell you how to handle string variables 
+#
+# | [root@ansiblemaster01 print_message]# more /etc/ansible/roles/print_message/print_message.yml 
+# | ---
+# | 
+# |   # Target section : will display where and who will run 
+# |   - hosts: all
+# |     user : root
+# |     gather_facts: true
+# |   
+# |   # Variable section : to handle the string variables in this playbook
+# |     vars: 
+# |       dest_file_name : '/tmp/test_file'
+# |       centos_6_message : ansible has just updated "{{ dest_file_name }}" on a CentOS 6 system
+# |       centos_7_message : ansible has just updated "{{ dest_file_name }}" on a CentOS 7 system
+# | 
+# |   # Handlers : This will help to notify the message 
+# |     handlers: 
+# |       - name: CentOS 6 Message 
+# |         debug: 
+# |           msg: " {{ centos_6_message }} "
+# |       - name: CentOS 7 Message
+# |         debug: 
+# |           msg: " {{ centos_7_message }} "
+# | 
+# |   # Tasks section : List of tasks to execute  
+# |     tasks: 
+# |       - copy: 
+# |           content: "{{ centos_6_message }}"
+# |           dest: "{{ dest_file_name }}"
+# |         notify: CentOS 6 Message
+# |         when: ansible_distribution_major_version  == "6"
+# | 
+# |       - copy: 
+# |           content: "{{ centos_7_message }}"
+# |           dest: "{{ dest_file_name }}"
+# |         notify: CentOS 7 Message
+# |         when: ansible_distribution_major_version == "7"
+# | ...
+# | [root@ansiblemaster01 print_message]# 
+# | 
+#
+# Example : Below is the sample first run using the above playbook
+#
+# | [root@ansiblemaster01 print_message]# ansible-playbook print_message.yml 
+# | 
+# | PLAY [all] ******************************************************************************************************************************************************************************************
+# | 
+# | TASK [Gathering Facts] ******************************************************************************************************************************************************************************
+# | ok: [dnsserver01.svr.apac.sathsang.net]
+# | ok: [dockerstation01.svr.apac.sathsang.net]
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | ok: [clientnode03.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | 
+# | TASK [copy] ****************************************************************************************************************************************************************************************
+# | skipping: [clientnode03.svr.apac.sathsang.net]
+# | skipping: [clientnode01.svr.apac.sathsang.net]
+# | skipping: [clientnode02.svr.apac.sathsang.net]
+# | changed: [dnsserver01.svr.apac.sathsang.net]
+# | changed: [dockerstation01.svr.apac.sathsang.net]
+# | 
+# | TASK [copy] *****************************************************************************************************************************************************************************************
+# | skipping: [dnsserver01.svr.apac.sathsang.net]
+# | skipping: [dockerstation01.svr.apac.sathsang.net]
+# | changed: [clientnode03.svr.apac.sathsang.net]
+# | changed: [clientnode01.svr.apac.sathsang.net]
+# | changed: [clientnode02.svr.apac.sathsang.net]
+# | 
+# | RUNNING HANDLER [CentOS 6 Message] ******************************************************************************************************************************************************************
+# | ok: [dnsserver01.svr.apac.sathsang.net] => {
+# |     "msg": " ansible has just updated \"/tmp/test_file\" on a CentOS 6 system "
+# | }
+# | ok: [dockerstation01.svr.apac.sathsang.net] => {
+# |     "msg": " ansible has just updated \"/tmp/test_file\" on a CentOS 6 system "
+# | }
+# | 
+# | RUNNING HANDLER [CentOS 7 Message] *******************************************************************************************************************************************************************
+# | ok: [clientnode03.svr.apac.sathsang.net] => {
+# |     "msg": " ansible has just updated \"/tmp/test_file\" on a CentOS 7 system "
+# | }
+# | ok: [clientnode01.svr.apac.sathsang.net] => {
+# |     "msg": " ansible has just updated \"/tmp/test_file\" on a CentOS 7 system "
+# | }
+# | ok: [clientnode02.svr.apac.sathsang.net] => {
+# |     "msg": " ansible has just updated \"/tmp/test_file\" on a CentOS 7 system "
+# | }
+# | 
+# | PLAY RECAP *******************************************************************************************************************************************************************************************
+# | clientnode01.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | clientnode02.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | clientnode03.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | dnsserver01.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | dockerstation01.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | 
+# | [root@ansiblemaster01 print_message]#
+#
+# * Dictionary Variables 
+# In this section we will take a look at how to handle dictionary variables using ansible playbook. 
+# There are two ways you can access variables from dictionary within playbook, one if the YAML method and another is the python method, both are supported 
+#
+# 1. YAML method   -> dict_name.key_name 
+# 2. Python Method -> dict_name['key_name'] 
+#
+# NOTE : We are going to update the above playbook with dictionary for variables 
+#
+# | [root@ansiblemaster01 print_message]# cat print_message.yml
+# | ---
+# | 
+# |   # Target section : will display where and who will run 
+# |   - hosts: all
+# |     user : root
+# |     gather_facts: true
+# |   
+# |   # Variable section : to handle the string variables in this playbook
+# |     vars: 
+# |       file_dict:
+# |         cent_6_file: '/tmp/test_file_6'
+# |         cent_7_file: '/tmp/test_file_7'
+# |       msg_dict:
+# |         centos_6_message: ansible has just updated "{{ file_dict.cent_6_file }}" on a CentOS 6 Machine
+# |         centos_7_message: ansible has just updated "{{ file_dict['cent_7_file'] }}" on a CentOS 7 machine
+# | 
+# |   # Handlers : This will help to notify the message 
+# |     handlers: 
+# |       - name: CentOS 6 Message 
+# |         debug: 
+# |           msg: " {{ msg_dict.centos_6_message }} "
+# |       - name: CentOS 7 Message
+# |         debug: 
+# |           msg: " {{ msg_dict.centos_7_message }} "
+# | 
+# |   # Tasks section : List of tasks to execute  
+# |     tasks: 
+# |       - copy: 
+# |           content: "{{ msg_dict.centos_6_message }}"
+# |           dest: "{{ file_dict.cent_6_file }}"
+# |         notify: CentOS 6 Message
+# |         when: ansible_distribution_major_version  == "6"
+# | 
+# |       - copy: 
+# |           content: "{{ msg_dict['centos_7_message'] }}"
+# |           dest: "{{ file_dict['cent_7_file'] }}"
+# |         notify: CentOS 7 Message
+# |         when: ansible_distribution_major_version == "7"
+# | ...
+# | [root@ansiblemaster01 print_message]# 
+# | 
+#
+# Example : Below is the sample run of the above playbook
+#
+# | [root@ansiblemaster01 print_message]# ansible-playbook print_message.yml 
+# | 
+# | PLAY [all] *****************************************************************************************************************************************************************************************
+# | 
+# | TASK [Gathering Facts] ****************************************************************************************************************************************************************************
+# | ok: [dnsserver01.svr.apac.sathsang.net]
+# | ok: [dockerstation01.svr.apac.sathsang.net]
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | ok: [clientnode03.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | 
+# | TASK [copy] *****************************************************************************************************************************************************************************************
+# | skipping: [clientnode03.svr.apac.sathsang.net]
+# | skipping: [clientnode01.svr.apac.sathsang.net]
+# | skipping: [clientnode02.svr.apac.sathsang.net]
+# | changed: [dnsserver01.svr.apac.sathsang.net]
+# | changed: [dockerstation01.svr.apac.sathsang.net]
+# |
+# | TASK [copy] ******************************************************************************************************************************************************************************************
+# | skipping: [dnsserver01.svr.apac.sathsang.net]
+# | skipping: [dockerstation01.svr.apac.sathsang.net]
+# | changed: [clientnode03.svr.apac.sathsang.net]
+# | changed: [clientnode01.svr.apac.sathsang.net]
+# | changed: [clientnode02.svr.apac.sathsang.net]
+# | 
+# | RUNNING HANDLER [CentOS 6 Message] ********************************************************************************************************************************************************************
+# | ok: [dnsserver01.svr.apac.sathsang.net] => {
+# |     "msg": " ansible has just updated \"/tmp/test_file_6\" on a CentOS 6 Machine "
+# | }
+# | ok: [dockerstation01.svr.apac.sathsang.net] => {
+# |     "msg": " ansible has just updated \"/tmp/test_file_6\" on a CentOS 6 Machine "
+# | }
+# | 
+# | RUNNING HANDLER [CentOS 7 Message] *******************************************************************************************************************************************************************
+# | ok: [clientnode03.svr.apac.sathsang.net] => {
+# |     "msg": " ansible has just updated \"/tmp/test_file_7\" on a CentOS 7 machine "
+# | }
+# | ok: [clientnode01.svr.apac.sathsang.net] => {
+# |     "msg": " ansible has just updated \"/tmp/test_file_7\" on a CentOS 7 machine "
+# | }
+# | ok: [clientnode02.svr.apac.sathsang.net] => {
+# |     "msg": " ansible has just updated \"/tmp/test_file_7\" on a CentOS 7 machine "
+# | }
+# | 
+# | PLAY RECAP ***********************************************************************************************************************************************************************************************
+# | clientnode01.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | clientnode02.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | clientnode03.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | dnsserver01.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | dockerstation01.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | 
+#
+#
 
-# 
