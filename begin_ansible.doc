@@ -1164,6 +1164,29 @@
 #
 # * Dictionary Variables 
 # In this section we will take a look at how to handle dictionary variables using ansible playbook. 
+# Below is the method you can define a dictionary in a YAML playbook for both keys value pair and also to associate keys with list of values
+# 
+# 1. Only Key value pair syntax 
+#
+# | vars: 
+# |  dict_name:
+# |      key1  : value1
+# |      leys2 : value2
+# 
+# NOTE : Accessing the value : dictname.key1  or dict_name[key1]
+#
+# 2. Key with list of values 
+#
+# | vars: 
+# |   dict_name: 
+# |     key1 : 
+# |       - item1
+# |       - item2
+# |       - item3
+# |       - item4
+#
+# NOTE : Accessing the value : dictname.key1.index_number  or dict_name[key1][index_number]
+#
 # There are two ways you can access variables from dictionary within playbook, one if the YAML method and another is the python method, both are supported 
 #
 # 1. YAML method   -> dict_name.key_name 
@@ -1267,6 +1290,97 @@
 # | dnsserver01.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
 # | dockerstation01.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
 # | 
+#
+# * Sourcing variables from External YAML file 
+# Similar to declaring variables within the file we can also declare variable on a external file and source the same into the main playbook. 
+# This will help to keep the variable data away from the main code, if you want to change the variables then you will need to only change the data in the variable file. 
+# You main playbook will be untouched to make any changes related to data. 
+#
+# NOTE : Below example will help us to uderstand the usage of external variable files 
+#
+# => Below is the external file containing the variables 
+#
+# | [root@ansiblemaster01 detect_file]# more external_variables.yml 
+# | ---
+# | 
+# | # Variables needed for main playbook 
+# | detect_file: '/etc/sathsang_detect'
+# | host_details: 
+# |   hostname : 
+# |     -  "{{facter_networking.hostname}}"
+# |     -  "{{facter_networking.fqdn}}"
+# |     -  "{{facter_networking.domain}}"
+# |   IP       : "{{facter_networking.dhcp}}"
+# |   hardware : "{{facter_os.hardware}}"
+# |   os_type  : "{{ansible_distribution}}"
+# |   os_versn : "{{ansible_distribution_version}}"
+# |   kernel   : "{{facter_kernel}}"
+# |   
+# | ...
+#
+# => Main playbook 
+#
+# | [root@ansiblemaster01 detect_file]# more create_detect_file.yml 
+# | ---
+# | -
+# |   hosts : sathsang_two_infra
+# |   gather_facts: true
+# |   user : root
+# | 
+# |   vars_files: 
+# |     - external_variables.yml
+# | 
+# |   handlers: 
+# |     - name: change completed
+# |       debug: 
+# |         msg: created "{{ detect_file }}" file successfully 
+# | 
+# |   tasks: 
+# |     - name : To create a "{{ detect_file }}" file 
+# |       copy: 
+# |         content: 
+# |             hostname : "{{ host_details.hostname }}"
+# |             IP       : "{{ facter_networking.dhcp }}"
+# |             hardware : "{{ host_details.hardware }}"
+# |             os_type  : "{{ host_details.os_type }}"
+# |             os_versn : "{{ host_details.os_versn }}"
+# |             kernel   : "{{ host_details.kernel }}"
+# |         dest: "{{ detect_file }}"
+# |       notify: change completed
+# |       when : facter_kernel == "Linux"
+# | ...
+# | [root@ansiblemaster01 detect_file]# ansible-playbook create_detect_file.yml
+# | 
+# | PLAY [sathsang_two_infra] ***************************************************************************************************************************************************************************
+# | 
+# | TASK [Gathering Facts] ******************************************************************************************************************************************************************************
+# | ok: [clientnode03.svr.apac.sathsang.net]
+# | 
+# | TASK [To create a "/etc/sathsang_detect" file] ******************************************************************************************************************************************************
+# | changed: [clientnode03.svr.apac.sathsang.net]
+# | 
+# | RUNNING HANDLER [change completed] ******************************************************************************************************************************************************************
+# | ok: [clientnode03.svr.apac.sathsang.net] => {
+# |     "msg": "created \"/etc/sathsang_detect\" file successfully"
+# | }
+# | 
+# | PLAY RECAP ******************************************************************************************************************************************************************************************
+# | clientnode03.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | 
+# | [root@ansiblemaster01 detect_file]# 
+# | 
+#
+# => below is the output from client 
+#
+# | [root@clientnode03 ~]# more /etc/sathsang_detect 
+# | {"kernel": "Linux", "IP": "192.168.122.1", "hostname": ["clientnode03", "clientnode03.svr.apac.sathsang.net", "svr.apac.sathsang.net"], "hardware": "x86_64", "os_versn": "7.3.1611", "os_type": "CentOS"}
+# | [root@clientnode03 ~]# 
+# | 
+#
+
+#
+#
+#
 #
 #
 
