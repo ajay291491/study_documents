@@ -240,8 +240,8 @@
 # += Add AND 			It adds right operand to the left operand and assign the result to left operand 		c += a is equivalent to c = c + a
 # -= Subtract AND 		It subtracts right operand from the left operand and assign the result to left operand 		c -= a is equivalent to c = c - a
 # *= Multiply AND 		It multiplies right operand with the left operand and assign the result to left operand 	c *= a is equivalent to c = c * a
-# /= Divide AND 			It divides left operand with the right operand and assign the result to left operand 		c /= a is equivalent to c = c / ac /= a is equivalent to c = c / a
-# %= Modulus AND 			It takes modulus using two operands and assign the result to left operand 			c %= a is equivalent to c = c % a
+# /= Divide AND 		It divides left operand with the right operand and assign the result to left operand 		c /= a is equivalent to c = c / ac /= a is equivalent to c = c / a
+# %= Modulus AND 		It takes modulus using two operands and assign the result to left operand 			c %= a is equivalent to c = c % a
 # **= Exponent AND 		Performs exponential (power) calculation on operators and assign value to the left operand 	c **= a is equivalent to c = c ** a
 # //= Floor Division 		It performs floor division on operators and assign value to the left operand 			c //= a is equivalent to c = c // a
 # 
@@ -264,7 +264,7 @@
 # ^ Binary XOR 			It copies the bit if it is set in one operand but not both. 	(a ^ b) = 49 (means 0011 0001)
 # ~ Binary Ones Complement 	It is unary and has the effect of 'flipping' bits. 	(~a ) = -61 (means 1100 0011 in 2's complement form due to a signed binary number.
 # << Binary Left Shift 		The left operands value is moved left by the number of bits specified by the right operand. 	a << 2 = 240 (means 1111 0000)
-# >> Binary Right Shift 		The left operands value is moved right by the number of bits specified by the right operand. 	a >> 2 = 15 (means 0000 1111)
+# >> Binary Right Shift 	The left operands value is moved right by the number of bits specified by the right operand. 	a >> 2 = 15 (means 0000 1111)
 # 
 # 
 # * Python Logical Operators
@@ -273,7 +273,7 @@
 # [ Show Example ]
 # Operator 		Description 								Example
 # and Logical AND 	If both the operands are true then condition becomes true. 		(a and b) is true.
-# or Logical OR 		If any of the two operands are non-zero then condition becomes true. 	(a or b) is true.
+# or Logical OR 	If any of the two operands are non-zero then condition becomes true. 	(a or b) is true.
 # not Logical NOT 	Used to reverse the logical state of its operand. 			Not(a and b) is false.
 # 
 # * Membership Operators
@@ -282,7 +282,7 @@
 # [ Show Example ]
 # Operator 	Description 											Example
 # in 		Evaluates to true if it finds a variable in the specified sequence and false otherwise. 	x in y, here in results in a 1 if x is a member of sequence y.
-# not in 		Evaluates to true if it does not finds a variable in aspecified sequence and false otherwise.	x not in y, here not in results in a 1 if x is not a member of sequence y.
+# not in 	Evaluates to true if it does not finds a variable in aspecified sequence and false otherwise.	x not in y, here not in results in a 1 if x is not a member of sequence y.
 # 
 # * Python Identity Operators
 # Identity operators compare the memory locations of two objects. There are two Identity operators explained below
@@ -290,7 +290,7 @@
 # [ Show Example ]
 # Operator 	Description 														Example
 # is 		Evaluates to true if the variables on either side of the operator point to the same object and false otherwise. 	x is y, here is results in 1 if id(x) equals id(y).
-# is not 		Evaluates to false if the variables on either side of the operator point to the same object and true otherwise. 	x is not y, here is not results in 1 if id(x) is not equal to id(y).
+# is not 	Evaluates to false if the variables on either side of the operator point to the same object and true otherwise. 	x is not y, here is not results in 1 if id(x) is not equal to id(y).
 # 
 # 
 # * Python Operators Precedence
@@ -400,7 +400,7 @@
 #
 # * Importing a module 
 # In python there are amble amount of modules available which can used to perform various predefined actions
-# By using pre-defined modules, you are avoiding the duplication of code and can achieve your task simply by calling the function within th module 
+# By using pre-defined modules, you are avoiding the duplication of code and can achieve your task simply by calling the function within the module 
 # Modules are called into the script by using a keyword 'import'and once modules are imported we can use functions within that modules according to their usage 
 #
 # Syntax : import module_name
@@ -411,7 +411,7 @@
 # | import math
 # | number = 25
 # | result = math.sqrt(number)
-# | print "Your resuly is : %d" %(result)
+# | print "Your result is : %d" %(result)
 #
 # * Importing only a function from a module 
 # Lets say rather than using 'math.sqrt' function on the above example, you want to directly use it as 'sqrt()' function. 
@@ -445,7 +445,7 @@
 #
 #
 # * How to list all functions within a module 
-# To list all functions available with the module, you can use dir() function to convert all option as a list 
+# To list all functions available within the module, you can use dir() function to convert all option as a list 
 # 
 # Example : synatx and example given below for further understanding
 #
@@ -461,7 +461,7 @@
 # 
 # There are few builtin functions which we need to be aware of 
 #
-# min ()    => This will give you the minimum values from a list , e.g : min_value = min(-10, 10, 20, -100)    : Here result will be -100
+# min ()    => This will give you the minimum values from a list , e.g : min_value = min(-10, 10, 20, -100)            : Here result will be -100
 # max ()    => This will give you the maximum or biggest value in a list , e.q : max_value = max(-10, 10, 20, -100)    : Here result will be 20
 # abs()     => This will give you the absolute value of a number, that is distance from zero distance = abs(-10)       : Here rsult will be 10
 # type()    => This will resturn the type of the variable or data is either int, float or string, this will be very useful ehen you are writing if condition to check the type if the input
@@ -2169,12 +2169,111 @@
 # NOTE : Continue from http://docs.python-requests.org/en/master/user/quickstart/#
 #
 #-------------------------------------------------------------------------------------------------------------
-# Chapter 15 - Python and database
+# Chapter 15 - Python and Django
+#-------------------------------------------------------------------------------------------------------------
+# Django is a popular web framework which is available with python. Django also provides a REST API framwork.
+# To start working with Django, we will need to install the latest version of the python 3.x. 
+# We will now go with a step by step procedure to create an Djnago REST API framework here 
+#
+# * STEP 1 : Install latest version of the Python and pip
+#
+# 1. Install python package manager and upgrade it to latest version 
+#
+# | $ yum install python2-pip
+# | $ pip install --upgrade pip
+#
+# 2. Install python3.x latest using pip 
+#
+# | $ pip install python3.6
+#
+# * STEP 2 : Create a virtual environment to work with python 3.x
+# 
+# 1. Install python vitual environemnt package using pip
+#
+# | $ pip install virtualenv
+# | $ pip install virtualenvwrapper
+# 
+# 2. Update .bashrc and /etc/profile files with below virtual environment settings for 3.6
+#
+# | [root@rhceclient01 profile-rest-api]# tail -6  /root/.bashrc 
+# | export WORKON_HOME=$HOME/.virtualenvs
+# | export PROJECT_HOME=$HOME/Devel
+# | export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.6
+# | export VIRTUALENVWRAPPER_VIRTUALENV=/usr/bin/virtualenv
+# | source /usr/bin/virtualenvwrapper.sh
+# | [root@rhceclient01 profile-rest-api]#
+# | 
+# | [root@rhceclient01 profile-rest-api]# tail -6  /etc/profile
+# | export WORKON_HOME=$HOME/.virtualenvs
+# | export PROJECT_HOME=$HOME/Devel
+# | export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.6
+# | export VIRTUALENVWRAPPER_VIRTUALENV=/usr/bin/virtualenv
+# | source /usr/bin/virtualenvwrapper.sh
+# | [root@rhceclient01 profile-rest-api]# 
+#
+# 3. Now create a python virtual envrionment, so that you can work under a isolated 3.6 environment 
+#
+# | # mkvirtualenv profile_rest_api --python=python3.6 
+# | (profile_rest_api) [root@rhceclient01 profile-rest-api]# python -V      => This will show the 3.6 version 
+# | Python 3.6.5
+# | (profile_rest_api) [root@rhceclient01 profile-rest-api]# 
+#
+# 4. How to switch on and off from virtual environment 
+#
+# | (profile_rest_api) [root@rhceclient01 profile-rest-api]# deactivate     => 'deactivate' will drop back to real shell and you can see the python version there 
+# | [root@rhceclient01 profile-rest-api]# python -V
+# | Python 2.7.5
+# | [root@rhceclient01 profile-rest-api]# workon profile_rest_api           => 'workon' on will take you back to the python virtual enviromment 
+# | (profile_rest_api) [root@rhceclient01 profile-rest-api]# python -V      
+# | Python 3.6.5
+# | (profile_rest_api) [root@rhceclient01 profile-rest-api]# 
+#
+# * STEP 3 : Install 'Django' on the virtual environment 
+#
+# 1. Install the Djangi 1.11 version 
+#
+# | (profile_rest_api) [root@rhceclient01 profile-rest-api]# pip3.6 install django==1.11
+# | Collecting django==1.11
+# |   Downloading https://files.pythonhosted.org/packages/47/a6/078ebcbd49b19e22fd560a2348cfc5cec9e5dcfe3c4fad8e64c9865135bb/Django-1.11-py2.py3-none-any.whl (6.9MB)
+# |     100% |████████████████████████████████| 6.9MB 9.1MB/s 
+# | Collecting pytz (from django==1.11)
+# |   Downloading https://files.pythonhosted.org/packages/30/4e/27c34b62430286c6d59177a0842ed90dc789ce5d1ed740887653b898779a/pytz-2018.5-py2.py3-none-any.whl (510kB)
+# |     100% |████████████████████████████████| 512kB 24.2MB/s 
+# | Installing collected packages: pytz, django
+# | Successfully installed django-1.11 pytz-2018.5
+# | (profile_rest_api) [root@rhceclient01 profile-rest-api]#
+#
+# 2. Install djangorestframework version 3.6.2
+#
+# | (profile_rest_api) [root@rhceclient01 profile-rest-api]# pip3.6 install djangorestframework==3.6.2
+# | Collecting djangorestframework==3.6.2
+# |   Downloading https://files.pythonhosted.org/packages/d2/79/e68b85647c539a155c6f6a0738208eb5ed09c61adabfd6f2e6edde944529/djangorestframework-3.6.2-py2.py3-none-any.whl (1.3MB)
+# |     100% |████████████████████████████████| 1.3MB 16.0MB/s 
+# | Installing collected packages: djangorestframework
+# | Successfully installed djangorestframework-3.6.2
+# | (profile_rest_api) [root@rhceclient01 profile-rest-api]#
+# | 
+#
+# 3. Verify the package installtion within virtual environment 
+#
+# | (profile_rest_api) [root@rhceclient01 profile-rest-api]# pip list
+# | Package             Version
+# | ------------------- -------
+# | Django              1.11   
+# | djangorestframework 3.6.2  
+# | pip                 10.0.1 
+# | pytz                2018.5 
+# | setuptools          40.0.0 
+# | wheel               0.31.1 
+# | (profile_rest_api) [root@rhceclient01 profile-rest-api]# 
+#
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 16 - Python and database
 #-------------------------------------------------------------------------------------------------------------
 #
 # 
 #-------------------------------------------------------------------------------------------------------------
-# Chapter 16 - Common untilities and its use 
+# Chapter 17 - Common untilities and its use 
 #-------------------------------------------------------------------------------------------------------------
 #
 # * pprint - pretty printer 
@@ -2212,7 +2311,7 @@
 # . https://www.youtube.com/watch?v=uKZ8GBKmeDM
 #
 #-------------------------------------------------------------------------------------------------------------
-# Chapter 17 - Writing test cases in python
+# Chapter 18 - Writing test cases in python
 #-------------------------------------------------------------------------------------------------------------
 #
 # https://jeffknupp.com/blog/2013/12/09/improve-your-python-understanding-unit-testing/
