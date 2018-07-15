@@ -2267,6 +2267,85 @@
 # | wheel               0.31.1 
 # | (profile_rest_api) [root@rhceclient01 profile-rest-api]# 
 #
+# * STEP 4 : Start a Django Project within the python virtual environment 
+# 
+#  To create a virtual environment you will need to create a 'src' directory in our vitual environment dirctory and then start the project there as folloes 
+#
+# | $ pwd
+# | /opt/django_project/profile-rest-api
+# | $ mkdir src
+# | $ ls
+# | hello_world.py  README.md  src
+# | $ cd src/
+# | $ ls
+# | django-admin.py startproject profiles_project
+# | $ tree profiles_project
+# | profiles_project
+# | ├── __init__.py
+# | ├── __pycache__
+# | │   ├── __init__.cpython-36.pyc
+# | │   └── settings.cpython-36.pyc
+# | ├── settings.py
+# | ├── urls.py
+# | └── wsgi.py
+# |
+# | 1 directory, 6 files
+# | $ 
+# |
+#
+# * STEP 5 : Start a Django app using'manage.py' script
+#
+# | $ ls
+# | profiles_project
+# | $ cd profiles_project/
+# | $ ls
+# | manage.py  profiles_project
+# | $ python manage.py startapp profiles_api
+# | $ tree profiles_api/
+# | profiles_api/
+# | ├── admin.py
+# | ├── apps.py
+# | ├── __init__.py
+# | ├── migrations
+# | │   └── __init__.py
+# | ├── models.py
+# | ├── tests.py
+# | └── views.py
+# |
+# | 1 directory, 7 files
+# | $ 
+# |
+#
+# * STEP 6 : Enable apps within 'settings.py' within the 'profiles_project' directory under our project directory
+#
+# Under the 'INSTALLED_APPS' section in the 'application definition we will need add 3 new item to the list 
+#
+# . rest_framework              : This will enable the 'rest framework'
+# . rest_framework.authtoken    : This will enable a option feature of 'authtoken' 
+# . profiles_api                : This will enable the 'profiles_api' apps which we are going to enbale 
+#
+# | $ cd /opt/django_project/profile-rest-api/src/profiles_project/profiles_project/
+# | $ cat settings.py|grep -C13  'Application definition'|tail -14
+# | # Application definition
+# | 
+# | INSTALLED_APPS = [
+# |     'django.contrib.admin',
+# |     'django.contrib.auth',
+# |     'django.contrib.contenttypes',
+# |     'django.contrib.sessions',
+# |     'django.contrib.messages',
+# |     'django.contrib.staticfiles',
+# |     'rest_framework',                               -> Here we are appending the list 
+# |     'rest_framework.authtoken',                     -> Here we are appending the list 
+# |     'profiles_api',                                 -> Here we are appending the list 
+# | ]
+# | 
+# | $
+# | 
+#
+# NOTE : Keep in mind if you want to enable any apps within Django framework, you will need to define that with in 'settings/py' file under the 'INSTALLED_APPS'
+#
+#
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 16 - Python and database
 #-------------------------------------------------------------------------------------------------------------
