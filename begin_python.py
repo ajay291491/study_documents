@@ -2343,8 +2343,60 @@
 # | $
 # | 
 #
-# NOTE : Keep in mind if you want to enable any apps within Django framework, you will need to define that with in 'settings/py' file under the 'INSTALLED_APPS'
+# NOTE : Keep in mind if you want to enable any apps within Django framework, you will need to define that with in 'settings.py' file under the 'INSTALLED_APPS'
 #
+# * STEP 7 : Create requirement file (Needed only if you are using vagrant)
+# Its always a standard practice that we will need to create a 'requirement.txt' file within the project directory, so that we can port our application to a new machine later. 
+# 'rerquirement.txt' will contain the information about the package required for our app and also the its version numbers. 
+# This file will help to get the package installed for our app, when it gets ported into a new machine. 
+# To create the 'requirement.txt' file,  List the number of python package we have installed via pip for the project using 'pip freeze' and store them under the project directory
+#
+# | $ workon profile_rest_api
+# | $ pip3.6 freeze > requirement.txt
+# | Django==1.11
+# | djangorestframework==3.6.2
+# | pytz==2018.5
+# | $
+#
+# * STEP 8 : Update the settings.py with the "ALLOW_HOSTS"
+#
+# | $ grep HOSTS settings.py 
+# | ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', '192.168.122.42', 'rhceclient01.svr.apac.sathsang.net',]
+# | $ 
+#
+# * STEP 9 : Start the Django service using 'manage.py' script 
+# Once you have completed all above requirements, then you can start your django application. 
+# When you start the application you will need to mentioned IP and port from which the webservice can be accessed. 
+# Here in our example we will mention the IP as '0.0.0.0' and port as '8080' 
+#
+# | $ workon profile_rest_api
+# | $
+# | $ python3.6 manage.py runserver 0.0.0.0:8080            ==> This is how you start a Django server
+# | Performing system checks...
+# | 
+# | System check identified no issues (0 silenced).
+# | 
+# | You have 15 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, authtoken, contenttypes, sessions.
+# | Run 'python manage.py migrate' to apply them.
+# | 
+# | July 17, 2018 - 14:26:21
+# | Django version 1.11, using settings 'profiles_project.settings'
+# | Starting development server at http://0.0.0.0:8080/
+# | Quit the server with CONTROL-C.
+# | [17/Jul/2018 14:26:25] "GET / HTTP/1.1" 200 1716        ==> This is the output you will get in log when you access the website
+# | [17/Jul/2018 14:26:32] "GET / HTTP/1.1" 200 1716
+# | [17/Jul/2018 14:26:33] "GET / HTTP/1.1" 200 1716
+#
+# * STEP 10 : Verify you can access the webpage 
+#
+# | [root@sathsang python]# elinks http://rhceclient01.svr.apac.sathsang.net:8080
+# | Welcome to Django 
+# | It worked!                                                                                                     
+# |                                                                                                                                                                                                             
+# | Congratulations on your first Django-powered page.                                                                                                                                                          
+# | Next, start your first app by running python manage.py startapp [app_label].                                                                                                                                
+# | You're seeing this message because you have DEBUG = True in your Django settings file and you haven't configured any URLs. Get to work!                                                                     
+# |
 #
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 16 - Python and database
