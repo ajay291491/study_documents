@@ -235,9 +235,53 @@
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 2 : Django Data Models
 #-------------------------------------------------------------------------------------------------------------
+# Models is the single definitive source of data you are storing. It contains the type and behavious of the data you are storing. 
+# In django we uses 'models' to describe the data we need for our application, django then uses these models to describe tables needed. 
+# Generally each data type will store into a single database table. In django we specify each data to use some type available in the database table.
+# Baceuse of this Django  will use 'mode;s' to take care of working with the backend database so that we don't need to interact with any DB or sql queries.
 #
+# * Defining modles using 'modles.py'
+# When you create an application using django 'python manage.py startapp  <apps_name>', then there will be a 'modles.py' file gets created within apps directory
+# Below is a sample file you can see, and how to update this file will discusses further. 
 #
+# | $ pwd
+# | /opt/django_project/profile-rest-api/src/profiles_project/profiles_api   ==> Here 'profiles_api' is the application name 
+# | $ ls -l 
+# | total 20
+# | -rw-r--r--. 1 root sathsang 63 Jul 14 19:55 admin.py
+# | -rw-r--r--. 1 root sathsang 98 Jul 14 19:55 apps.py
+# | -rw-r--r--. 1 root sathsang  0 Jul 14 19:55 __init__.py
+# | drwxr-sr-x. 3 root sathsang 44 Jul 17 08:59 migrations
+# | -rw-r--r--. 1 root sathsang 57 Jul 14 19:55 models.py
+# | drwxr-sr-x. 2 root sathsang 94 Jul 17 08:59 __pycache__
+# | -rw-r--r--. 1 root sathsang 60 Jul 14 19:55 tests.py
+# | -rw-r--r--. 1 root sathsang 63 Jul 14 19:55 views.py
+# | $ cat models.py
+# | from django.db import models
+# | 
+# | # Create your models here.
+# | (profile_rest_api) [root@rhceclient01 profiles_api]# 
+# |
+# | $
 #
+# NOTE : You can refer below url to understand about various fileds available with django
+# URL  : https://docs.djangoproject.com/en/2.0/ref/models/fields/
+# 
+# * Creating a user profile model
+# This is the basic model we will need to create in our django so that we can manage users. When we create a user profile we will need to think about three different things here. 
 #
+# . Creatin a user
+# . Manging a user 
+# . Deleting a user
 #
+# Before we begin, we will need to understand few modules which we will be using while creating a 'user profile model' 
+#
+# . from django.db import models                                =>  https://docs.djangoproject.com/en/2.0/topics/db/models/ (used for defining models)
+# . from django.contrib.auth.models import AbstractBaseUser     =>  https://docs.djangoproject.com/en/2.0/ref/contrib/auth/ (This will provide the base use profile)
+# . from django.contrib.auth.models import PermissionsMixin     =>  https://docs.djangoproject.com/en/2.0/ref/contrib/auth/ (This will provide the ability to give permission for user)
+#
+# PENDING : This Lecture is half way (19. Add a user model manager)
+#           . We have imported the required modules
+#           . We have define Userprofile class and its variables and functions 
+#           . Continue from '19. Add a user model manager'
 #
