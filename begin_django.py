@@ -244,6 +244,7 @@
 # When you create an application using django 'python manage.py startapp  <apps_name>', then there will be a 'modles.py' file gets created within apps directory
 # Below is a sample file you can see, and how to update this file will discusses further. 
 #
+# | $ workon profile_rest_api
 # | $ pwd
 # | /opt/django_project/profile-rest-api/src/profiles_project/profiles_api   ==> Here 'profiles_api' is the application name 
 # | $ ls -l 
@@ -274,14 +275,261 @@
 # . Manging a user 
 # . Deleting a user
 #
+# STEP 1 : Creating custom user model and user model manager with in our app
+#
 # Before we begin, we will need to understand few modules which we will be using while creating a 'user profile model' 
 #
 # . from django.db import models                                =>  https://docs.djangoproject.com/en/2.0/topics/db/models/ (used for defining models)
 # . from django.contrib.auth.models import AbstractBaseUser     =>  https://docs.djangoproject.com/en/2.0/ref/contrib/auth/ (This will provide the base use profile)
 # . from django.contrib.auth.models import PermissionsMixin     =>  https://docs.djangoproject.com/en/2.0/ref/contrib/auth/ (This will provide the ability to give permission for user)
+# . from django.contrib.auth.models import BaseUserManager      =>  https://docs.djangoproject.com/en/2.0/ref/contrib/auth/ (This will provide the basic user profile to be used)
 #
-# PENDING : This Lecture is half way (19. Add a user model manager)
-#           . We have imported the required modules
-#           . We have define Userprofile class and its variables and functions 
-#           . Continue from '19. Add a user model manager'
+# Below is the sample 'model.py' which we created for the 'profile_api' application
+#
+# | $ workon profile_rest_api
+# | $ pwd
+# | /opt/django_project/profile-rest-api/src/profiles_project/profiles_api
+# | $ vim /tmp/test
+# | from django.db import models
+# | from django.contrib.auth.models import AbstractBaseUser
+# | from django.contrib.auth.models import PermissionsMixin
+# | from django.contrib.auth.models import BaseUserManager
+# | 
+# | # Create your models here.
+# | 
+# | class UserProfileManager(BaseUserManager):
+# |     """ Helps Django to work with the custom user profile which we created """
+# | 
+# |     def createuser(self, email, name, password=None):
+# |         """ Helps to create a new user profile objects """
+# |         
+# |         if not email:
+# |             raise ValueError('User must have an email address')
+# |         elif not name:
+# |             raise ValueError('User must have a name specified')
+# | 
+# |         # This will normalize the email by setting everything to lowercase 
+# |         email = self.normalize_email(email)
+# | 
+# |         # This will create a normal user with the provided information
+# |         user  = self.model(email=email, name=name)
+# |         
+# |         # This will set the password and store it in database as a hash
+# |         user.set_password(password)
+# | 
+# |         # This will save the user details in the database 
+# |         user.save(using=self.db)
+# | 
+# |         return user
+# | 
+# |    def create_superuser(self, email, name, password): 
+# |        """ Creates a super user with the given details """
+# | 
+# |        # Using the same 'createuser' function defined within the class to create the user
+# |        user = self.createuser(email, name, password)
+# |  
+# |        # Set the user as a Super user and add to group staff
+# |        user.is_superuser = True
+# |        user.is_staff     = True 
+# |        
+# |        # Save the user and retun the user details 
+# |        user.save(using=self._db)
+# |        retrun user
+# | 
+# | 
+# | class UserProfile(AbstractBaseUser, PermissionsMixin):
+# |     """ Represents 'user profile' inside our system and inherited form AbstractBaseUser and PermissionsMixin """
+# | 
+# |     email     = models.EmailField(max_length=255, unique=True) 
+# |     name      = models.CharFiled(max_length=255)
+# |     is_active = models.BooleanField(default=True)
+# |     is_staff  = models.BooleanFiled(default=False)
+# | 
+# |    
+# |     # Object manager (This will be covered in next lesson)
+# |     objects = UserProfileManager()
+# |    
+# |     # Standard djano fileds for user profle 
+# |     USERNAME_FIELD  = 'email'
+# |     REQUIRED_FILEDS = ['name']
+# |     
+# |     def get_full_name(self):
+# |         """ Used to get a user full name """
+# | 
+# |         return self.name
+# | 
+# |     def get_short_name(self):
+# |         """ Used to get the short name """
+# | 
+# |         return self.name 
+# | 
+# |     def __str__(self):
+# |         """ Django uses this function when it needs to convert the object to a string this is manadatory """
+# | 
+# |         return self.email
+# |      
+#
+# STEP 2 : Update the settings.py in our project to use the custom user model
+# To enable this you will need go to the project directory and update the 'settings.py' to refer to the custom user model which we created. 
+# By enabeling the custom user profile we are overriding the default user profile model in django
+# Value you need to enable is 'AUTH_USER_MODEL = profiles_api.UserProfile', by mentioning this django understand it is coming from the profile_api apps models.py  
+#
+# Example : Below is the sample of this output
+#
+# | $ pwd
+# | /opt/django_project/profile-rest-api/src/profiles_project/profiles_project
+# | $ grep -i AUTH_USER_MODEL settings.py 
+# | AUTH_USER_MODEL = 'profiles_api.UserProfile'
+# | $
+#
+# STEP 3 : Create Migration and sync DB
+# Using this we are going to update the changes we did to the django database. 
+# This is done using without any sql queries, this migration is does by django itself in the background seemlessly. 
+# This migration process will include two stages 
+# 
+# 1. Prepare for Migration 
+# 2. Perform Migration 
+#
+# 1. Prepare for Migration : At this stage you will need to use the 'manage.py' within our project using command 'makemigrations' 
+#                          : Once you have run the command django will prepare the migration file, which can be used for migration in next step
+#
+# | 
+# | $ workon profile_rest_api
+# | $ python manage.py makemigrations 
+# | Migrations for 'profiles_api':
+# |   profiles_api/migrations/0001_initial.py       => You can look at this file to understand the details about migration (at the app base location)
+# |    - Create model UserProfile
+# | $
+# |
+# 
+# 2. Perform Migration : Once you have validated the migration file at 'profiles_api/migrations/0001_initial.py' and happy with the changes its going to make. 
+#                      : Then the next step to run the actual migraton, this will go and alter the database with required changes needed for our requirement 
+#
+# | $ python manage.py migrate
+# | Operations to perform:
+# |   Apply all migrations: admin, auth, authtoken, contenttypes, profiles_api, sessions
+# | Running migrations:
+# |   Applying contenttypes.0001_initial... OK
+# |   Applying contenttypes.0002_remove_content_type_name... OK
+# |   Applying auth.0001_initial... OK
+# |   Applying auth.0002_alter_permission_name_max_length... OK
+# |   Applying auth.0003_alter_user_email_max_length... OK
+# |   Applying auth.0004_alter_user_username_opts... OK
+# |   Applying auth.0005_alter_user_last_login_null... OK
+# |   Applying auth.0006_require_contenttypes_0002... OK
+# |   Applying auth.0007_alter_validators_add_error_messages... OK
+# |   Applying auth.0008_alter_user_username_max_length... OK
+# |   Applying profiles_api.0001_initial... OK
+# |   Applying admin.0001_initial... OK
+# |   Applying admin.0002_logentry_remove_auto_add... OK
+# |   Applying authtoken.0001_initial... OK
+# |   Applying authtoken.0002_auto_20160226_1747... OK
+# |   Applying sessions.0001_initial... OK
+# | (profile_rest_api) [root@rhceclient01 profiles_project]# 
+#
+# Once you have completed the migraition, you will see a database file on the project base location as below 
+#
+# | $ pwd
+# | /opt/django_project/profile-rest-api/src/profiles_project
+# | $ ls -l db.sqlite3
+# | -rw-r--r--. 1 root sathsang 44032 Jul 20 05:30 db.sqlite3
+# | $ file db.sqlite3
+# | db.sqlite3: SQLite 3.x database
+# | $ 
+# 
+# If you migrate already then you run the migrate command again then it will say there is no more migration pending until we upate any. 
+#
+# | $ python manage.py migrate
+# | Operations to perform:
+# |   Apply all migrations: admin, auth, authtoken, contenttypes, profiles_api, sessions
+# | Running migrations:
+# |   No migrations to apply.
+# | $ 
+# |
+#
+# STEP 4 : Create a Django super user 
+# Django createsuperuser fascility will help to create a superuser which cane make use of the custom user model we have created 
+#
+# | $ workon profile_rest_api
+# | $ python manage.py createsuperuser
+# | Email: ajay291491@gmail.com 
+# | Name: Ajayaghosh V L
+# | Password: 
+# | Password (again): 
+# | Superuser created successfully.
+# | $ 
+#
+# STEP 5 : Register user model with Django admin
+# In this topic we will register the user profile model with the django admin. 
+# This will help us to manage the user profile objects from the django admin. 
+#
+# |
+# | $ workon profile_rest_api 
+# | $ pwd
+# | /opt/django_project/profile-rest-api/src/profiles_project/profiles_api
+# | $ ls -l
+# | total 20
+# | -rw-r--r--. 1 root sathsang  251 Jul 23 18:55 admin.py
+# | -rw-r--r--. 1 root sathsang   98 Jul 14 19:55 apps.py
+# | -rw-r--r--. 1 root sathsang    0 Jul 14 19:55 __init__.py
+# | drwxr-sr-x. 3 root sathsang   67 Jul 22 08:12 migrations
+# | -rw-r--r--. 1 root sathsang 2585 Jul 23 18:26 models.py
+# | drwxr-sr-x. 2 root sathsang   94 Jul 23 18:55 __pycache__
+# | -rw-r--r--. 1 root sathsang   60 Jul 14 19:55 tests.py
+# | -rw-r--r--. 1 root sathsang   63 Jul 14 19:55 views.py
+# | $ vim admin.py 
+# | from django.contrib import admin            # => This will import the admin module which needed to resiter our custom user profile
+# | from . import models		        # => This will import the model from the same apps directory
+# | 
+# | Register your models here.
+# | admin.site.register(models.UserProfile)     # => This will register the 'UserProfile' to the django admin using the 'admin.site.register' module
+# | $ 
+# | 
+#
+# STEP 6 : Test you django admin login 
+# Once you have completed till step 5, then you can test Django superuser login for, 
+# 
+# 1. Start the django server if not running already 
+# 2. Login to Django admin page http://rhceclient01.svr.apac.sathsang.net:8080/admin/
+# 3. Use the email address and password which you have used to create the super user
+# 4. Once you have logged in You should be able to see the superuser profile as below 
+#    - Site administration
+#       - AUTH TOKEN
+#       - AUTHENTICATION AND AUTHORIZATION
+#       - PROFILES_API
+# 
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 3 : Django REST Framework Views - APIView
+#-------------------------------------------------------------------------------------------------------------
+# Django REST framework offers two different helper ways to create our own API end points 
+#
+# 1. APIView
+# 2. Viewset
+#
+# Both ways are slightly different and offers their own benifit. 
+# In this chapter we will take a close look at the 'APIView' framework.  
+#
+# * APIView 
+# APIView allows us to find the stadard HTTP methods such as 
+#
+# - GET     : This helps you to get the details of one or more resources 
+# - PUT     : This helps you to create a new resource
+# - POST    : This helps you to update an existing item 
+# - PATCH   : This helps you to partially update an existing item
+# - DELETE  : This help you to delete a resource 
+#
+# This helps to given most application control over logic using various methods used above. 
+#
+# * When to use APIView 
+# Below are the few use case scenarios or examples where you can use the APIViews 
+#
+# - Perfect for building a complex logics, which means rather than just updating a resourcce, you can have more complex logics 
+# - When you need full control over your application logic 
+# - Processing application files and expecting a synchronous response on the same request 
+# - When you are calling other APIs or Services in the same request 
+# - While accessing local files or data
+#
+#
+#
+#
 #
