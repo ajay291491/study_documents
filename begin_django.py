@@ -289,7 +289,7 @@
 # | $ workon profile_rest_api
 # | $ pwd
 # | /opt/django_project/profile-rest-api/src/profiles_project/profiles_api
-# | $ vim /tmp/test
+# | $ vim models.py 
 # | from django.db import models
 # | from django.contrib.auth.models import AbstractBaseUser
 # | from django.contrib.auth.models import PermissionsMixin
@@ -529,7 +529,203 @@
 # - When you are calling other APIs or Services in the same request 
 # - While accessing local files or data
 #
+# * Basics of How to create a APIView 
+# Before we jump into deploying an API we can go through the basics of how to create an API. 
+# In this chapter we will discuss the step by step procedure for creating an API view 
+# 
+# STEP 1 : Creating views for your API (For GET method) 
+# To create views you will need to navigate to your application base directory and then you will need to make the necessary updates in views.py file 
+# This is the file which basically create the view for the application API end point which user visits 
+#
+#
+# | $ workon profile_rest_api
+# | $ pwd
+# | /opt/django_project/profile-rest-api/src/profiles_project/profiles_api
+# | $ ls -l 
+# | total 20
+# | -rw-r--r--. 1 root sathsang  377 Jul 23 19:05 admin.py
+# | -rw-r--r--. 1 root sathsang   98 Jul 14 19:55 apps.py
+# | -rw-r--r--. 1 root sathsang    0 Jul 14 19:55 __init__.py
+# | drwxr-sr-x. 3 root sathsang   67 Jul 22 08:12 migrations
+# | -rw-r--r--. 1 root sathsang 2585 Jul 23 18:26 models.py
+# | drwxr-sr-x. 2 root sathsang   94 Jul 23 19:05 __pycache__
+# | -rw-r--r--. 1 root sathsang   60 Jul 14 19:55 tests.py
+# | -rw-r--r--. 1 root sathsang  936 Jul 25 21:50 views.py
+# | $ vim views.py 
+# | 
+# | from django.shortcuts import render
+# | 
+# | from rest_framework.views import APIView            # This imports the APIView class from the django rest_framework views 
+# | from rest_framework.response import Response        # This will process output which we need to return in JSON format with status codes 
+# | 
+# | # Create your views here.
+# | 
+# | class HelloApiView(APIView):
+# |     """ Test API View """
+# | 
+# |     def get(self, request, format=None):
+# |         """ Returns a list of APIView Features """
+# | 
+# |         an_apiview = [
+# |             'Uses HTTP methods as functions (get, post, patch, put , delete)',
+# |             'It is similar to traditional Django view',
+# |             'Gives you the most control over your application logic', 
+# |             'Its manually mapped to URLs']
+# | 
+# |         # response has to be always send it a dictionary format, for that we will associate our list with a key as seen below 
+# |         return Response({'Message' : 'Hello, welcome to Ajay\'s first api endpoint', 'an_apiview': an_apiview })
+# | 
+# | 
+#
+# STEP 2 : Configure View URL (For GET method) 
+# To Configure a view url you have to configure the 'URL dispatcher' and there is two steps of process behind this.
+#
+# 1. Configure - url.py (Under Project Base Directory): 
+#      Update the url.py within the project directory, which is first place Django will look at while request comes in. 
+#      At this location you will enable a pointer to the application based url file. 
+#      When the requests comes in this url.py will forward the request to the application based url.py and from there request will be further processd. 
+#
+# | 
+# | $ workon profile_rest_api
+# | $ cat urls.py 
+# | """profiles_project URL Configuration
+# | 
+# | The `urlpatterns` list routes URLs to views. For more information please see:
+# |     https://docs.djangoproject.com/en/1.11/topics/http/urls/
+# | Examples:
+# | Function views
+# |     1. Add an import:  from my_app import views
+# |     2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
+# | Class-based views
+# |     1. Add an import:  from other_app.views import Home
+# |     2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
+# | Including another URLconf
+# |     1. Import the include() function: from django.conf.urls import url, include
+# |     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
+# | """
+# | from django.conf.urls import url
+# | from django.conf.urls import include   #  This is the module which import to forward request to apps based url.py
+# | from django.contrib import admin
+# | 
+# | urlpatterns = [
+# |     url(r'^admin/', admin.site.urls),
+# | 
+# |    # Below will forward the request to /opt/django_project/profile-rest-api/src/profiles_project/profiles_api/views.py 
+# |    # When there is a query landed on url : http://rhceclient01.svr.apac.sathsang.net:8080/api/ """
+# |     url(r'^api/', include('profiles_api.urls'))
+# | ]
+# | $ 
+# | 
+#
+# 2. Configure - url.py (Under Application Base Directory):
+#      In Most of the cases there won't be any url.py file in the application base directory and you might need to create one. 
+#      Once the request formwarded to the application based 'url.py' then it will look for the 'url_pattern' list for the definition 
+#      In the url_pattern we will use the 'url' module to access 'views.py' and provide the definition as the output 
+#
+# | $ pwd
+# | /opt/django_project/profile-rest-api/src/profiles_project/profiles_api
+# | $
+# | $ ls -l 
+# | total 24
+# | -rw-r--r--. 1 root sathsang  377 Jul 23 19:05 admin.py
+# | -rw-r--r--. 1 root sathsang   98 Jul 14 19:55 apps.py
+# | -rw-r--r--. 1 root sathsang    0 Jul 14 19:55 __init__.py
+# | drwxr-sr-x. 3 root sathsang   67 Jul 22 08:12 migrations
+# | -rw-r--r--. 1 root sathsang 2585 Jul 23 18:26 models.py
+# | drwxr-sr-x. 2 root sathsang  149 Jul 28 21:07 __pycache__
+# | -rw-r--r--. 1 root sathsang   60 Jul 14 19:55 tests.py
+# | -rw-r--r--. 1 root sathsang  423 Jul 28 21:07 urls.py
+# | -rw-r--r--. 1 root sathsang 1226 Jul 28 19:58 views.py
+# | $
+# | $ cat views.py 
+# | from django.shortcuts import render
+# | 
+# | from rest_framework.views import APIView		# This imports the APIView class from the django rest_framework views 
+# | from rest_framework.response import Response	# This will process output which we need to return in JSON format with status codes 
+# | 
+# | # Create your views here.
+# | 
+# | class HelloApiView(APIView):
+# |     """ Test API View """
+# |     
+# |     def get(self, request, format=None):
+# |         """ Returns a list of APIView Features """
+# | 
+# |         an_apiview = [
+# |             'Uses HTTP methods as functions (get, post, patch, put , delete)',
+# |             'It is similar to traditional Django view',
+# |             'Gives you the most control over your application logic', 
+# |             'Its manually mapped to URLs'
+# |         ]
+# | 
+# |         family_details = {
+# |             'Father'   : 'Ajayaghosh V L',
+# |             'Mother'   : 'Aparna A',
+# |             'Daughter' : 'Vaiga Shanti A',
+# |             'Son'      : 'Rishi Krishna A',
+# |         }
+# | 
+# | 
+# |         # response has to be always send it a dictionary format, for that we will associate our list with a key as seen below 
+# |         return Response({'Message' : 'Hello, welcome to Ajay\'s first api endpoint', 'an_apiview': an_apiview, 'family_details' : family_details })
+# | 
+# | $
+# | $ more urls.py 
+# | from django.conf.urls import url	# This module is to handle the url
+# | from . import views			# We are importing views.py in our apps base directory here 
+# | 
+# | urlpatterns = [ 
+# |     
+# |     # Using the url module, we are defining the api view 'hello-view/'
+# |     # hello-view will display the get method defined under the HelloApiView class under the 'views.py' as the view
+# |     url(r'^hello-view/', views.HelloApiView.as_view()),	
+# |     ]
+# | $ 
+# | $
+# | 
+#
+# STEP 3 : Connect to your API and try to get the 'hello-view/' api view (For GET method) 
+# Login to any host and run belowscript to connect to the API which you have just created and try to get the data 
+#
+#
+# | # [root@sathsang sample_scripts]# cat test_get_hello_api.py
+# | #!/usr/bin/python
+# | #
+# | # Script to check the working status of hellp.api
+# | #
+# | 
+# | from pprint import pprint
+# | import requests 
+# | 
+# | #
+# | main_url = 'http://rhceclient01.svr.apac.sathsang.net:8080/api/'
+# | sub_url  = 'hello-view/'
+# | #
+# | def get_api_content(bae_api, api_key):
+# |     
+# |     full_url = bae_api + api_key
+# |     connect = requests.get(full_url)
+# |     pprint (connect.json())
+# | 
+# | get_api_content(main_url, sub_url)
+# | 
+# | [root@sathsang sample_scripts]# python test_get_hello_api.py
+# | {u'Message': u"Hello, welcome to Ajay's first api endpoint",
+# |  u'an_apiview': [u'Uses HTTP methods as functions (get, post, patch, put , delete)',
+# |                  u'It is similar to traditional Django view',
+# |                  u'Gives you the most control over your application logic',
+# |                  u'Its manually mapped to URLs'],
+# |  u'family_details': {u'Daughter': u'Vaiga Shanti A',
+# |                      u'Father': u'Ajayaghosh V L',
+# |                      u'Mother': u'Aparna A',
+# |                      u'Son': u'Rishi Krishna A'}}
+# | [root@sathsang sample_scripts]# 
+# | 
+#
+# NOTE : To know more about the Django url visit below URL 
+#  URL : https://docs.djangoproject.com/en/1.11/topics/http/urls/
 #
 #
 #
 #
+
