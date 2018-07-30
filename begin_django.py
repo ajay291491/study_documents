@@ -532,6 +532,8 @@
 # * Basics of How to create a APIView 
 # Before we jump into deploying an API we can go through the basics of how to create an API. 
 # In this chapter we will discuss the step by step procedure for creating an API view 
+#
+# -------- <<< STEP 1 - 3 dealing with the [GET] method >>> ----------
 # 
 # STEP 1 : Creating views for your API (For GET method) 
 # To create views you will need to navigate to your application base directory and then you will need to make the necessary updates in views.py file 
@@ -725,7 +727,121 @@
 # NOTE : To know more about the Django url visit below URL 
 #  URL : https://docs.djangoproject.com/en/1.11/topics/http/urls/
 #
+# -------- <<< STEP 4 - 6 dealing with the [POST] method >>> ----------
 #
+# STEP 4 :  Serializer (Creating Serializers)
+# Serializer objects will help to describe the data from and return the data to our API. It basically converts the text string into JSON  format and viceversa. 
+# Seralizers allows complex data types such as querysets and model instance to be converted into python datatypes which can be easily converted to JSON, XML or other content types. 
+# Seralizer will also provide help to deserialize the parsed data into complex data types after validating the first incoming data types
+#  
+# For our API we will be creating a seralizer within our application base directory as 'serializers.py' and it will have below contents 
 #
+# | $
+# | $ pwd
+# | /opt/django_project/profile-rest-api/src/profiles_project/profiles_api
+# | $ cat  serializers.py 
+# | from rest_framework import serializers
+# | 
+# | class HelloSerializer(serializers.Serializer): 
+# |     """ Serializes the name field for our APIView """
+# | 
+# |     name = serializers.CharField(max_lenth=10)
+# | $ 
+# | $
+# | 
 #
-
+# STEP 5 : Adding serializers to the APIView and creating POST method
+# Once we have created the serializer our next step is to update the 'views.py' with below details 
+#
+# 1. Update the 'status' module from the 'rest_framework' class
+# 2. Import the 'serializers' module from the apps base directory 
+# 3. Declare a object like serializer_class = serializers.HelloSerializer [ Need to find more details about it ]
+# 4. Create a 'POST' method within the 'HelloApiView' class which handle the POST request to our API
+# 5. Intialize a 'serializer' object within the class  which can carry the data comes in as part of tge post request
+# 6. Create an if condition which can retrun the name variable posted if it is valid 
+# 7. Create an else condition to retrun Error and HTTP status code if its not a valid variable 
+#
+# | $ cat  views.py 
+# | from django.shortcuts import render
+# | 
+# | from rest_framework.views import APIView		# This imports the APIView class from the django rest_framework views 
+# | from rest_framework.response import Response	# This will process output which we need to return in JSON format with status codes 
+# | from rest_framework import status			# This will help to return a status code for for API
+# | 
+# | from . import serializers
+# | 
+# | # Create your views here.
+# | 
+# | class HelloApiView(APIView):
+# |     """ Test API View """
+# | 
+# |     serializer_class = serializers.HelloSerializer
+# |     
+# |     def get(self, request, format=None):
+# |         """ Returns a list of APIView Features """
+# | 
+# |         an_apiview = [
+# |             'Uses HTTP methods as functions (get, post, patch, put , delete)',
+# |             'It is similar to traditional Django view',
+# |             'Gives you the most control over your application logic', 
+# |             'Its manually mapped to URLs'
+# |         ]
+# | 
+# |         family_details = {
+# |             'Father'   : 'Ajayaghosh V L',
+# |             'Mother'   : 'Aparna A',
+# |             'Daughter' : 'Vaiga Shanti A',
+# |             'Son'      : 'Rishi Krishna A',
+# |         }
+# | 
+# | 
+# |         # response has to be always send it a dictionary format, for that we will associate our list with a key as seen below 
+# |         return Response({'Message' : 'Hello, welcome to Ajay\'s first api endpoint', 'an_apiview': an_apiview, 'family_details' : family_details })
+# | 
+# |   def post(self, request):
+# |         """ This will return the same name which is getting pasted """
+# | 
+# |         """ Meaning of below is this will initialize the 'serializer' with HelloSerializer which we defined in the serializers.py in apps base dir
+# |             Also the 'request' will contain all information while we make a post request, amongst that actual data can be fetched out using 'request.data' """
+# |         serializer = serializers.HelloSerializer(data=request.data)
+# | 
+# |         if serializer.is_valid():
+# |             name = serializer.data.get('name')
+# |             message = 'Hello {0}'.format(name)
+# |             return Response({'message': message})
+# |         else:
+# |             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# | $ 
+# | $
+# | 
+#
+# STEP 6 : Try to post a request and see the output 
+# Login to a remote host and then try to post a request to HelloView API and see if that return the name as posted 
+#
+# | 
+# | [root@sathsang sample_scripts]# cat test_post_hello_api.py 
+# | #!/usr/bin/python
+# | #
+# | # Script to check the working status of hellp.api
+# | #
+# | 
+# | from pprint import pprint
+# | import requests 
+# | 
+# | #
+# | main_url = 'http://rhceclient01.svr.apac.sathsang.net:8080/api/'
+# | sub_url  = 'hello-view/'
+# | #
+# | def get_api_content(bae_api, api_key):
+# |     
+# |     full_url = bae_api + api_key
+# |     connect = requests.post(full_url, {'name': 'Ajayaghosh'})
+# |     pprint (connect.json())
+# | 
+# | get_api_content(main_url, sub_url)
+# | 
+# | [root@sathsang sample_scripts]# python test_post_hello_api.py 
+# | {u'message': u'Hello Ajayaghosh'}
+# | [root@sathsang sample_scripts]# 
+# | 
+#
