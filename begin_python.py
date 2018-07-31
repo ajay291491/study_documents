@@ -2169,7 +2169,7 @@
 # NOTE : Continue from http://docs.python-requests.org/en/master/user/quickstart/#
 #
 #-------------------------------------------------------------------------------------------------------------
-# Chapter 15 - Python and Django
+# Chapter 15 - Handling exceptions in python 
 #-------------------------------------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------------------------------------
@@ -2207,6 +2207,30 @@
 # | 
 # | get_data('https://api.github.com/events')
 # |
+#
+#
+# * print using '.format' method
+# Similar to the '%' method used along with the print statements we can use the '.format' method also to use variables in print statements 
+# This is a very useful method which we can be used along with strng vaiables, lists, tuples and dictionary. 
+# 
+# Example : Below are few examples of how to  use the '.format' method along with 'print'
+#
+# | >>> 
+# | >>> variables = ('ajay', 'aparna', '0xhty', '1234')
+# | >>> print 'This is a message for : {0} {1} {2} {3}'.format(variables[0], variables[1], variables[2], variables[3])
+# | This is a message for : ajay aparna 0xhty 1234
+# | >>> 
+# | >>> 
+# | >>> test = 'ajay'
+# | >>> test_1 = 'aparna' 
+# | >>> print 'This is a test message for : {0} {1}'.format(test_1, test)
+# | This is a test message for : aparna ajay
+# | >>> 
+# | >>> 
+# | >>> name = {'name' : 'ajay', 'hobby' : 'cricket'}
+# | >>> print 'Mr : {0} likes to play {1}'.format(name['name'], name['hobby'])
+# | Mr : ajay likes to play cricket
+# | >>> 
 #
 #
 #
