@@ -2232,7 +2232,18 @@
 # | Mr : ajay likes to play cricket
 # | >>> 
 #
+# NOTE : When you are using python 3, you do not need to use the print statement because it will be using its own print methods 
 #
+# | profile_rest_api) [root@rhceclient01 profiles_api]# python 
+# | Python 3.6.5 (default, Apr 10 2018, 17:08:37) 
+# | [GCC 4.8.5 20150623 (Red Hat 4.8.5-16)] on linux
+# | Type "help", "copyright", "credits" or "license" for more information.
+# | >>> name = 'ajay'
+# | >>> 'Mr : {0} like to study'.format(name)
+# | 'Mr : ajay like to study'
+# | >>> 
+#
+# 
 #
 # . https://developers.google.com/edu/python/utilities
 # . https://docs.python.org/2/howto/logging.html
