@@ -845,3 +845,131 @@
 # | [root@sathsang sample_scripts]# 
 # | 
 #
+# -------- <<< STEP 7 - 8 dealing with PUT, PATCH and DELETE methods >>> ----------
+#
+# STEP 7 : Define PUT, PATCH and DELETE methods 
+# One you have define your GET and POST methods and its working then it is very easy to define the PUT, PATCH and DELETE methods 
+# When you define these three methdods you will need to mention a 'key' which needs to get updated, in our sample file we have used 'pl' with the method
+#
+# | $
+# | $  cat views.py 
+# | from django.shortcuts import render
+# | 
+# | from rest_framework.views import APIView		# This imports the APIView class from the django rest_framework views 
+# | from rest_framework.response import Response		# This will process output which we need to return in JSON format with status codes 
+# | from rest_framework import status			# This will help to return a status code for for API
+# | 
+# | from . import serializers
+# | 
+# | # Create your views here.
+# | 
+# | class HelloApiView(APIView):
+# |     """ Test API View """
+# | 
+# |     serializer_class = serializers.HelloSerializer
+# |     
+# |     def get(self, request, format=None):
+# |         """ Returns a list of APIView Features """
+# | 
+# |         an_apiview = [
+# |             'Uses HTTP methods as functions (get, post, patch, put , delete)',
+# |             'It is similar to traditional Django view',
+# |             'Gives you the most control over your application logic', 
+# |             'Its manually mapped to URLs'
+# |         ]
+# | 
+# |         family_details = {
+# |             'Father'   : 'Ajayaghosh V L',
+# |             'Mother'   : 'Aparna A',
+# |             'Daughter' : 'Vaiga Shanti A',
+# |             'Son'      : 'Rishi Krishna A',
+# |         }
+# | 
+# | 
+# |         # response has to be always send it a dictionary format, for that we will associate our list with a key as seen below 
+# |         return Response({'Message' : 'Hello, welcome to Ajay\'s first api endpoint', 'an_apiview': an_apiview, 'family_details' : family_details })
+# | 
+# |     def post(self, request):
+# |         """ This will return the same name which is getting pasted """
+# | 
+# |         """ Meaning of below is this will initialize the 'serializer' with HelloSerializer which we defined in the serializers.py in apps base dir
+# |             Also the 'request' will contain all information while we make a post request, amongst that actual data can be fetched out using 'request.data' """
+# |         serializer = serializers.HelloSerializer(data=request.data)
+# | 
+# |         if serializer.is_valid():
+# |             name = serializer.data.get('name') # With this 'name' variable which declared within 'HelloSerializer' will assigned to name variable here 
+# |             message = 'Hello {0}'.format(name) # Formatting technique in python 
+# |             return Response({'message': message})
+# |         else:
+# |             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) # This will retun error and HTTP status code using Response module
+# | 
+# |     def put(self, request, pk=None):                        # => PUT Method, here its only returns a message 
+# |         """ This method will help to update an object """
+# | 
+# |         return Response({"message" : "You have used the put method"})
+# | 
+# |     def patch(self, request, pk=None):                      # => PATCH Method, here its only returns a message 
+# |         """ This method will help to update few fields in the object """
+# | 
+# |         return Response({"message": "You have used the patch method"})
+# | 
+# |     def delete(self, request, pk=None):                     # => DELTE Method, here its only returns a message 
+# |         """ This methhod will help to delete an object """
+# | 
+# |         return Response({"message" : "This method will delete an object"})
+# | 
+# |         (profile_rest_api) [root@rhceclient01 profiles_api]# 
+# | $
+# | $
+#
+# STEP 8 : Now login to another host and test the newly defined PUT, PATCH and DELETE methods 
+#
+# | [root@sathsang sample_scripts]# cat  test_post_hello_api.py 
+# | #!/usr/bin/python
+# | #
+# | # Script to check the working status of hellp.api
+# | #
+# | 
+# | import requests 
+# | 
+# | #
+# | main_url = 'http://rhceclient01.svr.apac.sathsang.net:8080/api/'
+# | sub_url  = 'hello-view/'
+# | #
+# | def put_api_content(bae_api, api_key):
+# |     
+# |     full_url = bae_api + api_key
+# |     connect = requests.put(full_url, {'name': 'Ajayaghosh'})
+# |     print 'Output from put method \n {0}'.format(connect.json())
+# | 
+# | def patch_api_content(bae_api, api_key):
+# | 
+# |     full_url = bae_api + api_key
+# |     connect = requests.patch(full_url, {'name': 'Ajayaghosh'})
+# |     print 'Output from patch method \n {0}'.format(connect.json())
+# | 
+# | def delete_api_content(bae_api, api_key):
+# | 
+# |     full_url = bae_api + api_key
+# |     connect = requests.delete(full_url)
+# |     print 'Output from delete method \n {0}'.format(connect.json())
+# | 
+# | 
+# | put_api_content(main_url, sub_url)
+# | patch_api_content(main_url, sub_url)
+# | delete_api_content(main_url, sub_url)
+# | 
+# | [root@sathsang sample_scripts]# python test_post_hello_api.py 
+# | Output from put method 
+# |  {u'message': u'You have used the put method'}
+# | Output from patch method 
+# |  {u'message': u'You have used the patch method'}
+# | Output from delete method 
+# |  {u'message': u'This method will delete an object'}
+# | [root@sathsang sample_scripts]# 
+#
+#
+#
+#
+#
+
