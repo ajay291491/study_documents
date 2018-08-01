@@ -968,7 +968,7 @@
 # |  {u'message': u'This method will delete an object'}
 # | [root@sathsang sample_scripts]# 
 #
-#
+# NOTE : Practice more with the samples 
 #
 #
 #
