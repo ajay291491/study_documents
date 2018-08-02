@@ -1,0 +1,104 @@
+------------------------------------------------------
+                   * GIT Tips * 
+
+http://git-school.github.io/visualizing-git/ 
+https://chris.beams.io/posts/git-commit/
+------------------------------------------------------
+
+1. How to navigate the git man pages 
+
+$ man git 
+$ man git-config
+$ man giteveryday
+
+2. To check the current branch 
+
+$ git status 
+
+3. To get summary for modifiled files
+
+$ git status -s 
+
+4. To understand the difefrence with previously committed filed 
+
+$ git diff 
+
+5. To understand the logs 
+
+$ git log 		(detail)
+$ git log --oneline 	(summary)
+$ git log --stat	(detail with only filename)
+$ git log --patch 	(detail with filename and content)
+
+
+6.  Git commit guidelines
+https://chris.beams.io/posts/git-commit/
+
+7. How to to untrack a file within the project 
+
+$ git rm --cached <file_name>
+
+8. How to remove a file from git tracking 
+
+$ git rm <file_name>
+
+9. changing filename in git 
+
+$ git mv original_name new_file_name
+
+10. Git Mocking tool
+
+http://git-school.github.io/visualizing-git/ 
+
+11. Creating a new branch 
+
+$ git checkout -b <new_branch_name>
+
+12. switch to a existing branch 
+
+$ git checkout <branch_name>
+
+
+13. How to remove the untrack files in a branch 
+
+$ git add .
+$ git stash 
+$ git stash list  ( To see the list of 
+$ git stash show  ( Give the details of stashing)
+
+14. How to merge your branch  
+
+$ git checkout <branch to get merged > 
+$ git merge <branch is going to get merged>
+
+15. How to undo what you have done [ Destructive ] 
+
+$ git reset --soft   <Previous_commit_ID>  [ will take to the pre committed stage ] 
+$ git reset --mixed  <Previous_commit_ID>  [ will take to original workinf directory ]
+$ git reset --hard   [ Going to delete all commits, ,never use it until needed ] 
+
+$ git log --oneline [ To check the status 
+
+16.  How to setup Github client
+
+$ yum install git 													[ You need to have the git package instlled on the host ]
+$ git --version														[ To check the version of the git installed ]
+$ git config --global user.name <git_hub_username>					[ This will setup the github username where your code repository located ]
+$ git config --global user.email <registered_email_id>				[ This email will be used for Githib notifications ]
+$ git config --list													[ This will show the configuration we set on git ]
+$ git init 															[ This will initialize a repository ]
+$ git clone git@github.com:<git_user_name>/<git_repo_name>.git		[ This will clone the github repo your working node / puppet master ]
+$ git remote -v 														[ This will show, to which hub you are connected to ]
+$ git status															[ This will show if any changes due for commit ]
+
+Note : Above clone method is applicable for ssh key based communication method, if you are using https method then you need link the url which is in https format 
+
+17. How to make a change and update to code repository locally from node
+Once you have downloaded the code to node with the above steps then make the changes as required and follow below steps to commit the change
+
+$ git status 					This command will show you what all changes which pending to commit ] 
+$ git add <file_name>				[ This is required if you are planning to upload a new file which is pending for commit  and not already in code repo ]
+$ git commit -m "change description"		[ This will document the change will stage the code for push, but this will not submit the change ]
+$ git log 					[ This will help us get a hostory of the changes on the repo ] 
+$ git add remote add origin git@github.com:<git_user_name>/<git_repo_name>.git  [ This will add the remote repo to which you are going to make the change ]
+$ git push -u origin master 										
