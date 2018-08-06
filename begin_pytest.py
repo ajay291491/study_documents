@@ -63,8 +63,36 @@
 # . You may not write more of a unit test than it is sufficient to fail, this forces you to write only enough of test case for next test case. 
 # . You may not write more of a production code which is not sufficient to pass the current test case. 
 #
-# NOTE : Start from '2. Example for TDD session'
 #
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 2 - Overview of pytest
+#-------------------------------------------------------------------------------------------------------------
+#
+# * What is pytest
+# Below are the keys things about pytest 
+#
+#  . Pytest is a python unit testing framework
+#  . It provides ability to create tests functions, test modules, test fixtures and test classes 
+#  . Uses the built in python assert statement 
+#  . Also provides commandline parameters and utilities to understand what tests are executed in what order and also you can filter the output
+#
+# * How to create a Test using pytest
+# When you create a test case in python you will need to follow certain guidelines 
+# 
+# . Tests are python function which begins with 'test_' at the beginning of the function name 
+#   | Example : def test_my_function():'
+#
+# . Tests do verification of values using the standard python assert statement.
+#   | Example : below is sample test case 
+#   | def test_my_function(value): 
+#   |     assert value == 1
+#
+# . Similar tests can be grouped together by including them in similar class or module 
+#
+# * Few Examples of unit tests 
+#
+# NOTE : Continue from '4. Pytest Overview (from the middle where example satrts)
+# IMP  : Create virtual environment in any of the lab machine and work
 #
 #
 
