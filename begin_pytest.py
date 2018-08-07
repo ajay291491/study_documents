@@ -89,12 +89,147 @@
 #
 # . Similar tests can be grouped together by including them in similar class or module 
 #
-# * Few Examples of unit tests 
+# * Pytest - command
+# We can use the pytest command utility to run the unit tests from a commandline. 
+# This will give us the output in green if the test is OKAY and it will be giving RED if the test is failed. 
 #
-# NOTE : Continue from '4. Pytest Overview (from the middle where example satrts)
-# IMP  : Create virtual environment in any of the lab machine and work
+# Example : Below is a sample program we had written to test the unit test case for a program to find the multiple of 3. 
+#
+# | #!/usr/bin/python
+# | #
+# | import pytest
+# | 
+# | def check_multiple_of_three(number):
+# |     if (number % 3) == 0:
+# |         return "Yes"
+# | 
+# | def test_check_function():
+# |     retValue = check_multiple_of_three(5)
+# |     assert  retValue == "Yes"
+# | 
+#
+# NOTE : Below is the first run we are trying to run a RED Phase
+# 
+# | [root@sathsang py_test]# pytest -v unit_test_one.py 
+# | ==================================== test session starts ========================================================================================================================
+# | platform linux2 -- Python 2.7.13, pytest-3.7.1, py-1.5.4, pluggy-0.7.1 -- /usr/bin/python
+# | cachedir: .pytest_cache
+# | rootdir: /study_docs/python/py_test, inifile:
+# | collected 1 item                                                                                                                                                                                            
+# | 
+# | unit_test_one.py::test_check_function FAILED     [100%]
+# | ================================================ FAILURES ==============================================================================================================================
+# | ______________________ test_check_function ________________________________________________________________________________________________________________________
+# |
+# |    def test_check_function():
+# |        retValue = check_multiple_of_three(5)
+# | >       assert  retValue == "Yes"
+# | E       AssertionError: assert None == 'Yes'
+# | 
+# | unit_test_one.py:13: AssertionError
+# | ============================ 1 failed in 0.05 seconds ======================================================================================================================
+# | [root@sathsang py_test]# 
+#
+# NOTE : Now we are running a GREEN phase by making the code pass
+# 
+# | [root@sathsang py_test]# pytest -v unit_test_one.py 
+# | ================================================================= test session starts ========================================================================================================================
+# | platform linux2 -- Python 2.7.13, pytest-3.7.1, py-1.5.4, pluggy-0.7.1 -- /usr/bin/python
+# | cachedir: .pytest_cache
+# | rootdir: /study_docs/python/py_test, inifile:
+# | collected 1 item                                                                                                                                                                                    
+# | unit_test_one.py::test_check_function PASSED  [100%]
+# | 
+# | =========================================================== 1 passed in 0.03 seconds ======================================================================================================================
+# | [root@sathsang py_test]# 
+#
+# NOTE : Now we know why our code was failing in the RED phase and we will do REFACTOR to fix the code 
+#
+# | import pytest
+# | 
+# | def check_multiple_of_three(number):
+# |     if (number % 3) == 0:
+# |         return "Yes"
+# |     else:
+# |         return "Not"
+# | 
+# | def test_success_function():
+# |     retValue = check_multiple_of_three(9)
+# |     assert  retValue == "Yes"
+# | 
+# | def test_failure_function():
+# |     retValue = check_multiple_of_three(5)
+# |     assert  retValue == "Not"
+# | 
+#
+# NOTE : Now we are moving to the repeat phase 
+#
+# | [root@sathsang py_test]# pytest -v unit_test_one.py 
+# | ============================================================= test session starts ========================================================================================================================
+# | platform linux2 -- Python 2.7.13, pytest-3.7.1, py-1.5.4, pluggy-0.7.1 -- /usr/bin/python
+# | cachedir: .pytest_cache
+# | rootdir: /study_docs/python/py_test, inifile:
+# | collected 2 items                                                                                                                                                                                           
+# |
+# | unit_test_one.py::test_success_function PASSED      [ 50%]
+# | unit_test_one.py::test_failure_function PASSED      [100%]
+# | 
+# | ===================================================== 2 passed in 0.04 seconds ======================================================================================================================
+# | [root@sathsang py_test]# 
 #
 #
-
+# * Test Discovery
+# This is the process where pytest automatically detects the unit tests from a python program. 
+# For python to find test program, it need to be of either of the below catagory
+# 
+# . Pytest will automatically discover the program when you execute based on a standard naming convention
+# . Test function must include 'test' at the beginning of the function name, i.e like 'def test_even_numbers():'
+# . Classes should start with 'Test' at the biginning of the class and should not contain '__init__' method, i.e like 'class Test_Number_Series():'
+# . Filenames of test module should start and end with 'test', i.e like test_my_numbers.py or number_test.py
+#
+# --------------------------------------------------
+#   Type   |   Naming conventions     |   Supported 
+# --------------------------------------------------
+# Function     test_my_numbers():            Yes
+# Function     test_my_output():             Yes
+# Function     my_test_number():              No
+# Function     my_test_output():              No
+# Class        Test_My_Numbers():            Yes
+# class        Test_My_Logic():              Yes
+# class        My_Test_Number():              No
+# class        My_Test_output():              No
+# file         test_my_numbers.py            Yes
+# file         my_numbers_test.py            Yes
+# file         my_test_numbers.py             No
+#----------------------------------------------------
+#
+#
+# * Xunit setup and teardown functions 
+# One keys feature provided by all unit tests is running the setup code before and after the test. 
+# Pytest provides this functionality by Xunit setup and teardown function and with pytest fixtures. 
+#
+# Xunit teardown will help you run the codes before and after in below catagories 
+# . Test modules 
+# . Test functions 
+# . Test classes 
+# . Test method in test classes
+#
+# def setup_module():
+# def teardown_module():
+#
+# def setup_functions():
+# def teardown_functions():
+#
+# def setup_classes():
+# def teardown_classes():
+#
+# def setup_method():
+# def teardown_method():
+#
+# NOTE : Using these setup and teardown functions help reduce the code duplication by letting you to specify the setup and teardown functions once at each level as necessary. 
+#        This will help to avoid maniting the code at the individual unit tests and this will help to keep you code clean. 
+#
+# Continue : Xunit setup and teardown functions and practicals 
+#
 
 
