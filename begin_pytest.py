@@ -227,9 +227,61 @@
 # def teardown_method():
 #
 # NOTE : Using these setup and teardown functions help reduce the code duplication by letting you to specify the setup and teardown functions once at each level as necessary. 
-#        This will help to avoid maniting the code at the individual unit tests and this will help to keep you code clean. 
+#        This will help to avoid maintaining the code at the individual unit tests and this will help to keep you code clean. 
+# 
+# When you use setup and teardown functions you will follow below methods regardless it is for function, module, class and methods. 
 #
-# Continue : Xunit setup and teardown functions and practicals 
+# Example 1 : Below is an example of setup and teardown functions used for functions 
+#
+# | import pytest
+# | 
+# | def setup_function(function):                               ==> This is the setup function 
+# |     if function == test_myfunction_1:
+# |         print "\nGood : Ran setup on myfunction_1"
+# |     elif function == test_myfunction_2:
+# |         print  "\nGood : Ran setup on myfunction_2"
+# | 
+# | def teardown_function(function):                            ==> This is the teardown function 
+# |     if function == test_myfunction_1:
+# |         print "\nGood : Ran teardown on myfunction_1"
+# |     elif function == test_myfunction_2:
+# |         print  "\nGood : Ran teardown on myfunction_2"
+# | 
+# | def test_myfunction_1():                                    ==> Writing the test case 
+# |     assert True
+# | 
+# | def test_myfunction_2():                                    ==> Writing another test case 
+# |     pass
+# |     assert True
+#
+# below is the test result 
+# 
+# | [root@sathsang py_test]# pytest -v -s unit_test_one.py 
+# |============================================== test session starts ========================================================================================================================
+# | platform linux2 -- Python 2.7.13, pytest-3.7.1, py-1.5.4, pluggy-0.7.1 -- /usr/bin/python
+# | cachedir: .pytest_cache
+# | rootdir: /study_docs/python/py_test, inifile:
+# | collected 2 items                                                                                                                                                                                   
+# | 
+# | unit_test_one.py::test_myfunction_1                         ==> It picks up the "test_myfunction_1" and started processing  
+# | Good : Ran setup on myfunction_1                            ==> While running the test case it picks up the setup function intially and executes it 
+# | PASSED                                                      ==> Here test case being executed 
+# | Good : Ran teardown on myfunction_1                         ==> Once after the test case is executed it executes teardown function at last 
+# | 
+# | unit_test_one.py::test_myfunction_2 
+# | Good : Ran setup on myfunction_2
+# | PASSED
+# | Good : Ran teardown on myfunction_2
+# | 
+# | 
+# |=========================================== 2 passed in 0.14 seconds ======================================================================================================================
+# | [root@sathsang py_test]# 
+# | 
+#
+# Example 2 : Here we will test another class based Unit test 
+#
+#
+#
 #
 
 

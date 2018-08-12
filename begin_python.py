@@ -2243,12 +2243,41 @@
 # | 'Mr : ajay like to study'
 # | >>> 
 #
-# 
-#
 # . https://developers.google.com/edu/python/utilities
 # . https://docs.python.org/2/howto/logging.html
 # . Try and exception method
 # . https://www.youtube.com/watch?v=uKZ8GBKmeDM
+#
+#
+# * Lamda - Anonymous function 
+# Lambda is a way of creating anonymous functions in python which is another way called as throw away functions. 
+# Lambda is used in python programs to write simple functions which which doesn't have too much of complexity. 
+# Lambda is anonymous functions which go with the filter() and map() functions to create lists.
+# 
+# Its very usefully where we need to, 
+# 
+#  * Find only true values from a list using filter() and update the new list or variable 
+#  * Modify a list and store value to new list using map() and update the new list or varaible
+#
+# - Filer() function
+# 
+# | >>> my_list = ['2', '4', '6', '8', '9']
+# | >>> multiple_of_two_list = filter(lambda x: (int(x)%2 == 0), my_list)
+# | >>> print multiple_of_two_list
+# | ['2', '4', '6', '8']
+# | >>> 
+# 
+# - Map() function 
+#
+# | >>> my_list = ['2', '4', '6', '8', '9']
+# | >>> added_by_five_list = map(lambda x: (int(x) + 5), my_list)
+# | >>> print added_by_five_list
+# | [7, 9, 11, 13, 14]
+# | >>> 
+#
+# Useful links: 
+# URL : https://www.python-course.eu/list_comprehension.php 
+# URL : https://www.programiz.com/python-programming/anonymous-function
 #
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 18 - Writing test cases in python
