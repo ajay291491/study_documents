@@ -2163,14 +2163,202 @@
 #
 # - Files - Sending a multiparted encoded file 
 #
-# NOTE : Continue here 
-#
-#
 # NOTE : Continue from http://docs.python-requests.org/en/master/user/quickstart/#
 #
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 15 - Handling exceptions in python 
 #-------------------------------------------------------------------------------------------------------------
+# In Python there are two types of errors mainly to deal with 
+#
+# 1. Syntax Errors 
+# These errors are coming as part of the coding syntax errors which programmer himself need to rectify the code
+#
+# 2. Exception error : 
+# These errors are occured when there are some exception scenarios occured. 
+# For example, you have written a logic to deal with intigers where somehow a string is passed to process , this will throw an exception 
+# Being a programmer if you can think of various different exception possibilities which can occur then you can gracefully handle them using exception in python 
+# If you are not hadling exception, problem will be the error which thrown as a result of the executiion wont be able to understand by the end user.
+# 
+# Example : Lets take a look at where we are handling a program where there is exception and no exption 
+#
+# Sample 1. Without exception 
+# 
+# | first_number = input("Please enter the first nmumber : ")
+# | second_number = input("Please Enter the second number : ")
+# | result = (first_number/second_number)
+# | print (result)
+#
+# NOTE : Below is the output with various models of inputs 
+
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | Please enter the first nmumber : 1
+# | Please Enter the second number : 2
+# | 1
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | Please enter the first nmumber : 1
+# | Please Enter the second number : 0
+# | 1
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | Please enter the first nmumber : 0
+# | Please Enter the second number : 1
+# | Traceback (most recent call last):
+# |   File "begin_python.py", line 2187, in <module>
+# |     result = (first_number/first_number)
+# | ZeroDivisionError: integer division or modulo by zero
+# | [sathsang@sathsang python]$ 
+#
+# sample 2. Now lets write an excption and try to execute the program
+#
+# | first_number = input("Please enter the first nmumber : ")
+# | second_number = input("Please Enter the second number : ")
+# | result = None
+# | try: 
+# |     result = (first_number/second_number)
+# | except ZeroDivisionError as error:
+# |     print ("Error : You are trying to perform devision on zero - %s" %(error))
+# | print (result)
+#
+# NOTE : Below is the output 
+#
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | Please enter the first nmumber : 1
+# | Please Enter the second number : 2
+# | 0
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | Please enter the first nmumber : 2
+# | Please Enter the second number : 2
+# | 1
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | Please enter the first nmumber : 2
+# | Please Enter the second number : 0
+# | Error : You are trying to perform devision on zero - integer division or modulo by zero
+# | None
+# | [sathsang@sathsang python]$ 
+# | 
+#
+# Now you could see on the above example ZeroDivisionError is handled in a much elegant way
+#
+# * How to handle multiple exceptions in a programs 
+# It is possible that there can be multiple exception senarios you can come accross in a programs 
+# To deal with such programs you can define multiple exption to deal with the programs. 
+# Take a look at below programs to understand how to handle the same 
+#
+# Example : We will try to add TypeError exception also with above program to deal if any way someone input strings rather than digits 
+#
+# | first_number = 5
+# | second_number = 'ajay'
+# | result = None
+# | try: 
+# |     result = (first_number/second_number)
+# | except ZeroDivisionError as error:
+# |     print ("Error : You are trying to perform devision on zero - %s" %(error))
+# | except TypeError as error:
+# |     print ("Error : You are trying to pass strings to division operation - %s" %(error))
+# | print (result)
+#
+# NOTE : below is the output 
+#
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | Error : You are trying to pass strings to division operation - unsupported operand type(s) for /: 'int' and 'str'
+# | None
+# | [sathsang@sathsang python]$ 
+#
+# * How to write a generic exption to handle any errors 
+# Even though this is a recomended method, it is possible to handle all exception which arises as part of the programs 
+# You can have a generic exception as below to deal with such situations 
+#
+# Example : Below program can deal with any exception 
+#
+# | first_number = 5
+# | second_number = 'ajay'
+# | result = None
+# | try: 
+# |     result = (first_number/second_number)
+# | except Exception  as error:
+# |     print ("Error : Some error occured %s" %(error))
+# | print (result)
+#
+# NOTE : Below is the output for second_number as a string and a number 
+#
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | Error : Some error occured unsupported operand type(s) for /: 'int' and 'str'
+# | None
+# | [sathsang@sathsang python]$ vim begin_python.py 
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | Error : Some error occured integer division or modulo by zero
+# | None
+# | [sathsang@sathsang python]$
+#
+# NOTE : Do not write a generic exception in case it is not necessary 
+#
+# * How to use 'else' with exception 
+# In case you want to process some logic if the exception did not occured then you can use else statement along with exception 
+#
+# Example : We will modify the existing program to deal with an else statement along with exception 
+#
+# | first_number = input("Please enter the first nmumber : ")
+# | second_number = input("Please Enter the second number : ")
+# | try: 
+# |     result = (first_number/second_number)
+# | except ZeroDivisionError as error:
+# |     print ("Error : You are trying to perform devision on zero - %s" %(error))
+# | else: 
+# |     print ("Success : There is no exception occured and the result is .. \n{0}".format(result))
+#
+# NOTE : Compare below output to understand the difference in output 
+#
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | Please enter the first nmumber : 1
+# | Please Enter the second number : 2
+# | Success : There is no exception occured and the result is .. 
+# | 0
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | Please enter the first nmumber : 3
+# | Please Enter the second number : 4
+# | Success : There is no exception occured and the result is .. 
+# | 0
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | Please enter the first nmumber : 4
+# | Please Enter the second number : 2
+# | Success : There is no exception occured and the result is .. 
+# | 2
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | Please enter the first nmumber : 2
+# | Please Enter the second number : 0
+# | Error : You are trying to perform devision on zero - integer division or modulo by zero
+# | [sathsang@sathsang python]$ 
+#
+# *How to use 'finally'
+# In case you want to give a statement which want to execute always regardless exception occured or not, then you can use finally
+# Finally will just execute the logic given regardless if any exception occured or not 
+#
+# Example : See below example to understand how this works 
+#
+# | first_number = input("Please enter the first nmumber : ")
+# | second_number = input("Please Enter the second number : ")
+# | try: 
+# |     result = (first_number/second_number)
+# | except ZeroDivisionError as error:
+# |     print ("Error : You are trying to perform devision on zero - %s" %(error))
+# | else: 
+# |    print ("Success : There is no exception occured and the result is .. \n{0}".format(result))
+# | finally:
+# |     print ("INFO : This program completed")
+#
+# Below is the output 
+#
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | Please enter the first nmumber : 4
+# | Please Enter the second number : 2
+# | Success : There is no exception occured and the result is .. 
+# | 2
+# | INFO : This program completed
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | Please enter the first nmumber : 2
+# | Please Enter the second number : 0
+# | Error : You are trying to perform devision on zero - integer division or modulo by zero
+# | INFO : This program completed
+# | [sathsang@sathsang python]$ 
 #
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 16 - Python and database
@@ -2178,7 +2366,237 @@
 #
 # 
 #-------------------------------------------------------------------------------------------------------------
-# Chapter 17 - Common untilities and its use 
+# Chapter 17 - Working with multi directory python programs
+#-------------------------------------------------------------------------------------------------------------
+#
+#
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 18 - Lamda (List comprehension)
+#-------------------------------------------------------------------------------------------------------------
+#
+# * Lamda - Anonymous function 
+# Lambda is a way of creating anonymous functions in python which is another way called as throw away functions. 
+# Lambda is used in python programs to write simple functions which which doesn't have too much of complexity. 
+# Lambda is anonymous functions which go with the filter() and map() functions to create lists.
+# 
+# Its very usefully where we need to, 
+# 
+#  * Find only true values from a list using filter() and update the new list or variable 
+#  * Modify a list and store value to new list using map() and update the new list or varaible
+#
+# - Filer() function
+# 
+# | >>> my_list = ['2', '4', '6', '8', '9']
+# | >>> multiple_of_two_list = filter(lambda x: (int(x)%2 == 0), my_list)
+# | >>> print multiple_of_two_list
+# | ['2', '4', '6', '8']
+# | >>> 
+# 
+# - Map() function 
+#
+# | >>> my_list = ['2', '4', '6', '8', '9']
+# | >>> added_by_five_list = map(lambda x: (int(x) + 5), my_list)
+# | >>> print added_by_five_list
+# | [7, 9, 11, 13, 14]
+# | >>> 
+#
+# Useful links: 
+# URL : https://www.python-course.eu/list_comprehension.php 
+# URL : https://www.programiz.com/python-programming/anonymous-function
+#
+# NOTE : Alternate to lambda we can use the list comprehension method, which is described below 
+# URL : https://www.python-course.eu/list_comprehension.php
+#
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 19 - Magic variables  
+#-------------------------------------------------------------------------------------------------------------
+#
+# * Magic Variables -  *args and **kwargs in python explained
+# Most new python programmers have a hard time figuring out the *args and **kwargs magic variables. 
+# So what are they ? First of all let me tell you that it is not necessary to write *args or **kwargs. 
+# Only the * (aesteric) is necessary. You could have also written *var and **vars. Writing *args and **kwargs is just a convention. So now lets take a look at *args first.
+# 
+# *args    - This handles a list of undefined number of inputs 
+# **kwargs - This handles a dictionary of undefined inputs 
+# 
+# . Usage of *args 
+# '*args and **kwargs' are mostly used in function definitions. 
+# '*args and **kwargs' allow you to pass a variable number of arguments to a function. 
+# What does variable mean here is that you do not know before hand that how many arguments can be passed to your function by the user so in this case you use these two keywords. 
+# 
+# Example : Below example will show us an example about *args
+# 
+# | def print_my_inputs(first_argument, *args):
+# |     print ("My first argument is : {0}".format(first_argument,))                => Kept this to make understand along with *args we can pass other arguments in begining
+# |     counter = 1
+# |     for other_argument in args:
+# |         print ("{0}. Other argument is : {1}".format(counter, other_argument))
+# |         counter += counter
+# | 
+# | print_my_inputs('hello', 'how', 'are', 'you')
+# | 
+#
+# Output for above script as below 
+#
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | My first argument is : hello
+# | 1. Other argument is : how
+# | 2. Other argument is : are
+# | 4. Other argument is : you
+# | [sathsang@sathsang python]$ 
+#
+# . Usage of **kwargs
+# **kwargs can be used if you want to pass keyword arguments where you do not know in hand how many variables are going to be there to pass it to a function. 
+# This will help you to handle many arguments together with the keyword arguments. 
+# 
+# Example : Below example can be used for explaining **kwargs
+# 
+# | def print_my_inputs(first_argument, **kwargs):
+# |    print ("My first argument is : {0}".format(first_argument,))
+# |    counter = 1
+# |    if kwargs is not None: 
+# |        for keys, values in kwargs.items():
+# |            print ("{0} : Key and Value is {1} => {2}".format(counter, keys, values))
+# |            counter += counter
+# |
+# | print_my_inputs('first_one', fruit='apple', rice='brown', currey='avial')
+#
+# Output as below 
+#
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | My first argument is : first_one
+# | 1 : Key and Value is currey => avial
+# | 2 : Key and Value is rice => brown
+# | 4 : Key and Value is fruit => apple
+# | [sathsang@sathsang python]$
+#
+# . Order of using *args **kwargs and formal args
+# In case you want to call fixed arguments, *args and **kwargs together then you will need follow below order 
+#
+#  | some_func(fxed_args,*args,**kwargs)
+#
+# In case there is no fixed argumet and only *args and **kwargs are there, then you will need to use below 
+# 
+# | some_func=(*args,**kwargs)
+#
+# Refrence : 'https://pythontips.com/2013/08/04/args-and-kwargs-in-python-explained/'
+#
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 20 - Decorator
+#-------------------------------------------------------------------------------------------------------------
+#
+# Reference : https://www.youtube.com/watch?v=nYDKH9fvlBY
+#
+# * What is decorator
+# Decorator is a function that takes function as an argument and return another function as the result.
+# Decorators will help you to wrap your function in another function. 
+# Python has a special syntax for decorator something like '@my_decorator', which is syntactically equal to  
+# Decorator normally has an 'inner wrapper' function, which calls the decorated function and adds some functionalities to it.
+#
+# * Sample representation of decorator 
+#
+# | def decorator_func_name(input_function_to_decorator):
+# |
+# |    def inner_wrapper_function(*args, **kwargs):
+# |        < some_steps_to_execute >
+# |        < process input_function_to_decorator(*args, **kwargs) > 
+# |        < remaining_steps_to_execute >
+# |
+# |    return inner_wrapper_function
+# |
+# | @decorator_func_name
+# | def input_function_to_decorator():
+# |    < some_steps_to_execute >
+# |    < some_steps_to_execute >
+# |
+#
+# NOTE : When we represent "@decorator_func_name" it equal to "decorator_func_name = decorator_func_name(input_function_to_decorator)"
+#
+# * What is the advantages of having a decorated function 
+# Decorators will help you to solve some problems which will help you to write better code
+#
+# . Avoid code duplication - By taking out the repeating codes under decorator and call decorator instead for such functionalities.
+# . Keep the logical flow  - This will help you to keep the logical flow of the original function by taking out other common functionalities such as logging, timing etc 
+#
+# * Commom use cases 
+# When it comes to programming, we will be often deal with logging and timing for functions. 
+# If we do not use a decorator function this will be a difficult situations where we need to write the same functionalities in different functions many times inside. 
+# Lets take an example for logging, how many times we will be using logging in a program. 
+# To deal with such problems we will write a decorator function which will deal with logging for every function which call in the function. 
+# 
+# Example : We will take a scenario below to understand the decorator concept using a program which retuns the timer. 
+#
+# STEP 1 : Here we are defining function without decorator 
+#
+# | import time
+# |
+# | def square_of_number():
+# |
+# |     result = []
+# |     start_time = time.time()
+# |     number_list = range(1, 5000)
+# |     for number in number_list:
+# |         square = (number * number)
+# |         result.append(square) 
+# |     end_time = time.time()
+# |     print ("Time Took to process the function is : " + str(((end_time - start_time)) * 10000) + " Millisecond") 
+# |     return result
+# |
+# | def cube_of_number():
+# | 
+# |     result = []
+# |     start_time = time.time()
+# |     number_list = range(1, 5000)
+# |     for number in number_list:
+# |         cube = (number * number * number)
+# |         result.append(cube)
+# |     end_time = time.time()
+# |     print ("Time Took to process the function is : " + str(((end_time - start_time)) * 10000) + " Millisecond")    
+# |     return result
+# |
+# | square_of_number()
+# | cube_of_number()
+#    
+# NOTE : In the above example you can see we are using the timer function twice on both functions
+#
+# STEP 2 : Avoid code duplication using decorator 
+#
+# | import time
+# | 
+# | def check_timer(input_function):                      => This is the decorator function 
+# |     
+# |     def timer(*args, **kwargs):                       => This is the wrapper function inside the decorator, which is a mandatory requirement
+# |         start_time = time.time()
+# |         result     = input_function(*args, **kwargs)  => Here we are actually processing the function which has given as a input to decorator 
+# |         end_time   = time.time()
+# |         print ("Time Took to process the function is : " + str(((end_time - start_time)) * 10000) + " Millisecond")
+# |     return timer                                      => Here we are retrung the wrapper function from the decorator  
+# | 
+# | @check_timer                                          => Here we are calling the decorator, this is equal to 'check_timer = check_timer(square_of_number)' 
+# | def square_of_number():
+# | 
+# |     result = []
+# |     number_list = range(1, 5000)
+# |     for number in number_list:
+# |         square = (number * number)
+# |         result.append(square)
+# |     return result
+# | 
+# | @check_timer
+# | def cube_of_number():                                => Here we are calling the decorator, this is equal to 'check_timer = check_timer(cube_of_number)'
+# | 
+# |     result = []
+# |     number_list = range(1, 5000)
+# |     for number in number_list:
+# |         cube = (number * number * number)
+# |         result.append(cube)
+# |     return result
+# | 
+# | square_of_number()
+# | cube_of_number()
+#
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 21 - Common untilities and its use 
 #-------------------------------------------------------------------------------------------------------------
 #
 # * pprint - pretty printer 
@@ -2248,41 +2666,28 @@
 # . Try and exception method
 # . https://www.youtube.com/watch?v=uKZ8GBKmeDM
 #
+# *  __name__ operator 
+# This is used to fetch the name of the function, this will be useful to understand the name of the function when you execute the program 
+# This is verify useful when it comes to logging 
 #
-# * Lamda - Anonymous function 
-# Lambda is a way of creating anonymous functions in python which is another way called as throw away functions. 
-# Lambda is used in python programs to write simple functions which which doesn't have too much of complexity. 
-# Lambda is anonymous functions which go with the filter() and map() functions to create lists.
-# 
-# Its very usefully where we need to, 
-# 
-#  * Find only true values from a list using filter() and update the new list or variable 
-#  * Modify a list and store value to new list using map() and update the new list or varaible
+# | def my_decorator(function):
+# |     def inner_func():
+# |         process = function()
+# |         print ("I am currently in " + inner_func.__name__)
+# |     return inner_func
+# | 
+# | @my_decorator
+# | def print_my_function_name():
+# |     print ("hello")
+# | 
+# | print_my_function_name()
 #
-# - Filer() function
-# 
-# | >>> my_list = ['2', '4', '6', '8', '9']
-# | >>> multiple_of_two_list = filter(lambda x: (int(x)%2 == 0), my_list)
-# | >>> print multiple_of_two_list
-# | ['2', '4', '6', '8']
-# | >>> 
-# 
-# - Map() function 
+# Below is the output 
 #
-# | >>> my_list = ['2', '4', '6', '8', '9']
-# | >>> added_by_five_list = map(lambda x: (int(x) + 5), my_list)
-# | >>> print added_by_five_list
-# | [7, 9, 11, 13, 14]
-# | >>> 
+# | [sathsang@sathsang python]$ python begin_python.py 
+# | hello
+# | I am currently in inner_func
+# | [sathsang@sathsang python]$
 #
-# Useful links: 
-# URL : https://www.python-course.eu/list_comprehension.php 
-# URL : https://www.programiz.com/python-programming/anonymous-function
-#
-#-------------------------------------------------------------------------------------------------------------
-# Chapter 18 - Writing test cases in python
-#-------------------------------------------------------------------------------------------------------------
-#
-# https://jeffknupp.com/blog/2013/12/09/improve-your-python-understanding-unit-testing/
 #
 #-------------------------------------------------------------------------------------------------------------
