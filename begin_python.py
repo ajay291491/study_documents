@@ -2363,12 +2363,54 @@
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 16 - Python and database
 #-------------------------------------------------------------------------------------------------------------
+# In this leacture will be giving some details about main database concepts
 #
+# * Inner Join 
+# When you combine two database, inner join is the table which has data in common. 
+# To Write the a inner join query, lets say an example you have two database like customer details and their address details 
+# You can do a inner join to get the data in common for their place or name with matching address. 
+# 
+# * Outer Join 
+# When you need data which are not in common then you will need to perform queries which are not in common. 
+#
+# * Left Join 
+# Left join will give data  for complete table on the left side along with matching data from the right side table 
+# Here left and right are determined based on the place where it comes in the query 
+#
+# * Right Join 
+# Right Join will give complete data for the right side table along with the data in common. 
+# Here left and right are detrmoned based on the position on the query 
+#
+# Reference : https://www.w3schools.com/sql/sql_join.asp  [ W3 School ]
+# Reference : https://dev.mysql.com/doc/connector-python/en/connector-python-tutorials.html [ Sample python scripts ]
+# Reference : https://www.youtube.com/watch?v=2HVMiPPuPIM [ Regarding Joins ]
+# Reference : https://pythonprogramming.net/mysql-intro/  [ My SQL ]
+# reference : https://pythonprogramming.net/sql-database-python-part-1-inserting-database/ [ SQL Lite ]
 # 
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 17 - Working with multi directory python programs
 #-------------------------------------------------------------------------------------------------------------
 #
+# Project/
+# |------/main.py
+# |------/setup.py
+# |------/Directory1/
+# |      |----------/module1.py
+# |      |----------/module2.py
+# |      |----------/SubDirectory1/
+# |                 |-------------/submodule1.py
+# |                 |-------------/submodule2.py  
+# |      |----------/Package1/
+# |                 |--------/__init__.py
+# |                 |--------/pModule1.py
+# |                 |--------/pModule2.py
+# |------/Directory2/    
+# |      |----------/__init__.py
+# |      |----------/myClass1.py
+# |      |----------/myClass2.py
+# |      |----------/Subdirectory2/
+# |                 |-------------/submodule3.py
+# |                 |-------------/submodule4.py    
 #
 #-------------------------------------------------------------------------------------------------------------
 # Chapter 18 - Lamda (List comprehension)
