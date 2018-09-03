@@ -968,8 +968,179 @@
 # |  {u'message': u'This method will delete an object'}
 # | [root@sathsang sample_scripts]# 
 #
-# NOTE : Practice more with the samples 
 #
+#-------------------------------------------------------------------------------------------------------------
+# Chapter 4 : Django REST Framework Views - Viewsets
+#-------------------------------------------------------------------------------------------------------------
+# Similar to apiview, django provides another method of designing an API which is called viewset. 
+# Viewset will also help to find the endpoint which is written in the fucntion. 
+# 
+# There are couple of adavanatges and use cases which makes us to use Viewset over APIView, few are 
 #
+# . Viewsets uses Model operations functions instead of the http methods Viewsets provoides some default object along with the APIs, few of the operations it provides are 
+# - List           : For geting a list of objects 
+# - Create         : Creating a new object 
+# - Retrive        : Retrive a new object 
+# - Update         : For updating an object
+# - Partial Update : For updating part of an object 
+# - Destroy        : To delete an object
 #
+# Along with this Viewsets will take care of standard logic for you 
+# - They are perfect for running standard database operation 
+# - They are the fatest way to interact with the database backend
+# 
+# * Example of using viewsets 
+# Below are few examples or use cases we are given along with the viewsets 
+# - In case we need a simple Create, Read, Update and Delete operation with the database. 
+# - In case you want a quick and simple API to manage predefined object 
+# - You need little or no custom logic to the embedded logic within Django 
+# - In case you are working with a standard data structure 
+# 
+# * Creating a API ViewSet
+# We will be going through a step by step procedure to create a viewset
+# 
+# STEP 1 : Creating Views under the apps views.py file 
+# In our case we will be updating the views.py under or apps directory '/opt/django_project/profile-rest-api/src/profiles_project/profiles_api/views.py' 
+# Additional to the classes we defined earlier to the APIview we will including one more class for viewset 
+# 'from rest_framework import viewsets' , This will help us to get the viewset configured 
+# 
+# | $
+# | $ vim /opt/django_project/profile-rest-api/src/profiles_project/profiles_api/views.py
+# | from django.shortcuts import render
+# | 
+# | from rest_framework.views import APIView		# This imports the APIView class from the django rest_framework views 
+# | from rest_framework.response import Response	# This will process output which we need to return in JSON format with status codes
+# | from rest_framework import status		        # This will help to return a status code for for API
+# | from rest_framework import viewsets                 # ** This module will take care of the Viewset operations **
+# | 
+# | from . import serializers
+# | 
+# | # Create your views here.
+# | 
+# | class HelloApiView(APIView):                        # ==> This is the carry over class already defined for APIView and not relevant for this session
+# |     """ Test API View """
+# | 
+# |     serializer_class = serializers.HelloSerializer
+# |     
+# |     def get(self, request, format=None):
+# |         """ Returns a list of APIView Features """
+# | 
+# |         an_apiview = [
+# |             'Uses HTTP methods as functions (get, post, patch, put , delete)',
+# |             'It is similar to traditional Django view',
+# |             'Gives you the most control over your application logic', 
+# |             'Its manually mapped to URLs'
+# |         ]
+# | 
+# |         family_details = {
+# |             'Father'   : 'Ajayaghosh V L',
+# |             'Mother'   : 'Aparna A',
+# |             'Daughter' : 'Vaiga Shanti A',
+# |             'Son'      : 'Rishi Krishna A',
+# |         }
+# | 
+# |         fstab_file = open('/etc/fstab', 'r')
+# |         content = fstab_file.readlines()
+# | 
+# | 
+# |         # response has to be always send it a dictionary format, for that we will associate our list with a key as seen below 
+# |         #return Response({'Message' : 'Hello, welcome to Ajay\'s first api endpoint', 'an_apiview': an_apiview, 'family_details' : family_details , 'fstab' : content})
+# |         return Response({'fstab contents' : content})
+# | 
+# |     def post(self, request):
+# |         """ This will return the same name which is getting pasted """
+# | 
+# |         """ Meaning of below is this will initialize the 'serializer' with HelloSerializer which we defined in the serializers.py in apps base dir
+# |             Also the 'request' will contain all information while we make a post request, amongst that actual data can be fetched out using 'request.data' """
+# |         serializer = serializers.HelloSerializer(data=request.data)
+# | 
+# |         if serializer.is_valid():
+# |             name = serializer.data.get('name') # With this 'name' variable which declared within 'HelloSerializer' will assigned to name variable here 
+# |             message = 'Hello {0}'.format(name) # Formatting technique in python 
+# |             return Response({'message': message})
+# |         else:
+# |             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) # This will retun error and HTTP status code using Response module
+# | 
+# |     def put(self, request, pk=None):
+# |         """ This method will help to update an object """
+# | 
+# |         return Response({"message" : "You have used the put method"})
+# | 
+# |     def patch(self, request, pk=None):
+# |         """ This method will help to update few fields in the object """
+# | 
+# |         return Response({"message": "You have used the patch method"})
+# | 
+# |     def delete(self, request, pk=None):
+# |         """ This methhod will help to delete an object """
+# | 
+# |         return Response({"message" : "This method will delete an object"})
+# | 
+# |         
+# | 
+# | class HellowViewSet(viewsets.ViewSet):                      ==> Creating View set for our requirement
+# |     """Test Hello Viewset"""
+# | 
+# |     def list (self, request):
+# |         """Return a Hello Message"""
+# |         a_viewset = [
+# |             "Uses actions (list, create, retrieve, update, partial_update",
+# |             "Automatically maps URLs using routers",
+# |             "Provide more functionality with less code",
+# |         ]
+# | 
+# |         return Response({'message' : 'This is a viewset', 'a_viewset': a_viewset})
+# |
+# | $ 
+#
+# STEP 2 : Configure using URL routers
+# Using routers you can easily map your class to the API urls. This is an important feature provided for ViewSets.
+# To do this what you need to do is, you will need to navigate to the apps dirctory and open the urls.py file 
+#
+# NOTE : You will need to update the application url.py file not the project file 
+#
+# Below is the sample configuration for urls.py 
+#
+# | root@rhceclient01 profiles_api]# 
+# | [root@rhceclient01 profiles_api]# cat /opt/django_project/profile-rest-api/src/profiles_project/profiles_api/urls.py 
+# | from django.conf.urls import url	                # This module is to handle the url
+# | from django.conf.urls import include                # Using for including the router.urls for ViewSet
+# | from rest_framework.routers import DefaultRouter    # Importing the DefaultRouter class to handle urls for ViewSet
+# | 
+# | from . import views			        # We are importing views.py in our apps base directory here
+# | 
+# | # Creating a router object from DefaultRouter class and mapping 'views.HellowViewSet' class with base name 'hello-viewset'
+# | router = DefaultRouter()
+# | router.register('hello-viewset', views.HellowViewSet, base_name='hello-viewset')
+# | 
+# | urlpatterns = [ 
+# |     
+# |     # Using the url module, we are defining the api view 'hello-view/'
+# |     # hello-view will display the get method defined under the HelloApiView class under the 'views.py' as the view
+# |     url(r'^hello-view/', views.HelloApiView.as_view()),
+# | 
+# |     # Here we are making the advntage of include module and DefaultRouter class
+# |     # Using this urls will automatically mapped according to how they are associated to objects
+# |     url(r'', include(router.urls))
+# |     ]
+# | 
+# | 
+# | [root@rhceclient01 profiles_api]# 
+# | [root@rhceclient01 profiles_api]# 
+# | 
+#
+# STEP 3 : Once this done verify the Django server is running fine without any error and test the api
+# Once verified the django server is running successfully, query the site as below 
+#
+# | >>> from pprint import pprint 
+# | >>> import requests
+# | >>> connect = requests.get('http://djangorestapi01.svr.apac.sathsang.net:8080/api/hello-viewset/')
+# | >>> print(connect.status_code)
+# | 200
+# | >>> pprint(connect.json())
+# | {u'a_viewset': [u'Uses actions (list, create, retrieve, update, partial_update',
+# |                 u'Automatically maps URLs using routers',
+# |                 u'Provide more functionality with less code'],
+# |  u'message': u'This is a viewset'}
+# | >>> 
 
