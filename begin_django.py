@@ -3,6 +3,20 @@
 #                                           Python and Django
 #
 #-------------------------------------------------------------------------------------------------------------
+# Before you start - Understand these terms
+#-------------------------------------------------------------------------------------------------------------
+# * Parser, Renderer and Seralizer 
+# When you work with a REST API framework we should understand few concepts 
+# 
+# JSONparser : Parser will help to parse the incoming data into JSON format
+# JSONrender : Render will help to return the data in a JSON format
+# 
+# Seralizer  : This is a class available in Django which helps to do the Parser and Render operations 
+#
+# For more details on this please refer : 
+# URL : https://stackoverflow.com/questions/35669322/difference-between-jsonparser-and-jsonrenderer
+#
+#-------------------------------------------------------------------------------------------------------------
 # Chapter 1 : Setting up a Django environment
 #-------------------------------------------------------------------------------------------------------------
 # Django is a popular web framework which is available with python. Django also provides a REST API framwork.
@@ -1129,7 +1143,7 @@
 # | [root@rhceclient01 profiles_api]# 
 # | 
 #
-# STEP 3 : Once this done verify the Django server is running fine without any error and test the api
+# Once this done verify the Django server is running fine without any error and test the api
 # Once verified the django server is running successfully, query the site as below 
 #
 # | >>> from pprint import pprint 
@@ -1143,4 +1157,158 @@
 # |                 u'Provide more functionality with less code'],
 # |  u'message': u'This is a viewset'}
 # | >>> 
-
+#
+# STEP 3 : Update other methods HTTP methods
+# Now we have a working viewset with a create methods. 
+# Lets go ahead and extend that view for other methods available, before we start configuring lets understand and map various viewset method with actual http methods 
+# 
+# . create          - This is the 'POST' method, which can help you to create a new object, this do not need a Pk while defining.
+# . retrieve        - This is the 'GET' method, which can help you to even retive based on the 'primary key (PK)' defined.
+# . update          - This is the 'PUT' method, which can help you to update an object with its 'Primary Key (PK)' defined.
+# . partial_update  - This is the 'PATCH' method , which can help you to partially update the object with its 'Primary Key(PK)' defined. 
+# . destroy         - This is the 'DELETE' method, which can help you to delete an object with the 'Primary Key (PK)' defined.
+#
+# NOTE : While defining these methods in the views.py of application, make sure you are not making any spelling mistakes to these names. 
+#        If there are spelling mistakes then these methods might not work
+#
+# PK : You will require a 'Primary Key' with all other methods except 'create' mthods since its all based on some action.
+#
+# Example : Below is a sample 'views.py' file which configured with viewset, look at the 'HelloViewSet' class
+#
+# | [root@djangorestapi01 ~]# more /opt/django_project/profile-rest-api/src/profiles_project/profiles_api/views.py 
+# | from django.shortcuts import render
+# | 
+# | from rest_framework.views import APIView		# This imports the APIView class from the django rest_framework views 
+# | from rest_framework.response import Response	# This will process output which we need to return in JSON format with status codes
+# | from rest_framework import status			    # This will help to return a status code for for API
+# | 
+# | from rest_framework import viewsets              # This module will take care of the Viewset operations
+# | 
+# | from . import serializers
+# | 
+# | # Create your views here.
+# | 
+# | class HelloApiView(APIView):
+# |     """ Test API View """
+# | 
+# |     serializer_class = serializers.HelloSerializer
+# |     
+# |     def get(self, request, format=None):
+# |         """ Returns a list of APIView Features """
+# | 
+# |         an_apiview = [
+# |             'Uses HTTP methods as functions (get, post, patch, put , delete)',
+# |             'It is similar to traditional Django view',
+# |             'Gives you the most control over your application logic', 
+# |             'Its manually mapped to URLs'
+# |         ]
+# | 
+# |         family_details = {
+# |             'Father'   : 'Ajayaghosh V L',
+# |             'Mother'   : 'Aparna A',
+# |             'Daughter' : 'Vaiga Shanti A',
+# |             'Son'      : 'Rishi Krishna A',
+# |         }
+# | 
+# |         fstab_file = open('/etc/fstab', 'r')
+# |         content = fstab_file.readlines()
+# | 
+# | 
+# |         # response has to be always send it a dictionary format, for that we will associate our list with a key as seen below 
+# |         #return Response({'Message' : 'Hello, welcome to Ajay\'s first api endpoint', 'an_apiview': an_apiview, 'family_details' : family_details , 'fstab' : content})
+# |         return Response({'fstab contents' : content})
+# | 
+# |     def post(self, request):
+# |         """ This will return the same name which is getting pasted """
+# | 
+# |         """ Meaning of below is this will initialize the 'serializer' with HelloSerializer which we defined in the serializers.py in apps base dir
+# |             Also the 'request' will contain all information while we make a post request, amongst that actual data can be fetched out using 'request.data' """
+# |         serializer = serializers.HelloSerializer(data=request.data)
+# | 
+# |         if serializer.is_valid():
+# |             name = serializer.data.get('name') # With this 'name' variable which declared within 'HelloSerializer' will assigned to name variable here 
+# |             message = 'Hello {0}'.format(name) # Formatting technique in python 
+# |             return Response({'message': message})
+# |         else:
+# |             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) # This will retun error and HTTP status code using Response module
+# | 
+# |     def put(self, request, pk=None):
+# |         """ This method will help to update an object """
+# | 
+# |         return Response({"message" : "You have used the put method"})
+# | 
+# |     def patch(self, request, pk=None):
+# |         """ This method will help to update few fields in the object """
+# | 
+# |         return Response({"message": "You have used the patch method"})
+# | 
+# |     def delete(self, request, pk=None):
+# |         """ This methhod will help to delete an object """
+# | 
+# |         return Response({"message" : "This method will delete an object"})
+# | 
+# |         
+# | 
+# | class HellowViewSet(viewsets.ViewSet):
+# |     """Test Hello Viewset"""
+# | 
+# |     serializer_class = serializers.HelloSerializer
+# | 
+# |     def list (self, request):
+# |         """Return a Hello Message"""
+# | 
+# |         a_viewset = [
+# |             "Uses actions (list, create, retrieve, update, partial_update", "destroy"
+# |             "Automatically maps URLs using routers",
+# |             "Provide more functionality with less code",
+# |         ]
+# |         return Response({'message' : 'This is a viewset', 'a_viewset': a_viewset})
+# | 
+# |     def create(self, request):
+# |         """Create a new hello message """
+# | 
+# |         serializer = serializers.HelloSerializer(data=request.data)
+# |         if serializer.is_valid():
+# |             name = serializer.data.get('name')
+# |             message = "Hello {0}".format(name)
+# |             return Response({'message' : message})
+# |         else:
+# |             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# | 
+# |     def retrieve(self, request, pk=None):
+# |         """Retrieves an object by its ID
+# |            Here PK means the primary key"""
+# | 
+# |         return Response({'http_method' : 'GET'})
+# | 
+# |     def update(self, request, pk=None):
+# |         """Handle update to an object"""
+# | 
+# |         return Response({'http_method' : 'PUT'})
+# | 
+# | 
+# |     def partial_update(self, request, pk=None):
+# |         """Handle updating part of an object """
+# | 
+# |         return Response({'http_method' : 'PATCH'})
+# | 
+# |     def destroy(self, request, pk=None):
+# |         """Handles destroying an object"""
+# | 
+# |         return Response({'http_method' : 'DELETE'})
+# | [root@djangorestapi01 ~]#         
+# | 
+#
+# STEP 4 : Check Django HTTP server is still running without any error 
+# 
+# | 
+# | System check identified no issues (0 silenced).
+# | September 10, 2018 - 23:53:25
+# | Django version 1.11, using settings 'profiles_project.settings'
+# | Starting development server at http://0.0.0.0:8080/
+# | Quit the server with CONTROL-C.
+# | 
+#
+# STEP 5 : Now test various methods of your API viewset using a python request module 
+#
+# Write program and update 
