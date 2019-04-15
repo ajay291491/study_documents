@@ -1489,6 +1489,19 @@
 # | [root@ansiblemaster01 facter_testing]# 
 # | 
 #
+# * Using filter in command line. 
+# You can use filter command in the anisble command line to hit a perticular key in the facter output 
+#
+# | [root@ansiblemaster01 facter_testing]# ansible -m setup clientnode01.svr.apac.sathsang.net -a 'filter=ansible_local'
+# | clientnode01.svr.apac.sathsang.net | SUCCESS => {
+# |     "ansible_facts": {
+# |         "ansible_local": {}
+# |     }, 
+# |     "changed": false
+# | }
+# | [root@ansiblemaster01 facter_testing]# 
+# | 
+
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
