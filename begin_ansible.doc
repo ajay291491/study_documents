@@ -134,7 +134,7 @@
 #
 #
 # ----------------------------------------------------------------------------------------------------------------------------------------
-# Chapter 02:01 : Ansible architecure and design - Inventory
+# Chapter 02 : Ansible architecure and design - Inventory
 # ----------------------------------------------------------------------------------------------------------------------------------------
 #
 # * Ansible Inventory
@@ -421,7 +421,7 @@
 # URL  : https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html
 #
 # ----------------------------------------------------------------------------------------------------------------------------------------
-# Chapter 02:02 : Ansible architecure and design - Modules
+# Chapter 03: Ansible architecure and design - Modules
 # ----------------------------------------------------------------------------------------------------------------------------------------
 #
 # * Idempotency
@@ -550,7 +550,7 @@
 # Syntax : ansible-playbook <module_name>
 #
 # ----------------------------------------------------------------------------------------------------------------------------------------
-# Chapter 02:03 : Ansible architecure and design - YAML
+# Chapter 04 : Ansible architecure and design - YAML
 # ----------------------------------------------------------------------------------------------------------------------------------------
 #
 # * YAML playbook structure 
@@ -701,7 +701,7 @@
 # | #
 #
 # ----------------------------------------------------------------------------------------------------------------------------------------
-# Chapter 02:04 : Ansible playbook and structuring
+# Chapter 05 : Ansible playbook and structuring
 # ----------------------------------------------------------------------------------------------------------------------------------------
 # In this secton, we will talk about various different things in ansible playbook such as, 
 #
@@ -1054,7 +1054,7 @@
 # NOTE : Roles will be discussed later 
 #
 # ----------------------------------------------------------------------------------------------------------------------------------------
-# Chapter 02:05 : Ansible Playbooks, Breakdown of Sections
+# Chapter 06 : Ansible Playbooks, Breakdown of Sections
 # ----------------------------------------------------------------------------------------------------------------------------------------
 # * Variables - Handling variables in an advance ways
 # When it comes to variables you will be able to handle many different formats such as list, dictionary and string variables in an YAML playbook.
@@ -1377,10 +1377,117 @@
 # | [root@clientnode03 ~]# 
 # | 
 #
-
+# * Handling variable hierarchy in Ansible 
+# In puppet you might have heared about Hiera which helps you to assign variables in a hierarchichal model. 
+# Similar to that in ansible also you can create hierarchichal variables using 'Groupvars' and 'Hostvars'.
+#
+# * Group_Vars : This will help to assign variables to one group or all hosts in the scope based on how you use the method
+# . /etc/ansible/group_vars/all.yml 		=> This will hold all the common variables which can be common across every node
+# . /etc/ansible/group_vars/<group_name>.yml	=> This can contain the variable details for host groups, which can be commonly applied accross that group
+#
+# * Host_Vars : This will help to assign variables which is specific to the hosts, you can created the variable file on below path 
+# . /etc/ansible/group_vars/<host_name>.yml
 #
 #
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# Chapter 07 : Creating custom facts in ansible 
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# If you want to create a custom facts in ansible then you will need to write a script in shell, perl or python which given you the output in Json format
+# You should always make sure the custom facts are placed in the "/etc/ansible/facts.d/ location. 
+# This is the default location where ansible looks for the custom facts, though you can mention other location and direct ansible to look at that path. 
 #
+# . Path : /etc/ansible/facts.d/
+# . facts variable : ansible_local
+#
+# Example Below is sample play book where we written the custom facts. 
+#
+# | [root@ansiblemaster01 facter_testing]# cat  /etc/ansible/facts.d/logged_user.sh 
+# | #!/bin/bash
+# | logged_user=$(who am i|awk '{print $1}')
+# | echo {\""logged_user\"": \"$logged_user\"}
+# | [root@ansiblemaster01 facter_testing]# 
+#
+#
+# | [root@ansiblemaster01 facter_testing]# more facts_testing.yml 
+# | ---
+# | - hosts: sathsang_one_infra
+# |   user: root 
+# |   gather_facts: true
+# | 
+# |   vars: 
+# |     file: /etc/ansible/facts.d/logged_user.sh
+# | 
+# |   handlers: 
+# |   - name: file_copy_notifier
+# |     debug: 
+# |       msg: "{{ file }} copied "
+# | 
+# |   tasks: 
+# |   - name: create directory 
+# |     file:
+# |       path: /etc/ansible/facts.d
+# |       recurse: yes
+# |       state: directory
+# |   
+# |   - name: copying facts 
+# |     copy: 
+# |       src: "{{ file }}"
+# |       dest: "{{ file }}"
+# |       mode: 0755
+# |     notify: file_copy_notifier
+# | 
+# |   - name: refresh facts
+# |     setup: 
+# | 
+# |   - name: printing new facts
+# |     debug: 
+# |       msg: "local facts available are : {{ ansible_local }}"
+# | ...
+# | [root@ansiblemaster01 facter_testing]# 
+#
+#
+# | [root@ansiblemaster01 facter_testing]# ansible-playbook facts_testing.yml 
+# | 
+# | PLAY [sathsang_one_infra] ********************************************************************************************************************************************************************
+# | 
+# | TASK [Gathering Facts] ***********************************************************************************************************************************************************************
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | 
+# | TASK [create directory] **********************************************************************************************************************************************************************
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | 
+# | TASK [copying facts] *************************************************************************************************************************************************************************
+# | changed: [clientnode01.svr.apac.sathsang.net]
+# | changed: [clientnode02.svr.apac.sathsang.net]
+# | 
+# | TASK [refresh facts] *************************************************************************************************************************************************************************
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | 
+# | TASK [printing new facts] ********************************************************************************************************************************************************************
+# | ok: [clientnode01.svr.apac.sathsang.net] => {
+# |     "msg": "local facts available are : {}"
+# | }
+# | ok: [clientnode02.svr.apac.sathsang.net] => {
+# |     "msg": "local facts available are : {}"
+# | }
+# | 
+# | RUNNING HANDLER [file_copy_notifier] *********************************************************************************************************************************************************
+# | ok: [clientnode01.svr.apac.sathsang.net] => {
+# |     "msg": "/etc/ansible/facts.d/logged_user.sh copied "
+# | }
+# | ok: [clientnode02.svr.apac.sathsang.net] => {
+# |     "msg": "/etc/ansible/facts.d/logged_user.sh copied "
+# | }
+# | 
+# | PLAY RECAP ***********************************************************************************************************************************************************************************
+# | clientnode01.svr.apac.sathsang.net : ok=6    changed=1    unreachable=0    failed=0   
+# | clientnode02.svr.apac.sathsang.net : ok=6    changed=1    unreachable=0    failed=0   
+# | 
+# | [root@ansiblemaster01 facter_testing]# 
+# | 
 #
 #
 
