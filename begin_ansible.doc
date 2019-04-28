@@ -1501,11 +1501,90 @@
 # | }
 # | [root@ansiblemaster01 facter_testing]# 
 # | 
-
-#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# Chapter 08 : Using conditionals and registers 
+# ----------------------------------------------------------------------------------------------------------------------------------------
+#
+# * How to add conditions with ansible playbook
+# While working on ansible playbook you will require to test various conditions to take decissions during the ansible playbook
+# we can use 'when' statement to perform conditions in ansible playbooks 
+#
+# Syntax :
+# when: variable <operator> value  ==> This is for testing single condition
+#
+# Example : Below example show we are running a command only when the OS is CentOS
+#
+# | root@ansiblemaster01 run_cmd]# more ansible_playbook.yml 
+# | ---
+# | -
+# |   hosts: all
+# |   user: root
+# |   become: true 
+# | 
+# |   tasks: 
+# |     - name: to test a command 
+# |       command: uptime
+# |       when: ansible_distribution == 'CentOS'
+# | ...
+# | [root@ansiblemaster01 run_cmd]# 
+#
+# - How to check muliple condition with 'logical AND' 
+# While doing the programs there will be times when you will need to use logical AND to test multiple conditions before you execute the code.
+# There are mulitple ways of doing that, below are the syntax for that 
+#
+# Syntax 1: 
+# when : variable <operator> value and variable <operator> value 
+#
+# Syntax 2: 
+# when: 
+#   - variable <operator> value
+#   - variable <operator> value  
+#
+# Example : Below example show we are letting the command to run only when OS is CentOS and version is above 7 
+#
+# | root@ansiblemaster01 run_cmd]# more ansible_playbook.yml 
+# | ---
+# | -
+# |   hosts: all
+# |   user: root
+# |   become: true 
+# | 
+# |   tasks: 
+# |     - name: to test a command 
+# |       command: uptime
+# |       when: 
+# |         - ansible_distribution_major_version | int >= 7
+# |         - ansible_distribution == 'CentOS'
+# | ...
+# | [root@ansiblemaster01 run_cmd]# 
+#
+# - How to check multiple condtion with 'logical OR'
+# When doing the programming at times you will need to take some decision based on any one of the condition is true 
+# Logical OR is the ideal operator we should  be availing in such cirumstances 
+#
+# Syntax : 
+# when: (variable <operator> value) or 
+#       (variable <operator> value)
+#
+# Example : Below example shows an usage of logical OR
+#
+# | [root@ansiblemaster01 run_cmd]# more ansible_playbook.yml 
+# | ---
+# | -
+# |  hosts: all
+# |   user: root
+# |   become: true 
+# | 
+# |   tasks: 
+# |     - name: to test a command 
+# |       command: uptime
+# |       when: (ansible_distribution == 'Redhat') or
+# |             (ansible_distribution == 'CentOS')
+# | ...
+# | [root@ansiblemaster01 run_cmd]# 
+#
+#
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # For Code reference for all Ansible topics Refer : https://github.com/spurin/masteringansible
-#
-#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
