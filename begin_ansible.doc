@@ -1585,6 +1585,161 @@
 # | [root@ansiblemaster01 run_cmd]# 
 #
 #
+# * How to register or store an output
+# When you are dealing with automating your daily jobs, at times you might required to store the command output which you are running on the system. 
+# May be you will be using those commands to process it for further logics. 
+# To store an output, first you will need to use 'register' to store the output on some varaible, then you can create debug task to take those output as required 
+#
+# Syntax : 
+# - name: some task 
+#   command: some command to run 
+#   register: some variable name to store 
+#
+# - name: some task name to debug the register variable
+#   debug: 
+#     var: variable name / exact key from the variable to use
+#
+# Example : Below example will show how to run a command and store output 
+#
+# | [root@ansiblemaster01 run_cmd]# more ansible_playbook.yml 
+# | ---
+# | -
+# |   hosts: all
+# |   user: root
+# |   become: true 
+# |
+# |   tasks: 
+# |     - name: to test a command 
+# |       command: uptime
+# |       when: (ansible_distribution == 'Redhat') or
+# |             (ansible_distribution == 'CentOS')
+# |       register: my_output
+# |
+# |     - name: print complete register output
+# |       debug: 
+# |         var:  my_output
+# |   
+# |...
+# |[root@ansiblemaster01 run_cmd]# 
+#
+# Above playbook will provide output as below. 
+#
+# | TASK [print command output] *********************************************************************************************************************************************************
+# | ok: [clientnode01.svr.apac.sathsang.net] => {
+# |     "my_output": {
+# |         "changed": true, 
+# |         "cmd": [
+# |             "uptime"
+# |         ], 
+# |         "delta": "0:00:00.003250", 
+# |         "end": "2019-04-30 17:47:38.974970", 
+# |         "failed": false, 
+# |         "rc": 0, 									--> return code shows return code from the command
+# |         "start": "2019-04-30 17:47:38.971720", 
+# |         "stderr": "", 
+# |         "stderr_lines": [], 							--> 'stderr' is the key which stores if any error message 
+# |         "stdout": " 17:47:38 up 4 min,  2 users,  load average: 0.23, 0.18, 0.10", 	--> 'stdout' is the key which stores the exact command output 
+# |         "stdout_lines": [
+# |             " 17:47:38 up 4 min,  2 users,  load average: 0.23, 0.18, 0.10"
+# |         ]
+# |     }
+# | }
+#
+# Example : if you want to print only the comand output you can use as below
+#
+# | [root@ansiblemaster01 run_cmd]# more ansible_playbook.yml 
+# | ---
+# | -
+# |   hosts: all
+# |   user: root
+# |   become: true 
+# | 
+# |   tasks: 
+# |     - name: to test a command 
+# |       command: uptime
+# |       when: (ansible_distribution == 'Redhat') or
+# |             (ansible_distribution == 'CentOS')
+# |       register: my_output
+# | 
+# |     - name: print only command output
+# |       debug:
+# |         var: my_output.stdout
+# |         
+# | ...
+# | [root@ansiblemaster01 run_cmd]# 
+#
+# Output as below. 
+#
+# | [root@ansiblemaster01 run_cmd]# ansible-playbook ansible_playbook.yml 
+# |
+# | PLAY [all***************************************************************************************************************************************************************************
+# |
+# | TASK [Gathering Fact****************************************************************************************************************************************************************
+# | ok: [clientnode03.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | 
+# | TASK [to test a command] ***********************************************************************************************************************************************************
+# | changed: [clientnode03.svr.apac.sathsang.net]
+# | changed: [clientnode01.svr.apac.sathsang.net]
+# | changed: [clientnode02.svr.apac.sathsang.net]
+# | 
+# | TASK [print only command output] ***************************************************************************************************************************************************
+# | ok: [clientnode03.svr.apac.sathsang.net] => {
+# |     "my_output.stdout": " 18:08:39 up 21 min,  1 user,  load average: 0.08, 0.03, 0.05"
+# | }
+# | ok: [clientnode01.svr.apac.sathsang.net] => {
+# |     "my_output.stdout": " 18:08:40 up 26 min,  2 users,  load average: 0.00, 0.01, 0.05"
+# | }
+# | ok: [clientnode02.svr.apac.sathsang.net] => {
+# |     "my_output.stdout": " 18:08:40 up 21 min,  1 user,  load average: 0.00, 0.01, 0.05"
+# | }
+# | 
+# | PLAY RECAP ***************************************************************************************************************************************************************************
+# | clientnode01.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | clientnode02.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | clientnode03.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | 
+# | [root@ansiblemaster01 run_cmd]# 
+# 
+# * Additing conditionals with registers 
+# You can always add conditionals with registers to take decissions on the playbook 
+# 
+# Example : Below example will show how to take decission with registers 
+#
+# | [root@ansiblemaster01 run_cmd]# more  ansible_playbook.yml 
+# | ---
+# | -
+# |   hosts: all
+# |   user: root
+# |   become: true 
+# | 
+# |   tasks: 
+# |     - name: to test a command 
+# |       command: uptime
+# |       when: (ansible_distribution == 'Redhat') or
+# |             (ansible_distribution == 'CentOS')
+# |       register: my_output
+# | 
+# |     - name: print only command output
+# |       debug:
+# |         var: my_output.stdout
+# |       when: my_output.rc |int == 0		==> Here we are using when to check the return code was '0' before priting them
+# |         
+# | ...
+# | [root@ansiblemaster01 run_cmd]# 
+# | 
+#
+# NOTE : The reason we use filter and then int (| int) is by default ansible provide output in string and we coverting that as a intiger
+#
+#
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# Chapter 09 : Looping with ansible 
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# 
+#
+#
+#
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # For Code reference for all Ansible topics Refer : https://github.com/spurin/masteringansible
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
