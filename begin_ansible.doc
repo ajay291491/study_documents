@@ -1737,7 +1737,48 @@
 # Chapter 09 : Looping with ansible 
 # ----------------------------------------------------------------------------------------------------------------------------------------
 # 
+# * with_items (lists)
+# In Ansible you can manage lists using 'with_items' modules which helps you to store the list based on the index values and then you can process them. 
+# When you process list using 'with_items', it will process the elements from 0 to last index number on each host you are trying to run and then completes the loop. 
+# Also, you can call them bcased on the index number to complete this. 
 #
+# Syntax : 
+# - name : some tasks to process the list
+#   module: some module which process the list 
+#     action : "some action in {{ item }}"	--> This is how you access the list using loop
+#   notify: notify some debug message
+#   with_items:					--> This is how you define the list 
+#     - element_0
+#     - element_1
+#   when: you can pust when if needed here 
+#
+# Example : Below example is used to create couple of directories in CentOS
+#
+# | [root@ansiblemaster01 lists]# more  /etc/ansible/roles/lists/ansible_playbook.yml 
+# | ---
+# | - hosts: all
+# |   user: root
+# |   become: true
+# | 
+# |   tasks: 
+# |   - name: create directories
+# |     file:
+# |       path: "{{ item }}"
+# |       state: absent
+# |     notify: directory created
+# |     with_items: 
+# |       - '/var/tmp/list_test1'
+# |       - '/var/tmp/list_test2'
+# |     when: ansible_distribution == 'CentOS'
+# | 
+# |   handlers: 
+# |     - name: directory created
+# |       debug:
+# |         msg: created directory under /var/tmp
+# | [root@ansiblemaster01 lists]# 
+# | 
+#
+# - You can also access elements with index number, below example will show the same 
 #
 #
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
