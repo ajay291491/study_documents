@@ -1778,8 +1778,212 @@
 # | [root@ansiblemaster01 lists]# 
 # | 
 #
-# - You can also access elements with index number, below example will show the same 
+# Output given below 
 #
+# | [root@ansiblemaster01 lists]# ansible-playbook ansible_playbook.yml 
+# | 
+# | PLAY [all] ****************************************************************************************************************************************************************************
+# | 
+# | TASK [Gathering Facts] ****************************************************************************************************************************************************************
+# | ok: [clientnode03.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | 
+# | TASK [create directories] *************************************************************************************************************************************************************
+# | changed: [clientnode03.svr.apac.sathsang.net] => (item=/var/tmp/list_test1)
+# | changed: [clientnode03.svr.apac.sathsang.net] => (item=/var/tmp/list_test2)
+# | changed: [clientnode01.svr.apac.sathsang.net] => (item=/var/tmp/list_test1)
+# | changed: [clientnode02.svr.apac.sathsang.net] => (item=/var/tmp/list_test1)
+# | changed: [clientnode01.svr.apac.sathsang.net] => (item=/var/tmp/list_test2)
+# | changed: [clientnode02.svr.apac.sathsang.net] => (item=/var/tmp/list_test2)
+# | 
+# | RUNNING HANDLER [directory created] ***************************************************************************************************************************************************
+# | ok: [clientnode03.svr.apac.sathsang.net] => {
+# |     "msg": "created directory under /var/tmp"
+# | }
+# | ok: [clientnode01.svr.apac.sathsang.net] => {
+# |     "msg": "created directory under /var/tmp"
+# | }
+# | ok: [clientnode02.svr.apac.sathsang.net] => {
+# |     "msg": "created directory under /var/tmp"
+# | }
+# | 
+# | PLAY RECAP ****************************************************************************************************************************************************************************
+# | clientnode01.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | clientnode02.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | clientnode03.svr.apac.sathsang.net : ok=3    changed=1    unreachable=0    failed=0   
+# | 
+# | [root@ansiblemaster01 lists]#
+#
+#
+# * with_dict (acessing dictionary)
+# There will be scenarios where you will need to access the dictionary in your playbook to handle two dimensional data 
+# You can follow below syntax to get it acheived 
+#
+# Syntax: 
+#
+# tasks: 
+#  - name: some tasks 
+#    some_module: 
+#       some_method: "{{item.key}} wll give the key of that dictionary" 
+#       some_method: "{{item.value}} will give value of that item"
+#       some_mthod: "{{item.value.key_name}} if value is pointing to another set of values"
+#
+# Example : Below example show us the usage of with_dict
+#
+# | [root@ansiblemaster02 dictionary]# more anisble_playbook.yml 
+# | ---
+# | - hosts: all
+# |   user: root
+# |   become: true 
+# | 
+# |   vars:
+# |     file_name: /var/tmp/food_file
+# | 
+# |   tasks: 
+# |   - name: Creating a favorire food file
+# |     copy: 
+# |       dest: "{{ file_name }}_{{item.key}}"
+# |       content: "{{ item.key }} likes {{ item.value.food }}"
+# |     with_dict:
+# |       Ajay:
+# |         food: ['Apple', 'Orange']
+# |       Aparna: 
+# |         food: ['Passion fruit', 'Grapes']
+# |       Vaiga: 
+# |         food: ['Strawberry', 'Rembuttan']
+# |       Rishi: 
+# |         food: ['appale']
+#
+# - Output 
+#
+# | 
+# | [root@ansiblemaster01 dictionary]# ansible-playbook  anisble_playbook.yml
+# | 
+# | PLAY [all] ***************************************************************************************************************************************************************************
+# | 
+# | TASK [Gathering Facts] ***************************************************************************************************************************************************************
+# | ok: [clientnode03.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | 
+# | TASK [Creating a favorire food file] **************************************************************************************************************************************************
+# | changed: [clientnode03.svr.apac.sathsang.net] => (item={'value': {u'food': [u'Strawberry', u'Rembuttan']}, 'key': u'Vaiga'})
+# | changed: [clientnode03.svr.apac.sathsang.net] => (item={'value': {u'food': u'appale'}, 'key': u'Rishi'})
+# | changed: [clientnode03.svr.apac.sathsang.net] => (item={'value': {u'food': [u'Apple', u'Orange']}, 'key': u'Ajay'})
+# | changed: [clientnode01.svr.apac.sathsang.net] => (item={'value': {u'food': [u'Strawberry', u'Rembuttan']}, 'key': u'Vaiga'})
+# | changed: [clientnode03.svr.apac.sathsang.net] => (item={'value': {u'food': [u'Passion fruit', u'Grapes']}, 'key': u'Aparna'})
+# | changed: [clientnode02.svr.apac.sathsang.net] => (item={'value': {u'food': [u'Strawberry', u'Rembuttan']}, 'key': u'Vaiga'})
+# | changed: [clientnode01.svr.apac.sathsang.net] => (item={'value': {u'food': u'appale'}, 'key': u'Rishi'})
+# | changed: [clientnode02.svr.apac.sathsang.net] => (item={'value': {u'food': u'appale'}, 'key': u'Rishi'})
+# | changed: [clientnode01.svr.apac.sathsang.net] => (item={'value': {u'food': [u'Apple', u'Orange']}, 'key': u'Ajay'})
+# | changed: [clientnode02.svr.apac.sathsang.net] => (item={'value': {u'food': [u'Apple', u'Orange']}, 'key': u'Ajay'})
+# | changed: [clientnode01.svr.apac.sathsang.net] => (item={'value': {u'food': [u'Passion fruit', u'Grapes']}, 'key': u'Aparna'})
+# | changed: [clientnode02.svr.apac.sathsang.net] => (item={'value': {u'food': [u'Passion fruit', u'Grapes']}, 'key': u'Aparna'})
+# | 
+# | PLAY RECAP ***************************************************************************************************************************************************************************
+# | clientnode01.svr.apac.sathsang.net : ok=2    changed=1    unreachable=0    failed=0   
+# | clientnode02.svr.apac.sathsang.net : ok=2    changed=1    unreachable=0    failed=0   
+# | clientnode03.svr.apac.sathsang.net : ok=2    changed=1    unreachable=0    failed=0   
+# | 
+# | [root@ansiblemaster01 dictionary]#
+#
+#
+# * With_subelements (using list of dictionaries)
+# This method is used for looping in a list of dictionries. Here your data will start with a list which contains a dictionary data type. 
+# Here you can access the data with its index number as well to get a control on the dictionary 
+#
+# Syntax : 
+# tasks: 
+# - name: some task 
+#   some_module:
+#     some_mothod: "{{ item.<index_number>.key }}"			-> This will help you to get the key with in a specific index number
+#     some_method: "{{ item.<index_number>.value }}"			-> This will help you to get a value with in a specific index number
+#     some_method: "{{ item.<index_number>.value.sub_keys }}"		-> This will help you to get a sub key or value with in a list inside index number
+#
+# Example : Below example will explain about with_subelements
+#
+# | [root@ansiblemaster01 sub_elements]# more ansible_playbook.yml 
+# | ---
+# | - hosts: all
+# |   user: root
+# |   become: true 
+# | 
+# |   tasks:
+# |     - name: Creating user
+# |       user:
+# |         name: "{{ item.1 }}"
+# |         comment: "{{ item.1 | title }} {{ item.0.surname }}"
+# |       with_subelements: 
+# |         - 
+# |           - surname: Spurin
+# |             members:
+# |              - james
+# |              - hayley
+# |              - lily
+# |              - anwen
+# |           - surname: Jalba
+# |             members:
+# |              - ana
+# |           - surname: Angne
+# |             members:
+# |              - abhishek
+# |           - surname: Mahmood
+# |             members:
+# |              - sara
+# |         - members			--> This gives the reference based on what "item" should be picked.
+# | 
+# | [root@ansiblemaster01 sub_elements]# 
+# | 
+# | [root@ansiblemaster01 sub_elements]# ansible-playbook ansible_playbook.yml 
+# | 
+# | PLAY [all] **************************************************************************************************************************************************************************
+# | 
+# | TASK [Gathering Facts] **************************************************************************************************************************************************************
+# | ok: [clientnode03.svr.apac.sathsang.net]
+# | ok: [clientnode01.svr.apac.sathsang.net]
+# | ok: [clientnode02.svr.apac.sathsang.net]
+# | 
+# | TASK [Creating user] ****************************************************************************************************************************************************************
+# | changed: [clientnode03.svr.apac.sathsang.net] => (item=({u'surname': u'Spurin'}, u'james'))
+# | changed: [clientnode03.svr.apac.sathsang.net] => (item=({u'surname': u'Spurin'}, u'hayley'))
+# | changed: [clientnode01.svr.apac.sathsang.net] => (item=({u'surname': u'Spurin'}, u'james'))
+# | changed: [clientnode03.svr.apac.sathsang.net] => (item=({u'surname': u'Spurin'}, u'lily'))
+# | changed: [clientnode02.svr.apac.sathsang.net] => (item=({u'surname': u'Spurin'}, u'james'))
+# | changed: [clientnode03.svr.apac.sathsang.net] => (item=({u'surname': u'Spurin'}, u'anwen'))
+# | changed: [clientnode03.svr.apac.sathsang.net] => (item=({u'surname': u'Jalba'}, u'ana'))
+# | changed: [clientnode01.svr.apac.sathsang.net] => (item=({u'surname': u'Spurin'}, u'hayley'))
+# | changed: [clientnode03.svr.apac.sathsang.net] => (item=({u'surname': u'Angne'}, u'abhishek'))
+# | changed: [clientnode02.svr.apac.sathsang.net] => (item=({u'surname': u'Spurin'}, u'hayley'))
+# | changed: [clientnode03.svr.apac.sathsang.net] => (item=({u'surname': u'Mahmood'}, u'sara'))
+# | changed: [clientnode01.svr.apac.sathsang.net] => (item=({u'surname': u'Spurin'}, u'lily'))
+# | changed: [clientnode02.svr.apac.sathsang.net] => (item=({u'surname': u'Spurin'}, u'lily'))
+# | changed: [clientnode01.svr.apac.sathsang.net] => (item=({u'surname': u'Spurin'}, u'anwen'))
+# | changed: [clientnode02.svr.apac.sathsang.net] => (item=({u'surname': u'Spurin'}, u'anwen'))
+# | changed: [clientnode01.svr.apac.sathsang.net] => (item=({u'surname': u'Jalba'}, u'ana'))
+# | changed: [clientnode02.svr.apac.sathsang.net] => (item=({u'surname': u'Jalba'}, u'ana'))
+# | changed: [clientnode01.svr.apac.sathsang.net] => (item=({u'surname': u'Angne'}, u'abhishek'))
+# | changed: [clientnode02.svr.apac.sathsang.net] => (item=({u'surname': u'Angne'}, u'abhishek'))
+# | changed: [clientnode01.svr.apac.sathsang.net] => (item=({u'surname': u'Mahmood'}, u'sara'))
+# | changed: [clientnode02.svr.apac.sathsang.net] => (item=({u'surname': u'Mahmood'}, u'sara'))
+# | 
+# | PLAY RECAP **************************************************************************************************************************************************************************
+# | clientnode01.svr.apac.sathsang.net : ok=2    changed=1    unreachable=0    failed=0   
+# | clientnode02.svr.apac.sathsang.net : ok=2    changed=1    unreachable=0    failed=0   
+# | clientnode03.svr.apac.sathsang.net : ok=2    changed=1    unreachable=0    failed=0   
+# | 
+# | [root@ansiblemaster01 sub_elements]#
+#
+# * Other Loops available in Ansible 
+# There are various other loops are also available in ansible which can be used to make your playbooks more powerful. 
+# Few are give below. 
+#
+# - with_nested [ https://github.com/spurin/masteringansible/blob/master/03%20-%20Ansible%20Playbooks%2C%20Advanced%20Topics/04%20-%20Looping/11/user_playbook.yml ]
+# - with_together [ https://github.com/spurin/masteringansible/blob/master/03%20-%20Ansible%20Playbooks%2C%20Advanced%20Topics/04%20-%20Looping/12/user_playbook.yml ]
+# - with_file [ https://github.com/spurin/masteringansible/blob/master/03%20-%20Ansible%20Playbooks%2C%20Advanced%20Topics/04%20-%20Looping/13/user_playbook.yml ]
+# - with_sequance [ https://github.com/spurin/masteringansible/blob/master/03%20-%20Ansible%20Playbooks%2C%20Advanced%20Topics/04%20-%20Looping/16/directory_sequence.yml ]
+# - with_random_choice [ https://github.com/spurin/masteringansible/blob/master/03%20-%20Ansible%20Playbooks%2C%20Advanced%20Topics/04%20-%20Looping/19/random_choice_playbook.yml ] 
+# - until [ https://github.com/spurin/masteringansible/blob/master/03%20-%20Ansible%20Playbooks%2C%20Advanced%20Topics/04%20-%20Looping/20/until_playbook.yml ] 
 #
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # For Code reference for all Ansible topics Refer : https://github.com/spurin/masteringansible
