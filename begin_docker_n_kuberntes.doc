@@ -1,5 +1,5 @@
 #---------------------------------------------------------------------------------------------
-#  Chapter 01 - Introduction Docker
+#  Chapter 01 - Introduction to Docker
 #---------------------------------------------------------------------------------------------
 # * Install Docker
 # You can install Docker by install below two packages 
@@ -76,8 +76,99 @@
 # |
 # | [root@dockerstation01 ~]#
 # |
-#
-#...........................................................................................................
 # NOTE : Below tutorial will explain about how docker run works
 # https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11436626?start=79#bookmarks
-#...........................................................................................................
+#
+#
+# * What happens when you install docker container
+# When you install docker container there will be a Linux virtual machine gets installed in the background which acts as the Docker Server
+# You can see docker server operating system details in the 'docker version' command to verify this. 
+# Any container process which runs will be from this container, this will be true regardless the underlying OS is Linux, Windows or Mac.
+#
+# Docker installation layering is done like below. 
+# - Underlying Operating system (Windows / Linux / Mac)
+# - Docker Server Linux VM gets created on top of the OS 
+# - Docker contaner process running inside the Docker Server Linux VM
+#
+# NOTE : Udemy Detailed Tutorial on the Docker layers and how its works 
+# https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11436636?start=1#bookmarks
+#
+#
+# * What is a Docker Image and container
+# Docker image is a collection of software and filesystem snapshot along with a set of steps which can be used to startup a container.
+# Container is a set of process which spins up with the instruction given from the docker images
+# 
+# NOTE : Below udemy tutorial gives a complete details about container image. 
+# https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11436632?start=422#bookmarks 
+#
+# 
+# * What is namespacing and cgroups
+# namespacing - namespacing a Linux feature which allows to isolate resourse per processs or group of process 
+# cgroups     - cgroups also a Linux feature which limit the amount of resources used per process 
+#
+# NOTE : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11436636?start=63#bookmarks
+#
+#---------------------------------------------------------------------------------------------
+#  Chapter 02 - Manipulating a docker Container
+#---------------------------------------------------------------------------------------------
+#
+# * Executing commands in Container 
+# When you are running a command insider a docker container that will work only if that contaner image contains that commands embedded inside. 
+# If the container image is not embedded with the commands then the command won't work 
+#
+# Examples : Below are two instances where the same command behave in different while executing in two different containers
+#
+# | [root@dockerstation01 ~]# docker run hello-world uptime
+# | docker: Error response from daemon: OCI runtime create failed: container_linux.go:348: starting container process caused "exec: \"uptime\": executable file not found in $PATH": unknown.
+# | [root@dockerstation01 ~]# docker run busybox uptime
+# |  23:26:30 up  1:53,  0 users,  load average: 0.07, 0.02, 0.01
+# | [root@dockerstation01 ~]# 
+#
+# Note : Here uptime command was not embedded in the 'hello-world' image where its available in 'busybox' 
+#
+# To run a command in a docker container you will need to follow below syntax 
+#
+# syntax : docker run <image> <command>
+#
+# * ps command
+# This command can be used to find the list of running continers. 
+# When you add '--all' parameter to the command then its going to give the details about all the commands ran in the past
+#
+# Syntax : docker ps 
+#        : docker ps --all
+#
+# Example : Running the command to show currently running containers
+#
+# | [root@dockerstation01 ~]# docker ps 
+# | CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+# | 3d488796f6ab        busybox             "top"               6 seconds ago       Up 4 seconds                            optimistic_mahavira
+# | [root@dockerstation01 ~]# 
+#
+# Example : Running the command to show the history of all containers 
+#
+# | [root@dockerstation01 ~]# docker ps --all
+# | CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS                        PORTS               NAMES
+# | 3d488796f6ab        busybox             "top"                    About a minute ago   Up About a minute                                 optimistic_mahavira
+# | ce70ccd4eaba        busybox             "uptime"                 7 minutes ago        Exited (0) 7 minutes ago                          blissful_fermat
+# | 9e3a5166cd32        hello-world         "uptime"                 7 minutes ago        Created                                           sleepy_babbage
+# | df515bd2bc4a        busybox             "ls etc"                 19 minutes ago       Exited (0) 19 minutes ago                         romantic_goldberg
+# | 7b6d14cdc48c        busybox             "ls"                     19 minutes ago       Exited (0) 19 minutes ago                         focused_kapitsa
+# | 1af30959d59f        busybox             "systemctl -a"           19 minutes ago       Created                                           epic_beaver
+# | 4356fa5da624        busybox             "uname -a"               19 minutes ago       Exited (0) 19 minutes ago                         reverent_wu
+# | feec6f069754        busybox             "cat /etc/redhat-rel…"   20 minutes ago       Exited (1) 20 minutes ago                         festive_edison
+# | bbfc0aaa39d9        busybox             "uname -r"               20 minutes ago       Exited (0) 20 minutes ago                         eloquent_noyce
+# | cbbe3a745190        busybox             "top"                    20 minutes ago       Exited (130) 20 minutes ago                       elegant_banzai
+# | dd4a37b07df2        busybox             "ping yahoo.com"         20 minutes ago       Exited (1) 20 minutes ago                         xenodochial_cori
+# | 188cf85a7b3f        busybox             "ping google.com"        21 minutes ago       Exited (1) 20 minutes ago                         sad_shockley
+# | e875caa538be        busybox             "ping"                   21 minutes ago       Exited (1) 21 minutes ago                         peaceful_snyder
+# | 5f88bfa642d2        busybox             "uptime"                 22 minutes ago       Exited (0) 22 minutes ago                         hopeful_payne
+# | 486ffb75e744        busybox             "sh"                     22 minutes ago       Exited (0) 22 minutes ago                         hopeful_heyrovsky
+# | dd0a1203e18c        hello-world         "uptime"                 31 minutes ago       Created                                           pedantic_jackson
+# | f7dfeb40ecde        hello-world         "ls"                     31 minutes ago       Created                                           compassionate_fermi
+# | 9b7a8dc92eff        hello-world         "/hello"                 2 hours ago          Exited (0) 2 hours ago                            festive_colden
+# | 64392280e628        hello-world         "/hello"                 2 weeks ago          Exited (0) 2 weeks ago                            sleepy_sinoussi
+# | 779c5c963c0c        hello-world         "/hello"                 2 weeks ago          Exited (0) 2 weeks ago                            clever_heyrovsky
+# | [root@dockerstation01 ~]#
+# |
+
+
