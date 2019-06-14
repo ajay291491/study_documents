@@ -298,6 +298,30 @@
 # | [ec2-user@ip-172-31-21-124 ~]$
 # |
 #
+# * Logs in docker 
+# You can checks the logs from a container using the docker logs command
+#
+# Syntax : docker logs <conatiner_ID>
+#
+# Example: Below example show how to get the logs for a specific container 
+#
+# |
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker ps --all
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | CONTAINER ID  IMAGE                                 COMMAND    CREATED            STATUS                        PORTS  NAMES
+# | fc4f9980fe0a  docker.io/library/ubuntu:latest       uptime     About an hour ago  Exited (0) 25 minutes ago            admiring_dijkstra
+# | 348902c0561c  docker.io/library/ubuntu:latest       /bin/bash  About an hour ago  Exited (0) About an hour ago         gifted_booth
+# | 779800ec7966  docker.io/library/busybox:latest      sh         2 days ago         Exited (0) 2 days ago                admiring_nightingale
+# | 9a20dd1593c4  docker.io/library/hello-world:latest  /hello     2 days ago         Exited (0) 2 days ago                kind_kalam
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker logs fc4f9980fe0a
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# |  00:36:39 up 2 days, 37 min,  0 users,  load average: 0.05, 0.06, 0.02
+# |  00:56:26 up 2 days, 57 min,  0 users,  load average: 0.00, 0.00, 0.00
+# | [ec2-user@ip-172-31-21-124 ~]$
+# |
+# 
+#
 #
 #
 
