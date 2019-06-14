@@ -170,5 +170,136 @@
 # | 779c5c963c0c        hello-world         "/hello"                 2 weeks ago          Exited (0) 2 weeks ago                            clever_heyrovsky
 # | [root@dockerstation01 ~]#
 # |
+#
+# * Understanding the docker run 
+# When you are invoking the docker run command it actually a combination of docker create and docker start commands. 
+#
+# docker run = docker create <image_name> + docker run <container ID>
+#
+# * Docker create 
+# Docker create will help you to create a writable container from a container image. 
+# This is useful when you want to create a container with some specific command which need to be in a ready to create state later. 
+# Once you create the container the container state will be in the "Created" status. 
+#
+# Syntax : docker create <image_name>
+#
+# Example : Below example is to create a fedora container
+#
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker create ubuntu
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | Trying to pull registry.redhat.io/ubuntu:latest...Failed
+# | Trying to pull quay.io/ubuntu:latest...Failed
+# | Trying to pull docker.io/ubuntu:latest...Getting image source signatures
+# | Copying blob 6abc03819f3e: 27.52 MiB / 27.52 MiB [==========================] 1s
+# | Copying blob 05731e63f211: 844 B / 844 B [==================================] 1s
+# | Copying blob 0bd67c50d6be: 164 B / 164 B [==================================] 1s
+# | Copying config 7698f282e524: 3.27 KiB / 3.27 KiB [==========================] 0s
+# | Writing manifest to image destination
+# | Storing signatures
+# | 348902c0561cc725828c4f79a7206cd19d6a3789567f158043aedb0610d6aa50
+# | [ec2-user@ip-172-31-21-124 ~]$
+# |
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker ps -a
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | CONTAINER ID  IMAGE                                 COMMAND    CREATED        STATUS                 PORTS  NAMES
+# | 348902c0561c  docker.io/library/ubuntu:latest       /bin/bash  3 seconds ago  Created                       gifted_booth  --> You can see the container in the Created State
+# | 779800ec7966  docker.io/library/busybox:latest      sh         2 days ago     Exited (0) 2 days ago         admiring_nightingale
+# | 9a20dd1593c4  docker.io/library/hello-world:latest  /hello     2 days ago     Exited (0) 2 days ago         kind_kalam
+# | [ec2-user@ip-172-31-21-124 ~]$
+# |
+#
+# Detail Tutoroial : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11436650?start=79#bookmarks
+#
+# * Docker start
+# Docker start will help you to start the container which is already  created. 
+# This will be useful when you want to start a conatiner again and again which is already created 
+#
+# Syntax : docker start [-a] <container_ID>
+#
+# If you are using "-a" string then it will attach the startingh output to the terminal, i.e STDOUT, STDERR and forward will be printed on the console 
+#
+# Example : Below is an example for starting a container which is already created 
+#
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker create ubuntu uptime
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | fc4f9980fe0addc25a7584f360a6dc82a0fefa9433ff8b0ea9e970da935ca33d
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker ps -a
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | CONTAINER ID  IMAGE                                 COMMAND    CREATED         STATUS                         PORTS  NAMES
+# | fc4f9980fe0a  docker.io/library/ubuntu:latest       uptime     3 seconds ago   Created                               admiring_dijkstra
+# | 348902c0561c  docker.io/library/ubuntu:latest       /bin/bash  10 minutes ago  Exited (0) About a minute ago         gifted_booth
+# | 779800ec7966  docker.io/library/busybox:latest      sh         2 days ago      Exited (0) 2 days ago                 admiring_nightingale
+# | 9a20dd1593c4  docker.io/library/hello-world:latest  /hello     2 days ago      Exited (0) 2 days ago                 kind_kalam
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker start -a fc4f9980fe0a
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# |  00:36:39 up 2 days, 37 min,  0 users,  load average: 0.05, 0.06, 0.02
+# | [ec2-user@ip-172-31-21-124 ~]$
+#
+# * Restarting a container 
+# When a container is exited then it doesnot mean that it is dead or it cannot be started again 
+# You can always restart the same container using the docker start method which will help you to re-issue the same default command. 
+# Kindly note when you are starting an exited container you won't be able to attach or trigger new commands to it, it will only pick the default command
+#
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker ps -a
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | CONTAINER ID  IMAGE                                 COMMAND    CREATED         STATUS                     PORTS  NAMES
+# | fc4f9980fe0a  docker.io/library/ubuntu:latest       uptime     19 minutes ago  Exited (0) 19 minutes ago         admiring_dijkstra
+# | 348902c0561c  docker.io/library/ubuntu:latest       /bin/bash  30 minutes ago  Exited (0) 21 minutes ago         gifted_booth
+# | 779800ec7966  docker.io/library/busybox:latest      sh         2 days ago      Exited (0) 2 days ago             admiring_nightingale
+# | 9a20dd1593c4  docker.io/library/hello-world:latest  /hello     2 days ago      Exited (0) 2 days ago             kind_kalam
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker start -a fc4f9980fe0a
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# |  00:56:26 up 2 days, 57 min,  0 users,  load average: 0.00, 0.00, 0.00
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker start -a fc4f9980fe0a ls			-> Note that same container doesnot allow to override the default command
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | you cannot start and attach multiple containers at once
+# | [ec2-user@ip-172-31-21-124 ~]$
+# |
+#
+# Detail Tutorial : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11436652?start=139#bookmarks
+#
+# * How to delete a container
+# If you no longer need the container instance then you can delete them by using 'docker rm' or 'docker system prune' command 
+#
+# Syntax : docker rm [conatiner_ID | all]
+# Syntax : docker system prune           --> This will delete all containers 
+#
+# | [ec2-user@ip-172-31-21-124 ~]$ docker ps --all
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | CONTAINER ID  IMAGE                             COMMAND  CREATED            STATUS                        PORTS  NAMES
+# | f1beb2b1f2db  docker.io/library/busybox:latest  uptime   About an hour ago  Exited (0) About an hour ago         suspicious_wiles
+# | d782303fb193  docker.io/library/busybox:latest  uptime   About an hour ago  Exited (0) About an hour ago         priceless_darwin
+# | 70cf55e7554e  docker.io/library/busybox:latest  sh       About an hour ago  Exited (0) About an hour ago         gracious_hamilton
+# | 839d4ec68f32  docker.io/library/busybox:latest  sh       About an hour ago  Created                              optimistic_khorana
+# | ac96670a3ff1  docker.io/library/busybox:latest  uptime   2 hours ago        Exited (0) 2 hours ago               pedantic_shirley
+# | db8671b4bc4f  docker.io/library/busybox:latest  ls       2 hours ago        Exited (0) 2 hours ago               cocky_clarke
+# | a7bce2f35192  docker.io/library/busybox:latest  ls       2 hours ago        Exited (0) 2 hours ago               vigorous_bassi
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ docker rm f1beb2b1f2db                           --> Deleteing only one Container
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | f1beb2b1f2db4040ea21e964999f706c932de4b76baef80b86f149e4866ccf63
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ docker rm --all				    --> Deleting all containers 
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | 70cf55e7554edaa85ba8c6eb2ffa05c545b83491355ee48701d47f4bcb56ca9f
+# | ac96670a3ff19ac728ee0739333198de315ab3feed187d43f1f8da1cc2848e10
+# | 839d4ec68f32dfe7d18e75e5ffa6fec6f176e8357770c4c938ae1531d357f31b
+# | a7bce2f3519201c38bf07211a8248d131e96d475641ca4d4523dff532b915989
+# | d782303fb1936afd32f9216c0255c702dca3cd5b4c10131558dd22c0db9e9c37
+# | db8671b4bc4f9eaf5f119cca11823fa898c08a096e683c4b091e22f284710f07
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ docker ps --all
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | CONTAINER ID  IMAGE  COMMAND  CREATED  STATUS  PORTS  NAMES
+# | [ec2-user@ip-172-31-21-124 ~]$
+# |
+#
+#
+#
+
 
 
