@@ -321,6 +321,91 @@
 # | [ec2-user@ip-172-31-21-124 ~]$
 # |
 # 
+# * Stopping a container 
+# To stop a running container you have two methods either you can use the 'stop' method you can use the 'kill' method.
+# Stop - This is a graceful method where issuing the kill method it wait for some seconds so that continer has bring down the process
+# Kill - This method will immedietely issue the sigterm signal to kill the container 
+#
+# Syntax : docker stop <Container_ID>
+#        : docker kill <Container_ID>
+#
+# Example : Below example will show us about killing the docker container 
+# 
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker create busybox ping google.com			--> Creating a long running container
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | 0c1192c600ae61e1a825cb0fb03f1ec7f5939d6d5e3881c2697cf20af9bcae25
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker ps -a
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | CONTAINER ID  IMAGE                                 COMMAND          CREATED        STATUS                   PORTS  NAMES
+# | 0c1192c600ae  docker.io/library/busybox:latest      ping google.com  3 seconds ago  Created                         friendly_lamport	--> Created 
+# | fc4f9980fe0a  docker.io/library/ubuntu:latest       uptime           24 hours ago   Exited (0) 23 hours ago         admiring_dijkstra
+# | 348902c0561c  docker.io/library/ubuntu:latest       /bin/bash        24 hours ago   Exited (0) 24 hours ago         gifted_booth
+# | 779800ec7966  docker.io/library/busybox:latest      sh               3 days ago     Exited (0) 3 days ago           admiring_nightingale
+# | 9a20dd1593c4  docker.io/library/hello-world:latest  /hello           3 days ago     Exited (0) 3 days ago           kind_kalam
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker start 0c1192c600ae										--> Starting 
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | 0c1192c600ae
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker ps -a
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | CONTAINER ID  IMAGE                                 COMMAND          CREATED         STATUS                   PORTS  NAMES
+# | 0c1192c600ae  docker.io/library/busybox:latest      ping google.com  40 seconds ago  Up 26 seconds ago               friendly_lamport	--> up and running 
+# | fc4f9980fe0a  docker.io/library/ubuntu:latest       uptime           24 hours ago    Exited (0) 23 hours ago         admiring_dijkstra
+# | 348902c0561c  docker.io/library/ubuntu:latest       /bin/bash        24 hours ago    Exited (0) 24 hours ago         gifted_booth
+# | 779800ec7966  docker.io/library/busybox:latest      sh               3 days ago      Exited (0) 3 days ago           admiring_nightingale
+# | 9a20dd1593c4  docker.io/library/hello-world:latest  /hello           3 days ago      Exited (0) 3 days ago           kind_kalam
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker stop 0c1192c600ae										--> graceful shutdown
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | 0c1192c600ae61e1a825cb0fb03f1ec7f5939d6d5e3881c2697cf20af9bcae25
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker start 0c1192c600ae
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | 0c1192c600ae
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker kill 0c1192c600ae										--> Killed immedietely 
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | 0c1192c600ae61e1a825cb0fb03f1ec7f5939d6d5e3881c2697cf20af9bcae25
+# | [ec2-user@ip-172-31-21-124 ~]$
+# |
+#
+# Udemy Detailed : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11436664?start=96#bookmarks
+#
+# * How to run a command inside a container 
+# While a container is running there will be requirement for you to run the commands and fetch output from them. 
+# While you ran the command it will interact with the container and then it will provide the output from the container. 
+# When you try to ran an output from the command, then you will need to provide container id to fatch the output 
+#
+# Syntax : docker exec -it <Container_ID> <command>
+#
+# Example : Below command will help you to fetch uptime from a running container 
+#
+# | ec2-user@ip-172-31-21-124 ~]$ sudo docker ps -a
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | CONTAINER ID  IMAGE                                 COMMAND          CREATED         STATUS                         PORTS  NAMES
+# | 0c1192c600ae  docker.io/library/busybox:latest      ping google.com  21 minutes ago  Exited (137) 19 minutes ago           friendly_lamport
+# | fc4f9980fe0a  docker.io/library/ubuntu:latest       uptime           24 hours ago    Exited (0) 24 hours ago               admiring_dijkstra
+# | 348902c0561c  docker.io/library/ubuntu:latest       /bin/bash        24 hours ago    Exited (0) About a minute ago         gifted_booth
+# | 779800ec7966  docker.io/library/busybox:latest      sh               3 days ago      Exited (0) 3 days ago                 admiring_nightingale
+# | 9a20dd1593c4  docker.io/library/hello-world:latest  /hello           3 days ago      Exited (0) 3 days ago                 kind_kalam
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker start 0c1192c600ae
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | 0c1192c600ae
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker exec -it 0c1192c600ae uptime
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# |  00:28:51 up 3 days, 29 min,  0 users,  load average: 0.00, 0.00, 0.00
+# | [ec2-user@ip-172-31-21-124 ~]$
+#
+# NOTE : Here "-it' flag which we have used is important, reason is it helps  us to interact with the contaciner in a ternimal
+# -i  : This means attch my terminal to container while running the comamnds 
+# -t  : this means output should be printed in a nice terminal format
+#
+#
+#
+#
 #
 #
 #
