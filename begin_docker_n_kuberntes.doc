@@ -403,11 +403,85 @@
 # -i  : This means attch my terminal to container while running the comamnds 
 # -t  : this means output should be printed in a nice terminal format
 #
+# * How to launch a shell insider a container
+# Instead of running command all the time using 'exec' method you can always launch a shell in container. 
+# You can launch the shell with 'sh' or 'zsh' along with the exec input for command. 
 #
+# Syntax : docker exec -it <container_id> [sh | zsh]
 #
+# Example : Below command will launch a shell 
 #
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker ps
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | CONTAINER ID  IMAGE                             COMMAND          CREATED       STATUS           PORTS  NAMES
+# | 0c1192c600ae  docker.io/library/busybox:latest  ping google.com  23 hours ago  Up 23 hours ago         friendly_lamport
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker exec -it 0c1192c600ae sh
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | / # uname -a
+# | Linux 0c1192c600ae 4.18.0-80.el8.x86_64 #1 SMP Wed Mar 13 12:02:46 UTC 2019 x86_64 GNU/Linux
+# | / # more /etc/
+# | group        hostname     hosts        localtime    network/     passwd       resolv.conf  shadow
+# | / # ls
+# | bin   dev   etc   home  proc  root  run   sys   tmp   usr   var
+# | / # exit
+# | [ec2-user@ip-172-31-21-124 ~]$
+# |
 #
+# * How to start a container with a shell 
+# You can always launch a container with a shell by attaching the 'sh' command with '-it' flag while running the container
+# The downside for this approach will be you will be only running that shell with the container and there won't be any apps running 
+# As soon as you exit the shell it will terminate the session. 
 #
+# Syntax : docker run -it <image_name> sh
+#
+# Example : below example will show you how to launch a shell 
+#
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker ps -a
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | CONTAINER ID  IMAGE                                 COMMAND               CREATED       STATUS                     PORTS  NAMES
+# | 1016f0da1363  docker.io/library/mariadb:10.3        docker-entrypoint...  22 hours ago  Exited (1) 10 minutes ago         xenodochial_euler
+# | 0c1192c600ae  docker.io/library/busybox:latest      ping google.com       23 hours ago  Up 23 hours ago                   friendly_lamport
+# | fc4f9980fe0a  docker.io/library/ubuntu:latest       uptime                47 hours ago  Exited (0) 47 hours ago           admiring_dijkstra
+# | 348902c0561c  docker.io/library/ubuntu:latest       /bin/bash             47 hours ago  Exited (0) 23 hours ago           gifted_booth
+# | 779800ec7966  docker.io/library/busybox:latest      sh                    3 days ago    Exited (0) 3 days ago             admiring_nightingale
+# | 9a20dd1593c4  docker.io/library/hello-world:latest  /hello                3 days ago    Exited (0) 3 days ago             kind_kalam
+# | [ec2-user@ip-172-31-21-124 ~]$
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker run -i -t busybox sh
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | / #
+# | / #
+# | / # pwd
+# | /
+# | / # ls
+# | bin   dev   etc   home  proc  root  run   sys   tmp   usr   var
+# | / # ls /var
+# | spool  www
+# | / # ls /etc/init.d
+# | ls: /etc/init.d: No such file or directory
+# | / # exit
+# | [ec2-user@ip-172-31-21-124 ~]$ sudo docker ps -a
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | CONTAINER ID  IMAGE                                 COMMAND               CREATED         STATUS                     PORTS  NAMES
+# | cc80521b1b45  docker.io/library/busybox:latest      sh                    54 seconds ago  Exited (1) 18 seconds ago         nervous_turing
+# | 1016f0da1363  docker.io/library/mariadb:10.3        docker-entrypoint...  22 hours ago    Exited (1) 11 minutes ago         xenodochial_euler
+# | 0c1192c600ae  docker.io/library/busybox:latest      ping google.com       23 hours ago    Up 23 hours ago                   friendly_lamport
+# | fc4f9980fe0a  docker.io/library/ubuntu:latest       uptime                47 hours ago    Exited (0) 47 hours ago           admiring_dijkstra
+# | 348902c0561c  docker.io/library/ubuntu:latest       /bin/bash             47 hours ago    Exited (0) 23 hours ago           gifted_booth
+# | 779800ec7966  docker.io/library/busybox:latest      sh                    3 days ago      Exited (0) 3 days ago             admiring_nightingale
+# | 9a20dd1593c4  docker.io/library/hello-world:latest  /hello                3 days ago      Exited (0) 3 days ago             kind_kalam
+# | [ec2-user@ip-172-31-21-124 ~]$
+# |
+#
+# Udemy Detail : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11436674?start=67#bookmarks
+#
+# * Container Isolation 
+# When you are running multiple containers from same image they are created and stored in the filesystem seperately. 
+# Which means there is no direct relationship between the filesystem created between the containers. 
+# If you are creating a container A and Container B from the same image then you create few files under A, then that is going remain only in A and cannot see in B. 
+#
+# Udemy Detail : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11436678?start=4#bookmarks
+# 
 #
 
 
