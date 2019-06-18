@@ -522,10 +522,10 @@
 # | [ec2-user@ip-172-31-21-124 apache]$ 
 # | [ec2-user@ip-172-31-21-124 apache]$ more Dockerfile
 # | # BUILD - What base image we are going to use here
-# | FROM fedora
+# | FROM centos
 # |
 # | # RUN - Download and install dependancy for the new image
-# | RUN yum install httpd
+# | RUN yum install httpd -y -q 
 # |
 # | # CMD - Tell what command or action it need to perform during startup
 # | CMD ["/usr/sbin/httpd”, “-D”, “FOREGROUND”]
@@ -536,6 +536,29 @@
 # * Building a Docker Image 
 # Once above steps are done, then perform below steps 
 #
+# | [ec2-user@ip-172-31-21-124 apache]$ sudo docker build .
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | STEP 1: FROM centos
+# | Getting image source signatures
+# | Copying blob 8ba884070f61: 71.91 MiB / 71.91 MiB [==========================] 4s
+# | Copying config 9f38484d220f: 2.13 KiB / 2.13 KiB [==========================] 0s
+# | Writing manifest to image destination
+# | Storing signatures
+# | STEP 2: RUN yum install httpd -y -q
+# | warning: /var/cache/yum/x86_64/7/base/packages/apr-util-1.5.2-6.el7.x86_64.rpm: Header V3 RSA/SHA256 Signature, key ID f4a80eb5: NOKEY
+# | Public key for apr-util-1.5.2-6.el7.x86_64.rpm is not installed
+# | Public key for httpd-tools-2.4.6-89.el7.centos.x86_64.rpm is not installed
+# | Importing GPG key 0xF4A80EB5:
+# |  Userid     : "CentOS-7 Key (CentOS 7 Official Signing Key) <security@centos.org>"
+# |  Fingerprint: 6341 ab27 53d7 8a78 a7c2 7bb1 24c6 a8a7 f4a8 0eb5
+# |  Package    : centos-release-7-6.1810.2.el7.centos.x86_64 (@CentOS)
+# |  From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+# | --> 277d285c16fcaefbd22a9075cccaaba8671be785db00bdf20b86976f1caffce6
+# | STEP 3: FROM 277d285c16fcaefbd22a9075cccaaba8671be785db00bdf20b86976f1caffce6
+# | STEP 4: CMD ["/usr/sbin/httpd”, “-D”, “FOREGROUND”]
+# | --> 6c948929a08bf2e15231204d81a3c57fcf004af82f79b18150d15ada7fc52165
+# | STEP 5: COMMIT
+# | [ec2-user@ip-172-31-21-124 apache]$
 #
 #
 #
