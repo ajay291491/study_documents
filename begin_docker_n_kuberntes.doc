@@ -482,6 +482,65 @@
 #
 # Udemy Detail : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11436678?start=4#bookmarks
 # 
+#---------------------------------------------------------------------------------------------
+#  Chapter 03 - Building custom images through Docker Server
+#---------------------------------------------------------------------------------------------
+#
+# * Docker Build
+# For doing docker build it uses 'Dockerfile' which is explained in detail in the next session. 
+# Once you call the docker build it goes theough a set of process 
+# 
+# Process : Dockerfile => Docker Client (we interact with build command) => Docker Server (which process the request) => Process and Create a usable image 
+#
+# Syntax : vi Dockerfile
+#          docker build . 
+#
+# Note : here '.' is denoted as the build context and Dockerfile should always start with 'D'
+#
+# * Docker file
+# Docker build is normally done through a dockerfile and it has mainly three sessions 'Build', 'Run' and 'Command'
+# At each stage there are certain process takes place and which will result in creating the image. 
+#
+# Build : At this stage you will need to specify the location from which you are going to download the base image. 
+#       : Upon completion of the this stage base image will be downloaded and it will spin up a temporary container which can be said as a staging conatiner 
+#
+# Run   : Here will be mentioning the list of software we need to install etc
+#       : At this stage the staging cotainer which created above will be used to install all packages within it. 
+#       : Once its completes its phase it updates or save the image and destroy the staging container. 
+#
+# CMD   : At this stage it will spin up another staging container and then it will update the startup command etc to that container. 
+#       : Once this stage is done, then it will update save the container to the image and then destroy the container. 
+#
+# Udemy Detail : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11436706?start=228#bookmarks
+#
+# * Creating a Dockerfile 
+# You can setup a directory to create a docker image, then setup a docker file similar to below 
+#
+# | [ec2-user@ip-172-31-21-124 docker_local_hub]$ cd /apps/docker_local_hub/apache/    --> make a directory specific to that build process
+# | [ec2-user@ip-172-31-21-124 apache]$ ls
+# | Dockerfile
+# | [ec2-user@ip-172-31-21-124 apache]$ 
+# | [ec2-user@ip-172-31-21-124 apache]$ more Dockerfile
+# | # BUILD - What base image we are going to use here
+# | FROM fedora
+# |
+# | # RUN - Download and install dependancy for the new image
+# | RUN yum install httpd
+# |
+# | # CMD - Tell what command or action it need to perform during startup
+# | CMD ["/usr/sbin/httpd”, “-D”, “FOREGROUND”]
+# |
+# | [ec2-user@ip-172-31-21-124 apache]$
+# |
+#
+# * Building a Docker Image 
+# Once above steps are done, then perform below steps 
+#
+#
+#
+#
+#
+#
 #
 
 
