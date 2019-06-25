@@ -536,14 +536,19 @@
 # * Building a Docker Image 
 # Once above steps are done, then perform below steps 
 #
-# | [ec2-user@ip-172-31-21-124 apache]$ sudo docker build .
+# | [ec2-user@ip-172-31-21-124 apache]$ more Dockerfile 
+# | # BUILD - What base image we are going to use here 
+# | FROM centos
+# | 
+# | # RUN - Download and install dependancy for thennnnn21 new image 
+# | RUN yum install httpd -y -q
+# | 
+# | # CMD - Tell what command or action it need to perform during startup
+# | CMD ["/usr/sbin/httpd"]
+# | 
+# | [ec2-user@ip-172-31-21-124 apache]$ sudo docker build . 
 # | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
 # | STEP 1: FROM centos
-# | Getting image source signatures
-# | Copying blob 8ba884070f61: 71.91 MiB / 71.91 MiB [==========================] 4s
-# | Copying config 9f38484d220f: 2.13 KiB / 2.13 KiB [==========================] 0s
-# | Writing manifest to image destination
-# | Storing signatures
 # | STEP 2: RUN yum install httpd -y -q
 # | warning: /var/cache/yum/x86_64/7/base/packages/apr-util-1.5.2-6.el7.x86_64.rpm: Header V3 RSA/SHA256 Signature, key ID f4a80eb5: NOKEY
 # | Public key for apr-util-1.5.2-6.el7.x86_64.rpm is not installed
@@ -553,13 +558,35 @@
 # |  Fingerprint: 6341 ab27 53d7 8a78 a7c2 7bb1 24c6 a8a7 f4a8 0eb5
 # |  Package    : centos-release-7-6.1810.2.el7.centos.x86_64 (@CentOS)
 # |  From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-# | --> 277d285c16fcaefbd22a9075cccaaba8671be785db00bdf20b86976f1caffce6
-# | STEP 3: FROM 277d285c16fcaefbd22a9075cccaaba8671be785db00bdf20b86976f1caffce6
-# | STEP 4: CMD ["/usr/sbin/httpd”, “-D”, “FOREGROUND”]
-# | --> 6c948929a08bf2e15231204d81a3c57fcf004af82f79b18150d15ada7fc52165
-# | STEP 5: COMMIT
+# | --> 750a90fe719bd9dd6162fc8fce5092c762fb729b23ee9d178d6131e2e2788f1c
+# | STEP 3: FROM 750a90fe719bd9dd6162fc8fce5092c762fb729b23ee9d178d6131e2e2788f1c
+# | STEP 4: CMD ["/usr/sbin/httpd", "-DNO_DETACH"]
+# | --> 2ed0af508b4fbe38557e7c9beccae772203d2dcd4747fb3498c0118eef161301
+# | STEP 5: COMMIT 
+# | [ec2-user@ip-172-31-21-124 apache]$ sudo docker image list 
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | REPOSITORY                      TAG      IMAGE ID       CREATED              SIZE
+# | <none>                          <none>   2ed0af508b4f   About a minute ago   347 MB    ==> New image created
+# | docker.io/library/fedora        latest   289289d1a15b   2 weeks ago          326 MB
+# | docker.io/library/busybox       latest   ef46e0caa533   2 weeks ago          1.43 MB
+# | docker.io/library/mariadb       10.3     56089178535f   2 weeks ago          356 MB
+# | docker.io/library/mariadb       latest   56089178535f   2 weeks ago          356 MB
+# | docker.io/library/ubuntu        latest   7698f282e524   5 weeks ago          72.3 MB
+# | docker.io/library/centos        latest   9f38484d220f   3 months ago         209 MB
+# | docker.io/library/hello-world   latest   fce289e99eb9   5 months ago         5.62 kB
+# | [ec2-user@ip-172-31-21-124 apache]$ sudo docker run 2ed0af508b4f
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 10.88.0.30. Set the 'ServerName' directive globally to suppress this message
 # | [ec2-user@ip-172-31-21-124 apache]$
+# | [ec2-user@ip-172-31-21-124 apache]$ sudo docker ps 
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | CONTAINER ID  IMAGE                                                             COMMAND               CREATED         STATUS             PORTS  NAMES
+# | 76fc5b8c1a22  2ed0af508b4fbe38557e7c9beccae772203d2dcd4747fb3498c0118eef161301  /usr/sbin/httpd -...  18 seconds ago  Up 18 seconds ago         wonderful_poincare  ==> New Container
+# | 0c1192c600ae  docker.io/library/busybox:latest                                  ping google.com       10 days ago     Up 10 days ago            friendly_lamport
+# | [ec2-user@ip-172-31-21-124 apache]$ 
+# | 
 #
+# Udemy Detail : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11436706?start=228#bookmarks
 #
 #
 #
