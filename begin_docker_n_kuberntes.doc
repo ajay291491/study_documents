@@ -534,7 +534,8 @@
 # |
 #
 # * Building a Docker Image 
-# Once above steps are done, then perform below steps 
+# Once you have created the Dockerfile the you can run the build process as you are seeing below. 
+# Once the build process completes then you can run the container from the created image  
 #
 # | [ec2-user@ip-172-31-21-124 apache]$ more Dockerfile 
 # | # BUILD - What base image we are going to use here 
@@ -574,7 +575,9 @@
 # | docker.io/library/ubuntu        latest   7698f282e524   5 weeks ago          72.3 MB
 # | docker.io/library/centos        latest   9f38484d220f   3 months ago         209 MB
 # | docker.io/library/hello-world   latest   fce289e99eb9   5 months ago         5.62 kB
-# | [ec2-user@ip-172-31-21-124 apache]$ sudo docker run 2ed0af508b4f
+# | [ec2-user@ip-172-31-21-124 apache]$
+# | [ec2-user@ip-172-31-21-124 apache]$
+# | [ec2-user@ip-172-31-21-124 apache]$ sudo docker run 2ed0af508b4f    --> Starting a container from the created image
 # | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
 # | AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 10.88.0.30. Set the 'ServerName' directive globally to suppress this message
 # | [ec2-user@ip-172-31-21-124 apache]$
@@ -588,10 +591,318 @@
 #
 # Udemy Detail : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11436706?start=228#bookmarks
 #
+# * Modifying an existing image 
+# In case you will need to create a modified image for an existing one then you can do that by following steps 
+# 
+# 1. Update the Dockerfile with the new requirement which you have created already 
+# 2. Then run the docker build process 
+# 3. Then docker build will create the new image from the cached previous image only with the new modifications added
+# 4. Once the build process completes, it will create a new image with the latest requirement. 
+# 5. This does not delete or overwrite the previous image
+#
+# Example : Below example we are going to create the new docker image with additional 'gcc' requirements
+#
+# | [ec2-user@ip-172-31-21-124 apache]$ more Dockerfile
+# | # BUILD - What base image we are going to use here
+# | FROM centos
+# |
+# | # RUN - Download and install dependancy for thennnnn21 new image
+# | RUN yum install httpd -y -q
+# | RUN yum install gcc -y -q
+# |
+# | # CMD - Tell what command or action it need to perform during startup
+# | CMD ["/usr/sbin/httpd", "-DNO_DETACH"]
+# |
+# | [ec2-user@ip-172-31-21-124 apache]$
+# | [ec2-user@ip-172-31-21-124 apache]$ sudo docker build .
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | STEP 1: FROM centos
+# | STEP 2: RUN yum install httpd -y -q
+# | --> Using cache 750a90fe719bd9dd6162fc8fce5092c762fb729b23ee9d178d6131e2e2788f1c
+# | STEP 3: FROM 750a90fe719bd9dd6162fc8fce5092c762fb729b23ee9d178d6131e2e2788f1c
+# | STEP 4: RUN yum install gcc -y -q
+# | Delta RPMs disabled because /usr/bin/applydeltarpm not installed.
+# | --> 2c086ce33cd684c8cf66dca6bf2fb91df49016c75130fe24a028898d5de2eb92
+# | STEP 5: FROM 2c086ce33cd684c8cf66dca6bf2fb91df49016c75130fe24a028898d5de2eb92
+# | STEP 6: CMD ["/usr/sbin/httpd", "-DNO_DETACH"]
+# | --> 9f27a8c302be8e3efc0e1cc6c6a2c0bca778cbea0652188a7044f2f582e6d0be
+# | STEP 7: COMMIT
+# | [ec2-user@ip-172-31-21-124 apache]$
+# | [ec2-user@ip-172-31-21-124 apache]$ sudo docker image list | head -3
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | REPOSITORY                      TAG      IMAGE ID       CREATED         SIZE
+# | <none>                          <none>   9f27a8c302be   3 minutes ago   526 MB
+# | <none>                          <none>   2ed0af508b4f   4 days ago      347 MB
+# | [ec2-user@ip-172-31-21-124 apache]$
 #
 #
+# * Tagging or Naming an image while building 
+# While creatng an image on the previous instances we must have seen that it had only an image ID and there is no name associated with it. 
+# You can create the image with a name associated with it, for that only requirement is you should have a docker hud id, if its your personal image. 
+# There is a naming convention it follows normally. 
+#
+# Syntax  : <docker_hub_id>/<image_name>:<versiob>
+# Example : ajay291491/apache:latest 
+#
+# Note : Normally for the version number we denote that with the latest. 
+#
+# To build a image with the 'name' tag you will need to provide '-t' followed by image name 
+#
+# Syntax  : docker build -t <docker_hub_id>/<image_name>:<version> . 
+# Example : docker build -t ajay291491/apache:latest . 
+#
+# Example : In below example we are going to build a docker image with the name 
+#
+# | [ec2-user@ip-172-31-21-124 apache]$ sudo docker build -t ajay291491/apache-gcc:latest . 
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | STEP 1: FROM centos
+# | STEP 2: RUN yum install httpd -y -q
+# | --> Using cache 750a90fe719bd9dd6162fc8fce5092c762fb729b23ee9d178d6131e2e2788f1c
+# | STEP 3: FROM 750a90fe719bd9dd6162fc8fce5092c762fb729b23ee9d178d6131e2e2788f1c
+# | STEP 4: RUN yum install gcc -y -q
+# | --> Using cache 2c086ce33cd684c8cf66dca6bf2fb91df49016c75130fe24a028898d5de2eb92
+# | STEP 5: FROM 2c086ce33cd684c8cf66dca6bf2fb91df49016c75130fe24a028898d5de2eb92
+# | STEP 6: RUN yum install tree -y -q
+# | --> 4b9e61b6888d4427f783bf2abd0bd1bda80c601a8e5ac4e75d6d25a59abd5dbc
+# | STEP 7: FROM 4b9e61b6888d4427f783bf2abd0bd1bda80c601a8e5ac4e75d6d25a59abd5dbc
+# | STEP 8: CMD ["/usr/sbin/httpd", "-DNO_DETACH"]
+# | --> 0c7753e7e80409e82e84e9be1fa396965d7c63200f274a7299a90010a077f6a5
+# | STEP 9: COMMIT ajay291491/apache-gcc:latest
+# | [ec2-user@ip-172-31-21-124 apache]$
+# | [ec2-user@ip-172-31-21-124 apache]$ sudo docker image list 
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | REPOSITORY                        TAG      IMAGE ID       CREATED          SIZE
+# | localhost/ajay291491/apache-gcc   latest   0c7753e7e804   12 seconds ago   631 MB
+# | <none>                            <none>   9f27a8c302be   34 minutes ago   526 MB
+# | <none>                            <none>   2ed0af508b4f   4 days ago       347 MB
+# | docker.io/library/fedora          latest   289289d1a15b   2 weeks ago      326 MB
+# | docker.io/library/busybox         latest   ef46e0caa533   2 weeks ago      1.43 MB
+# | docker.io/library/mariadb         latest   56089178535f   3 weeks ago      356 MB
+# | docker.io/library/mariadb         10.3     56089178535f   3 weeks ago      356 MB
+# | docker.io/library/ubuntu          latest   7698f282e524   6 weeks ago      72.3 MB
+# | docker.io/library/centos          latest   9f38484d220f   3 months ago     209 MB
+# | docker.io/library/hello-world     latest   fce289e99eb9   5 months ago     5.62 kB
+# | [ec2-user@ip-172-31-21-124 apache]$ 
+# | [ec2-user@ip-172-31-21-124 apache]$ sudo docker run localhost/ajay291491/apache-gcc
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 10.88.0.31. Set the 'ServerName' directive globally to suppress this message
+# | 
+# | 
+# | [ec2-user@ip-172-31-21-124 apache]$ sudo docker ps -a
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | CONTAINER ID  IMAGE                                                             COMMAND               CREATED         STATUS                     PORTS  NAMES
+# | 32e425129b1e  localhost/ajay291491/apache-gcc:latest                            /usr/sbin/httpd -...  26 seconds ago  Exited (0) 12 seconds ago         gallant_wright
+# | 76fc5b8c1a22  2ed0af508b4fbe38557e7c9beccae772203d2dcd4747fb3498c0118eef161301  /usr/sbin/httpd -...  4 days ago      Up 4 days ago                     wonderful_poincare
+# | 6ec232aa749a  docker.io/library/busybox:latest                                  sh                    2 weeks ago     Exited (0) 12 days ago            agitated_visvesvaraya
+# | a8ed65ecd30c  docker.io/library/busybox:latest                                  sh                    2 weeks ago     Exited (0) 11 days ago            agitated_rosalind
+# | cc80521b1b45  docker.io/library/busybox:latest                                  sh                    2 weeks ago     Exited (1) 2 weeks ago            nervous_turing
+# | 1016f0da1363  docker.io/library/mariadb:10.3                                    docker-entrypoint...  2 weeks ago     Exited (1) 2 weeks ago            xenodochial_euler
+# | 0c1192c600ae  docker.io/library/busybox:latest                                  ping google.com       2 weeks ago     Up 2 weeks ago                    friendly_lamport
+# | fc4f9980fe0a  docker.io/library/ubuntu:latest                                   uptime                2 weeks ago     Exited (0) 2 weeks ago            admiring_dijkstra
+# | 348902c0561c  docker.io/library/ubuntu:latest                                   /bin/bash             2 weeks ago     Exited (0) 2 weeks ago            gifted_booth
+# | 779800ec7966  docker.io/library/busybox:latest                                  sh                    2 weeks ago     Exited (0) 2 weeks ago            admiring_nightingale
+# | 9a20dd1593c4  docker.io/library/hello-world:latest                              /hello                2 weeks ago     Exited (0) 2 weeks ago            kind_kalam
+# | [ec2-user@ip-172-31-21-124 apache]$ 
+# | [ec2-user@ip-172-31-21-124 apache]$ 
+# | 
+#
+# * Saving a running conatiner to new image 
+# Additional to above mentioned method, there is one more way using you can create a modified docker image. 
+# To do that you will need to follow below process 
+#
+# 1. Run the container with 'sh' command to get the shell access
+# 2. Once the shell is launched make all modification needed, such as installing a package or tuning a component etc. 
+# 3. Then open another terminal and run a docker commit on the container id 
+# 4. This will help you to create a new modified docker image. 
+#
+# Syntax : docker commit -c 'CMD["arguments"] container_ID new_image_name
+#
+#---------------------------------------------------------------------------------------------
+#  Chapter 04 - Making real projects with Container 
+#---------------------------------------------------------------------------------------------
+# 
+# * Glossary 
+# Below are the few configuration files parameter we are going to use as part of creating our application image via 'dockerfile' 
+#
+# FROM    : This will be the rgistery from we are taking the base image 
+# WORKDIR : This will be the default working directory which will be used with in the container, wehn you copy files this will be the location where its getting created. 
+#         : In case this directory is not available it will be created as part of the docker build process 
+# COPY    : This command will help you to copy the files from the local files into the docker 
+# RUN     : These are list of steps which need to run as part of building images, such as installing package, building something etc 
+# CMD     : This is the startup command which you are going to use while starting the container 
+#
+# * Port Binding 
+# When you work with a container you will need to bind the undelying host port with the container port. 
+# reason for this is container will be accesses from the same host IP with a port number. 
+# When traffic reaches the host port, host should know to which port it should route the traffic to. 
+# 
+# Note : Port binding is always mentioned in the container run time rather than while building the image. 
+# Syntax : docker run -p 8080:80 <docker_image>
+#
+# Here -p represents the port binding 
+# 8080 is the host port 
+# 80 is the conatiner port to which it is getting mapped to 
+#
+# * Tagging an image 
+# When you normally create an image it gets created with the UUID number 
+# if you also want to associate name along with the image, you can tag that. 
+#
+# Syntax : docker build -t <docker_hub_id>/image_name:<optional_version_number>
+#
+# Note : if you do not supply a version number it assume it as the latest image 
+#
+# * Real Project : Creating a node js web server using docker 
+# Task : Create a node JS web server up and running via docker and then it should accessible via the network using port 8080
+#
+# Resources vailable : 
+# - Base Image : node:alpine    [ This means we are geting the alpine image which is fron node docker hub repo which comes with JS utilities such as npm]
+# - JS files   : index.js       [ This file will hold the configuration about the web server ]
+# - JS files   : package.js     [ This file contains the dependancy package list which needed for the index.js]
+# - WORKDIR    : /opt/apps      [ This will be the working directory with in the container to copy the files ] 
+# - RUN        : npm install    [ This will install all the required packages for the JS application which mentioned in package.js]
+# - RUN        : npm start      [ This will start the JS development server ]
+#
+# Example : Please see below ste by step details to create this container 
+#
+# . STEP 1: Create the index.js and package.json file for the webserver 
+#
+# | [root@ip-172-31-21-124 node_js]# cd cd /apps/docker_local_hub/node_js 
+# | [root@ip-172-31-21-124 node_js]# more index.js
+# | const express = require('express');
+# |
+# | const app = express();
+# |
+# | app.get('/', (req, res) => {
+# |     res.send('Welcome to Sathsang, how are you doing');
+# | });
+# |
+# | app.listen(8080, () => {
+# |     console.log('Listening on port 8080');
+# | });
+# |     
+# | [root@ip-172-31-21-124 node_js]# vim package.json
+# | [root@ip-172-31-21-124 node_js]# more index.js
+# | const express = require('express');
+# |
+# | const app = express();
+# |
+# | app.get('/', (req, res) => {
+# |     res.send('Welcome to Sathsang, how are you doing');
+# | });
+# |
+# | app.listen(8080, () => {
+# |     console.log('Listening on port 8080');
+# | });
+# |     
+# | [root@ip-172-31-21-124 node_js]#
+# 
+#
+# . STEP 2:  Create the Docker file for the image build 
+#
+# | [root@ip-172-31-21-124 node_js]# more Dockerfile
+# | # Base image used from node, which contains alpine base image with npm utilities
+# |
+# | FROM node:alpine
+# |
+# | # Working directory for the container
+# |
+# | WORKDIR /opt/apps
+# |
+# | # COPY these file in pwd to  working directory of container
+# |
+# | COPY ./ ./
+# |
+# | # Steps to run as part of building the container
+# |
+# | RUN npm install
+# |
+# | # Default command for container to startup
+# |
+# | CMD ["npm", "start"]
+# | [root@ip-172-31-21-124 node_js]#
+#
+# . STEP 3: Build the my_nodejs_webapp using the images given above 
+#
+# | [root@ip-172-31-21-124 node_js]# docker build -t ajay291491:my_nodejs_webapp .
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | STEP 1: FROM node:alpine
+# | Getting image source signatures
+# | Copying blob e7c96db7181b: 2.63 MiB / 2.63 MiB [============================] 1s
+# | Copying blob a2b3c20ed471: 21.73 MiB / 21.73 MiB [==========================] 1s
+# | Copying blob 240c8d07e1ef: 1.27 MiB / 1.27 MiB [============================] 1s
+# | Copying blob 21738480b7ba: 280 B / 280 B [==================================] 1s
+# | Copying config a9a8b83644f7: 5.52 KiB / 5.52 KiB [==========================] 0s
+# | Writing manifest to image destination
+# | Storing signatures
+# | STEP 2: WORKDIR /opt/apps
+# | --> ffcdce5b2301c839f403f66e6334e4b5e6b2298db133c2c6ff466faf955502f6
+# | STEP 3: FROM ffcdce5b2301c839f403f66e6334e4b5e6b2298db133c2c6ff466faf955502f6
+# | STEP 4: COPY ./ ./
+# | --> 545e51456b63686e4d13dadadf86ff8577961441d6b97e79c728dcd896b32efd
+# | STEP 5: FROM 545e51456b63686e4d13dadadf86ff8577961441d6b97e79c728dcd896b32efd
+# | STEP 6: RUN npm install
+# | ERRO[0008] read container terminal output: input/output error: input/output error
+# | npm notice created a lockfile as package-lock.json. You should commit this file.
+# | npm WARN apps No description
+# | npm WARN apps No repository field.
+# | npm WARN apps No license field.
+# |
+# | added 50 packages from 37 contributors and audited 126 packages in 4.781s
+# | found 0 vulnerabilities
+# |
+# | --> d9939a78ba16438de25cd0562953bc76a4593992b663212e2c2c601ad9580a5f
+# | STEP 7: FROM d9939a78ba16438de25cd0562953bc76a4593992b663212e2c2c601ad9580a5f
+# | STEP 8: CMD ["npm", "start"]
+# | --> d85d0dcc24a40f270fac81e2c4968068a76c2a5fca00e3f9ea6d72dfba43ccbb
+# | STEP 9: COMMIT ajay291491:my_nodejs_webapp
+# | [root@ip-172-31-21-124 node_js]#
+#
+# . STEP 4: List the newly created image and that is available with the tag 
+#
+# | [root@ip-172-31-21-124 node_js]# docker image list
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | REPOSITORY                        TAG                IMAGE ID       CREATED          SIZE
+# | localhost/ajay291491              my_nodejs_webapp   d85d0dcc24a4   19 seconds ago   87 MB
+# | docker.io/library/node            alpine             a9a8b83644f7   2 weeks ago      83 MB
+# | localhost/ajay291491/apache-gcc   latest             0c7753e7e804   3 weeks ago      631 MB
+# | <none>                            <none>             9f27a8c302be   3 weeks ago      526 MB
+# | <none>                            <none>             2ed0af508b4f   3 weeks ago      347 MB
+# | docker.io/library/fedora          latest             289289d1a15b   5 weeks ago      326 MB
+# | docker.io/library/busybox         latest             ef46e0caa533   5 weeks ago      1.43 MB
+# | docker.io/library/mariadb         10.3               56089178535f   6 weeks ago      356 MB
+# | docker.io/library/mariadb         latest             56089178535f   6 weeks ago      356 MB
+# | docker.io/library/ubuntu          latest             7698f282e524   2 months ago     72.3 MB
+# | docker.io/library/centos          latest             9f38484d220f   4 months ago     209 MB
+# | docker.io/library/hello-world     latest             fce289e99eb9   6 months ago     5.62 kB
+# | [root@ip-172-31-21-124 node_js]#
+#
+# . STEP 5: Star the container with the port binding 
+#
+# | [root@ip-172-31-21-124 node_js]# docker  run -p 8080:80 -it d85d0dcc24a4
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# |
+# | > @ start /opt/apps
+# | > node index.js
+# |
+# | Listening on port 8080
+# | ^C[root@ip-172-31-21-124 node_js]# docker  run -p 80:80 -it d85d0dcc24a4
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# |
+# | > @ start /opt/apps
+# | > node index.js
+# |
+# | Listening on port 8080
+# |
+#
+# . STEP 6: Access the web service and make sure all working fine.
+#
+#...................................................................
+#  Next Sesion : Go through all above steps and elobarate them 
+#              : Fix aws connect issue 
+#              : Port binding needs to get fixed
+#              : Also change the copy sequance as advised  
 #
 #
-
+#...................................................................
 
 
