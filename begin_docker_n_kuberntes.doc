@@ -876,7 +876,7 @@
 # | docker.io/library/hello-world     latest             fce289e99eb9   6 months ago     5.62 kB
 # | [root@ip-172-31-21-124 node_js]#
 #
-# . STEP 5: Star the container with the port binding 
+# . STEP 5: Start the container with the port binding 
 #
 # | [root@ip-172-31-21-124 node_js]# docker  run -p 8080:80 -it d85d0dcc24a4
 # | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
@@ -896,13 +896,129 @@
 #
 # . STEP 6: Access the web service and make sure all working fine.
 #
-#...................................................................
-#  Next Sesion : Go through all above steps and elobarate them 
-#              : Fix aws connect issue 
-#              : Port binding needs to get fixed
-#              : Also change the copy sequance as advised  
+# | [root@sathsang kubernets]# curl http://ec2-13-58-45-122.us-east-2.compute.amazonaws.com:8080
+# | Welcome to Sathsang infra, An instance of joy with AWS and Docker
+# | [root@sathsang kubernets]#
+#
+# * Rebuilding a container 
+# As an when you have changes to the application running on the container below is going to the proccedure you are going to follow. 
+# Note : there is no method available to make hot changes on the existing container image as they are just a snapshot of the config when they have made.
+#
+# 1. Make the relevant changes to the code in the source code directory 
+# 2. Once the changes to source code has been made then rebuild the same image 
+# 3. When you rebuild the image, from the point where the changes are effective, docker will flush those changes and then rebuild the image. 
+#
+# For example, if you have multiple files on the same conatiner, when you make changes to one file then the place from files is defined will get rebuild. 
+#
+# NOTE : if you want to make use of the maximum existing cache and then you need to only use the minimal changes to existing cache, then you will need plan your docker file accordingly. 
+#
+# Example : We are going to rebuild the existing container with some changes to index.js file
+#
+# . STEP 1 - Make the changes to the index.js file in the source code directory
+#
+# | root@ip-172-31-21-124 node_js]# more index.js
+# | const express = require('express');
+# |
+# | const app = express();
+# |
+# | app.get('/', (req, res) => {
+# |     res.send('Welcome to Sathsang infra, instance of joy with AWS and Docker \n');    --> This is the change we have made to the conatiner 
+# | });
+# |
+# | app.listen(8080, () => {
+# |     console.log('Listening on port 8080');
+# | });
+# |
+# | [root@ip-172-31-21-124 node_js]#
+#
+# . STEP 2 : Rearrange the Dockerfile to make sure only minimum cache will get bursted 
+#
+# | [root@ip-172-31-21-124 node_js]# more Dockerfile
+# | # Base image used from node, which contains alpine base image with npm utilities
+# |
+# | FROM node:alpine
+# |
+# | # Working directory for the container
+# |
+# | WORKDIR /opt/apps
+# |
+# | # COPY the static file in pwd to  working directory of container
+# |
+# | COPY ./package.json ./						--> Moved package.json above since it doesn't require to be rebuilt
+# |
+# | # Steps to run as part of building the container
+# |
+# | RUN npm install
+# |
+# | # COPY the dynamic files
+# |
+# | COPY ./ ./								--> This will be the place where actual changes will occur
+# |
+# | # Default command for container to startup
+# |
+# | CMD ["npm", "start"]
+# | [root@ip-172-31-21-124 node_js]#
+#
+# . STEP 3 : Rebuild the conatiner 
+#
+# | [root@ip-172-31-21-124 node_js]# docker rebuild -t ajay291491/node_web_app .
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | Command "rebuild" not found.
+# | See `podman --help`.
+# | [root@ip-172-31-21-124 node_js]# docker build -t ajay291491/node_web_app .
+# | Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+# | STEP 1: FROM node:alpine
+# | STEP 2: WORKDIR /opt/apps
+# | --> Using cache 87eea9b1a98c628c2fc5dec2931533e65863e52f116ac49dc281feb31cf9f704
+# | STEP 3: FROM 87eea9b1a98c628c2fc5dec2931533e65863e52f116ac49dc281feb31cf9f704
+# | STEP 4: COPY ./package.json ./
+# | --> Using cache c8bdfc26fd92e12b1e35f4a09e97d521b8719eba4f38b8a37198d5265ba163ed
+# | STEP 5: FROM c8bdfc26fd92e12b1e35f4a09e97d521b8719eba4f38b8a37198d5265ba163ed
+# | STEP 6: RUN npm install
+# | --> Using cache 6d2d190066366c0d7da559da0b2762ed426ee4721c0c11944f6f677adc17948d
+# | STEP 7: FROM 6d2d190066366c0d7da559da0b2762ed426ee4721c0c11944f6f677adc17948d
+# | STEP 8: COPY ./ ./										--> From here remaining steps will be executed again
+# | --> Using cache dc3681c55fad568def23434be0ae13779742a245428099df978bd92c5d606bfc
+# | STEP 9: FROM dc3681c55fad568def23434be0ae13779742a245428099df978bd92c5d606bfc
+# | STEP 10: CMD ["npm", "start"]
+# | --> Using cache 1ecc5a7cb29e743f02340bc14f4f02f353dfb14af72460d5e93048ed1dd9c45c
+# | STEP 11: COMMIT ajay291491/node_web_app
+# | [root@ip-172-31-21-124 node_js]#
+#
+# . STEP 4 : Now run the conatiner and test it again
+#
+# | [root@sathsang kubernets]# curl http://ec2-13-58-45-122.us-east-2.compute.amazonaws.com:8080
+# | Welcome to Sathsang infra, instance of joy with AWS and Docker 
+# | [root@sathsang kubernets]##
+# 
+# * Why we need to be careful in modifying or planning the Dockerfile 
+# As the applications becomes bigger and bigger it will increase the time for building that image. 
+# So it will be always good we keep minimal changes to the existing cache so that during build time only minimal changes will be done. 
+# That will save of lot of time when you rebuild applications and it will have lot of importance when comes to cloud. 
 #
 #
-#...................................................................
+#---------------------------------------------------------------------------------------------
+#  Chapter 05 - Making multi container application
+#---------------------------------------------------------------------------------------------
+#
+# * Creating Multi container apps for - "Visitor Count APP"
+# In this chapter we will start working on creating application with multiple containers. 
+# Here we will create an application with two containers one is node JS application and it will have a redis backend. 
+# Node application will act as the front end and redis will act as the backend.
+# Whom ever access the url, this app will return the value of how many times it got accessed. 
+#
+# * How multiple containers communicate together 
+#
+#
+# * How the port connectivity is managed between the containers
+#
+#
+#
+#
+#
+#
+#
+#
+#
 
 
