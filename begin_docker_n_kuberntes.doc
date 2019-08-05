@@ -1101,7 +1101,7 @@
 # | {
 # |   "dependencies": {
 # |     "express": "*",
-# |     "redis": "2.8.0"
+# |     "redis": "2.8.0"		--> This is just the node module name for redis, just like python module
 # |   },
 # |   "scripts": {
 # |     "start": "node index.js"
@@ -1111,17 +1111,17 @@
 # | [root@ip-172-31-21-124 visitor_count]# 
 # | [root@ip-172-31-21-124 visitor_count]# more index.js 
 # | const express = require('express');
-# | const redis = require('redis');
+# | const redis = require('redis');		--> Importing redis module to communicate with redis DB
 # | const app = express();
 # | 
-# | const client = redis.createClient({
-# |   host: 'redis-server',
-# |   port: 6379
+# | const client = redis.createClient({		--> Defining where to look for redis database
+# |   host: 'redis-server',			--> redis container name will be 'redis-server', this will be defined in 'docker-compose.yml' 
+# |   port: 6379				--> port in which node container @ app level will communicate with redis container
 # | });
 # | 
 # | client.set('visits', 0);
 # | 
-# | app.get('/', (req, res) => {
+# | app.get('/', (req, res) => {			--> Logic access the vistor counter and then increase the counter
 # |   client.get('visits', (err, visits) => {
 # |     res.send('Number of visits is ' + visits);
 # |     client.set('visits', parseInt(visits) + 1);
@@ -1164,10 +1164,10 @@
 # | [root@ip-172-31-21-124 visitor_count]# more docker-compose.yml 
 # | version: '3'
 # | services: 
-# |   node_app:
+# |   node_app:					--> This service will get built locally, docker compose has to run from '/apps/docker_local_hub/visitor_count'
 # |     build: .
 # |     ports:
-# |       - "4000:8081"
+# |       - "4000:8081"				--> Port binding with hypervisor and local container 
 # |   redis-server:
 # |     image: 'redis'
 # | [root@ip-172-31-21-124 visitor_count]# 
@@ -1255,7 +1255,94 @@
 # | [sathsang@sathsang ~]$ curl http://ec2-13-58-45-122.us-east-2.compute.amazonaws.com:4000/;echo
 # | Number of visits is 40
 # | [sathsang@sathsang ~]$ 
+#
+#
+# NOTE : The way this application works is like below 
+#
+# Client --> GET {{ https://hypervisor_url:4000i }} --> Hypervisor redirects -->  {{ via port 8081 }} --> node_app container --> {{ via port 6379 }} --> redis-server container
+#
+# * How to start the docker-compose in backgroup 
+# You can start the docker compose in background by using a "-d" string similar to what you have used for docker run . 
+#
+# Syntax : docker-compose up -d 
+#
+# Example : Below is the docker compose started in background 
+#
+# | [root@ip-172-31-21-124 visitor_count]# docker-compose up -d
+# | Starting visitor_count_redis-server_1 ... done
+# | Starting visitor_count_node_app_1     ... done
+# | [root@ip-172-31-21-124 visitor_count]# 
+# | [root@ip-172-31-21-124 visitor_count]# 
+# | [root@ip-172-31-21-124 visitor_count]# docker container ls
+# | CONTAINER ID        IMAGE                    COMMAND                  CREATED             STATUS              PORTS                    NAMES
+# | 813a0df19f4b        visitor_count_node_app   "docker-entrypoint.s…"   3 hours ago         Up 16 seconds       0.0.0.0:4000->8081/tcp   visitor_count_node_app_1
+# | e01afa785820        redis                    "docker-entrypoint.s…"   3 hours ago         Up 16 seconds       6379/tcp                 visitor_count_redis-server_1
+# | [root@ip-172-31-21-124 visitor_count]# 
+# | [sathsang@sathsang ~]$
+# | [sathsang@sathsang ~]$ curl http://ec2-13-58-45-122.us-east-2.compute.amazonaws.com:4000/;echo
+# | Number of visits is 0
+# | [sathsang@sathsang ~]$ curl http://ec2-13-58-45-122.us-east-2.compute.amazonaws.com:4000/;echo
+# | Number of visits is 1
+# | [sathsang@sathsang ~]$ curl http://ec2-13-58-45-122.us-east-2.compute.amazonaws.com:4000/;echo
+# | Number of visits is 2
+# | [sathsang@sathsang ~]$ 
+#
+#
+# * How to stop a running containers started via docker compose
+# You can stop the running containers using the command 'docker-compose down'
+#
+# syntax : docker compose down
+#
+# Example : Below is an example for bringing down the application 
+# 
+# | [root@ip-172-31-21-124 visitor_count]# docker-compose down
+# | Stopping visitor_count_node_app_1     ... done
+# | Stopping visitor_count_redis-server_1 ... done
+# | Removing visitor_count_node_app_1     ... done
+# | Removing visitor_count_redis-server_1 ... done
+# | Removing network visitor_count_default
+# | [root@ip-172-31-21-124 visitor_count]# docker container ls
+# | CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+# | [root@ip-172-31-21-124 visitor_count]# 
+# | 
+#
+# * Restart Policies : How to handle crash in a container 
+# You can always handle the crash in a container based on the its gracefully or unexpected. 
+# You can get this done via 'restart policies. 
+# You can update the restart policies in the docker-compose.yml under the services to make sure crashes are handled properly. 
+#
+# Note : You will need to define the restart policies for every containers under the service definition 
+#
+# Below are the restart policies available. 
+# 
+# no             : never attempt fo restart the container even if it is crashes or restarts
+# always         : if this container stops for any reason then restart always 
+# on-failure     : Only restart if the container stop with a non-zero error code 
+# unless-stopeed : Always restart the container unless it is forcefully stopped
+#
+# Example : below is an example of the visitor count application updated with restart policy on failure 
+#
+# | [root@ip-172-31-21-124 visitor_count]# more docker-compose.yml 
+# | version: '3'
+# | services: 
+# |   node_app:
+# |     build: .
+# |     ports:
+# |       - "4000:8081"
+# |     restart: 'on-failure'			--> restart policy to restart if there a failure 
+# |   redis-server:
+# |     image: 'redis'
+# |     restart: 'on-failure'			--> restart policy to restart if there a failure
+# | [root@ip-172-31-21-124 visitor_count]# 
 
+
+#
+#
+# Udemy : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11437008?start=413#bookmarks
+#
+#
+#
+#
 #
 
 
