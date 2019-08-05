@@ -719,6 +719,8 @@
 #
 #---------------------------------------------------------------------------------------------
 #  Chapter 04 - Making real projects with Container 
+#
+#  UDEMY : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11436978#overview
 #---------------------------------------------------------------------------------------------
 # 
 # * Glossary 
@@ -999,7 +1001,77 @@
 #
 #---------------------------------------------------------------------------------------------
 #  Chapter 05 - Making multi container application
+#
+#  UDEMY : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11436978#overview
 #---------------------------------------------------------------------------------------------
+#
+# * Docker Compose
+# Docker Compose is a tool for defining a multi container appliaction. 
+# One of the prime responsibility of docker compose is to create a networking between different containers in a multi container app infra. 
+# This brings up an isolated environment for multiple containers to work together. 
+# In most of the case there will be multiple containers working in various different ports in an isolated environment. 
+# They will be exposed to the external world through a port which bind to their hypervisor. 
+# You will be defining the configuration about your multi container application  and its servics in 'docker-compose.yml' file. 
+# This yaml file will bring up all the services and appliaction as defined in the yaml file. 
+# 
+# Using docker compose mainly consist of three steps. 
+#
+# 1. Defining all your app environment in a Dockerfile so that it can be reproduced anywhere
+# 2. Defining all your services which makes your application under the services, so that it can create multiple container under an isolated environment 
+# 3. Run 'docker-compose up' to bring all your application up. 
+#
+# Key Commands 
+#
+# $ docker compose up              ==> This is a combination of 'docker run <few images>'
+# $ docker compose up --build      ==> This is comination of 'docker build . ' + 'docker run <list of images>'
+# $ docker compose down            ==> This will terminate the containers
+#
+# udemy : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11437002?start=75#bookmarks
+#
+# * File structure - docker-compose.yml
+# When you are using docker-compose method, then you can keep below files as needed. 
+#
+#  1. If you are already using an image which is built then you might require only the 'docker-compose.yml' file. 
+#  2. if you are not build any image so far, you arrange files like 
+#     - application codes or files as needed
+#     - 'Dockerfile' to build the application image using the files and config
+#     - 'docker-compose.yml' to build the isolated environment for various containers. 
+#
+# Syntax : Below is the syntax of the docker-compose.yml
+#
+# version:  {{ version_number }}          => version of docker compose you are using
+# services:                       => List docker containers you are going to spin up, these containers will be in a same isolated environment and can communicate using port number internally
+#   {{ service_name_one }} :		 => This is name of the container and under the isolated env this container will be accessible via this name 
+#     images: {{ name of the image }}    => This should be a valid image name in the repo
+#     ports : 
+#        - {{ port_number }}          => list of port number for the service to open
+#
+#   {{ service_name_two }} : 
+#     image: {{ name of the image }}
+#     ports: 
+#       - {{ port_number_one }}
+#       - {{ external_port:port_number_two }}		==> This kind of config are used to map between local and hypervisor ports 
+#
+#   {{ service_name_three }}:
+#     build: {{ . }}					==> You can also build the image, if needed via docker compose
+#     ports:
+#       - {{ port_number }} 				
+#
+#
+#  Example: Below example shows a sample docker-compose.yml file for the visitor application 
+#
+# | [root@ip-172-31-21-124 visitor_count]# more docker-compose.yml 
+# | version: '3'
+# | services: 
+# |   node_app:
+# |     build: .			-> This is a image getting build locally
+# |     ports:
+# |       - "4000:8081"			-> portmapping for external access
+# |   redis-server:
+# |     image: 'redis'A			-> creating a container named 'redis-server' using docker hub image 'redis'
+# | [root@ip-172-31-21-124 visitor_count]# 
+# | 
+#
 #
 # * Creating Multi container apps for - "Visitor Count APP"
 # In this chapter we will start working on creating application with multiple containers. 
@@ -1007,18 +1079,183 @@
 # Node application will act as the front end and redis will act as the backend.
 # Whom ever access the url, this app will return the value of how many times it got accessed. 
 #
-# * How multiple containers communicate together 
+# . Tasks Involved for apps 
+#   - Create a visitor app which consist of package.json and index.js 
+#   - A backednd redis database which stores the vistor count
+#   - Node web application expected to communicate with a backend redis-server 
+#    
+# . Tasks involved from redis
+#   - Create docker image for node app which brings up a web app which stores vistor count
+#   - Pull redis docker image from docker hub
+#   - create a network infra for both node web app container and redis servers to communicate via ports in an isolated environment 
+#
+# STEP 1 : Create an application directory and application code base inside. 
+# 
+# | [root@ip-172-31-21-124 visitor_count]# pwd
+# | /apps/docker_local_hub/visitor_count
+# | [root@ip-172-31-21-124 visitor_count]# ls -l package.json index.js 
+# | -rw-r--r--. 1 root root 443 Aug  5 05:33 index.js
+# | -rw-r--r--. 1 root root 118 Aug  5 04:47 package.json
+# | [root@ip-172-31-21-124 visitor_count]# 
+# | [root@ip-172-31-21-124 visitor_count]# more package.json 
+# | {
+# |   "dependencies": {
+# |     "express": "*",
+# |     "redis": "2.8.0"
+# |   },
+# |   "scripts": {
+# |     "start": "node index.js"
+# |   }
+# | }
+# | [root@ip-172-31-21-124 visitor_count]# 
+# | [root@ip-172-31-21-124 visitor_count]# 
+# | [root@ip-172-31-21-124 visitor_count]# more index.js 
+# | const express = require('express');
+# | const redis = require('redis');
+# | const app = express();
+# | 
+# | const client = redis.createClient({
+# |   host: 'redis-server',
+# |   port: 6379
+# | });
+# | 
+# | client.set('visits', 0);
+# | 
+# | app.get('/', (req, res) => {
+# |   client.get('visits', (err, visits) => {
+# |     res.send('Number of visits is ' + visits);
+# |     client.set('visits', parseInt(visits) + 1);
+# |   });
+# | });
+# | 
+# | app.listen(8081, () => {
+# |   console.log('Listening on port 8081');
+# | });
+# | [root@ip-172-31-21-124 visitor_count]# 
+# | [root@ip-172-31-21-124 visitor_count]# 
+# | 
+#
+# STEP 2 : Create Dockerfile to create the application
+#
+# | [root@ip-172-31-21-124 visitor_count]# more Dockerfile 
+# | # Getting the base Image from alpine:linux
+# | FROM node:alpine
+# | 
+# | # Setting up the working directory in container
+# | WORKDIR /app
+# | 
+# | # Copying the package.json file to /app directory
+# | COPY package.json .
+# | 
+# | # Running npm install command to install dependancies 
+# | RUN npm install
+# | 
+# | # Copy rest of the files in code base(as of now index.js) to /app to redice cache burst
+# | COPY . .
+# | 
+# | # Command to start the service in container
+# | CMD ["npm", "start"]
+# | [root@ip-172-31-21-124 visitor_count]# 
+# | 
+#
+# STEP 3 : Create 'docker-compose.yml' to bring both node app and redis container on same isolated envioenment 
+#
+# | [root@ip-172-31-21-124 visitor_count]# 
+# | [root@ip-172-31-21-124 visitor_count]# more docker-compose.yml 
+# | version: '3'
+# | services: 
+# |   node_app:
+# |     build: .
+# |     ports:
+# |       - "4000:8081"
+# |   redis-server:
+# |     image: 'redis'
+# | [root@ip-172-31-21-124 visitor_count]# 
+# | [root@ip-172-31-21-124 visitor_count]# 
+# | 
 #
 #
-# * How the port connectivity is managed between the containers
+# STEP 4 : Start the container environment using the 'docker compose up' command
 #
+# | [root@ip-172-31-21-124 visitor_count]# docker-compose up
+# | Building node_app
+# | Step 1/6 : FROM node:alpine
+# | alpine: Pulling from library/node
+# | e7c96db7181b: Pull complete
+# | 72484f09da35: Pull complete
+# | 86bee4bed5f2: Pull complete
+# | f9e983f0fe2c: Pull complete
+# | Digest: sha256:300e3d2c19067c1aec9d9b2bd3acbd43d53797a5836d70a23e437a5634bcd33a
+# | Status: Downloaded newer image for node:alpine
+# |  ---> d97a436daee9
+# | Step 2/6 : WORKDIR /app
+# |  ---> Running in 2e3d8ecdd192
+# | Removing intermediate container 2e3d8ecdd192
+# |  ---> efb442f50567
+# | Step 3/6 : COPY package.json .
+# |  ---> 97b2310ddc9f
+# | Step 4/6 : RUN npm install
+# |  ---> Running in d0a5e431a2c8
+# | npm notice created a lockfile as package-lock.json. You should commit this file.
+# | npm WARN app No description
+# | npm WARN app No repository field.
+# | npm WARN app No license field.
+# | 
+# | added 54 packages from 41 contributors and audited 130 packages in 2.633s
+# | found 0 vulnerabilities
+# | 
+# | Removing intermediate container d0a5e431a2c8
+# |  ---> b9b8c8581e14
+# | Step 5/6 : COPY . .
+# |  ---> 4b1f9010e35e
+# | Step 6/6 : CMD ["npm", "start"]
+# |  ---> Running in 002916d81331
+# | Removing intermediate container 002916d81331
+# |  ---> 664d764d9678
+# | Successfully built 664d764d9678
+# | Successfully tagged visitor_count_node_app:latest
+# | WARNING: Image for service node_app was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+# | Pulling redis-server (redis:)...
+# | latest: Pulling from library/redis
+# | f5d23c7fed46: Pull complete
+# | 831c20fd50cb: Pull complete
+# | bc2a0f25caa5: Pull complete
+# | 745ac314a007: Pull complete
+# | 6deeca231441: Pull complete
+# | 6291e84f5373: Pull complete
+# | Digest: sha256:854715f5cd1b64d2f62ec219a7b7baceae149453e4d29a8f72cecbb5ac51c4ad
+# | Status: Downloaded newer image for redis:latest
+# | Creating visitor_count_redis-server_1 ... done
+# | Creating visitor_count_node_app_1     ... done
+# | Attaching to visitor_count_node_app_1, visitor_count_redis-server_1
+# | redis-server_1  | 1:C 05 Aug 2019 07:28:31.155 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+# | redis-server_1  | 1:C 05 Aug 2019 07:28:31.155 # Redis version=5.0.5, bits=64, commit=00000000, modified=0, pid=1, just started
+# | redis-server_1  | 1:C 05 Aug 2019 07:28:31.155 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+# | redis-server_1  | 1:M 05 Aug 2019 07:28:31.157 * Running mode=standalone, port=6379.
+# | redis-server_1  | 1:M 05 Aug 2019 07:28:31.157 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+# | redis-server_1  | 1:M 05 Aug 2019 07:28:31.157 # Server initialized
+# | redis-server_1  | 1:M 05 Aug 2019 07:28:31.157 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+# | redis-server_1  | 1:M 05 Aug 2019 07:28:31.157 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
+# | redis-server_1  | 1:M 05 Aug 2019 07:28:31.157 * Ready to accept connections
+# | node_app_1      | 
+# | node_app_1      | > @ start /app
+# | node_app_1      | > node index.js
+# | node_app_1      | 
+# | node_app_1      | Listening on port 8081
+# | 
+# | 
 #
+# STEP 5 : Access the url and make sure it is working as expected 
 #
-#
-#
-#
-#
-#
+# | [sathsang@sathsang ~]$ curl http://ec2-13-58-45-122.us-east-2.compute.amazonaws.com:4000/;echo
+# | Number of visits is 38
+# | [sathsang@sathsang ~]$ 
+# | [sathsang@sathsang ~]$ curl http://ec2-13-58-45-122.us-east-2.compute.amazonaws.com:4000/;echo
+# | Number of visits is 39
+# | [sathsang@sathsang ~]$ curl http://ec2-13-58-45-122.us-east-2.compute.amazonaws.com:4000/;echo
+# | Number of visits is 40
+# | [sathsang@sathsang ~]$ 
+
 #
 
 
