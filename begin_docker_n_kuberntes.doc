@@ -1334,15 +1334,414 @@
 # |     image: 'redis'
 # |     restart: 'on-failure'			--> restart policy to restart if there a failure
 # | [root@ip-172-31-21-124 visitor_count]# 
-
-
 #
 #
 # Udemy : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11437008?start=413#bookmarks
 #
 #
+#------------------------------------------------------------------------------------------------------------------
+#  Chapter 06 - Creating Production Grade workflow 
+#
+#  UDEMY : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11437040#overview
+#------------------------------------------------------------------------------------------------------------------
+#
+# * Data Management in Docker 
+# When you are using a conatiner managing data is a diffcult task as it brings up few challenges. 
+#
+# . Data which reside within the container doesn't persist as soon as container is brought down. 
+# . In case another process needs the same data for reference its is not easy to get that if that is within the container. 
+# . Writing into a container’s writable layer requires a storage driver to manage the filesystem. The storage driver provides a union filesystem, using the Linux kernel. 
+#
+# To deal with above challenges and make the data persistent even after the container is shutdown docker brings up two options 
+# Regardless which option you choose docker access the data as plain files and directories within the container regardless of the method you have used.
+#
+# 1. Volume 
+# 2. Bind Mounts
+#
+# Note : Go to below link and look for the image which represents the data management in docker
+#
+# Reference : https://docs.docker.com/storage/ 
+#
+# * Docker Volume
+# Volumes are stored in a part of the host filesystem which is managed by Docker, for example, (/var/lib/docker/volumes/).
+# Non-Docker process should not modify the data on these volumes, volumes are the best way to persist data in the docker. 
+# Volumes are created and managed by Docker during container or service creation. 
+#
+# If you want, you can manaually create and destroy the volume using below command also 
+#
+# Syntax : docker volume create
+# Syntax : docker volume prune 
+#
+# Example : Below is a manual creation of volume 
+#
+# | [root@ip-172-31-21-124 docker_local_hub]# docker volume create 
+# | 27cd6286781c4d6f9241af8d8c29917b0270bbd9ecd1b25d5a6693510bdfed0e
+# | [root@ip-172-31-21-124 docker_local_hub]# docker volume ls 
+# | DRIVER              VOLUME NAME
+# | local               27cd6286781c4d6f9241af8d8c29917b0270bbd9ecd1b25d5a6693510bdfed0e
+# | local               81b0f6c31a3b63dab9c97c2cc7ee5eefcc4cf64dc8a9715a2c784703434d8444
+# | local               62057d87f7c23e26a9d3c1c3c88fc823f2c2b9c9e0015d33526d68a89e57c226
+# | local               a9e8d56ea83bd014f62a0de90312de32758b5b6da3750460dac71a7b1de28b77
+# | [root@ip-172-31-21-124 docker_local_hub]#
+#
+# Note : Normally the manual creation methods are not used, they are used via container run time using '-v' flag. 
+#
+# * Docker Bind Mounts
+# Bind mounts have limited functionality compared to volumes. When you use a bind mount, a file or directory on the host machine is mounted into a container.
+# The file or directory is referenced by its full path on the host machine. The file or directory does not need to exist on the Docker host already.
+# It is created on demand if it does not yet exist. Bind mounts are very performant, but they rely on the host machine’s filesystem having a specific directory structure available.
+#
+# * How to access volume during runtime 
+# You will be using '-v' flag to map or bind a volume to a container, When you are mapping a volume or binding a mount it should follow 
+#
+# syntax : docker run -v  {{ host_local_dir:conatiner_dir }}  {{ docker_image }}
+#
+# If you want any of the directory to exclude as part of the mount volumes then you can still use '-v' flag this time without a mapping with ':'
+#
+# Syntax : docker run -v {{ exclude_dir }} {{ docker_image }}
+#
+# * Creating Production Grade workflow - Using docker Build 
+#
+# Level Set : In this chapter we will be going through a step by step approach to understand various different concept around 
+#
+# Note : We are using a React as the example for an application which can get deployed through the docker container. 
+#
+# . Creating a sample react application (This is just to showcase an example application)
+# . Running test cases on that application
+# . Building that application 
+# . Create an image with docker build 
+# . Creating volume bookmarks in docker 
+# . Understading what to refer in volume bookmark and what not to
+# . Building the same application using docker-compose 
+# . use Travis CICD pipeline to deploy the application 
+# . Deploy your application to AWS instance 
+#
+# * STEP 1 : Install node package on your localhost and then create a project and then create a production build
+#
+# $ npm install -g create-react-app
+# $ cd /app/
+# $ create-react-app frontend
+# $ cd frontend
+# $ npm start   --> This will bring up the development server instancce 
+#
+# * STEP 2 : If all above steps are completed, then we can create a production build 
+#
+# | [root@sathsang frontend]# npm build
+# | npm WARN build `npm build` called with no arguments. Did you mean to `npm run-script build`?
+# | [root@sathsang frontend]# npm run build
+# | 
+# | > frontend@0.1.0 build /app/frontend
+# | > react-scripts build
+# | 
+# | Creating an optimized production build...
+# | Compiled successfully.
+# | 
+# | File sizes after gzip:
+# | 
+# |   36.44 KB  build/static/js/2.b41502e9.chunk.js
+# |   762 B     build/static/js/runtime~main.a8a9905a.js
+# |   602 B     build/static/js/main.28647029.chunk.js
+# |   517 B     build/static/css/main.2cce8147.chunk.css
+# | 
+# | The project was built assuming it is hosted at the server root.
+# | You can control this with the homepage field in your package.json.
+# | For example, add this to build it for GitHub Pages:
+# | 
+# |   "homepage" : "http://myname.github.io/myapp",
+# | 
+# | The build folder is ready to be deployed.
+# | You may serve it with a static server:
+# | 
+# |   npm install -g serve
+# |   serve -s build
+# | 
+# | Find out more about deployment here:
+# | 
+# |   https://bit.ly/CRA-deploy
+# | 
+# | [root@sathsang frontend]# ls
+# | build  node_modules  package.json  package-lock.json  public  README.md  src
+# | [root@sathsang frontend]#
+#
+#
+# STEP 3 : Once you have the build directory then you can create a docker container 
+#
+# This time we are using 'Dockerfile.dev' file intead just 'Dockerfile'
+#
+# | [root@sathsang frontend]# more   Dockerfile.dev 
+# | # Base image from docker hub
+# | FROM node:alpine
+# | 
+# | # Working directory within the container
+# | WORKDIR /app
+# | 
+# | # Copying package.json to avoid cache bursting
+# | COPY package.json . 
+# | 
+# | # Install the npm packages needed
+# | RUN npm install
+# | 
+# | # Copy the directories inside container
+# | COPY . .
+# | 
+# | # Start command for the container
+# | CMD ["npm", "run", "start"]
+# | [root@sathsang frontend]# 
+# | 
+#
+# STEP 4 : Build the docker image 
+#
+# | [root@sathsang frontend]# docker build -t ajay291491/react_app:latest -f Dockerfile.dev . 
+# | Sending build context to Docker daemon  148.3MB
+# | Step 1/6 : FROM node:alpine
+# | alpine: Pulling from library/node
+# | e7c96db7181b: Pull complete 
+# | 72484f09da35: Pull complete 
+# | 86bee4bed5f2: Pull complete 
+# | f9e983f0fe2c: Pull complete 
+# | Digest: sha256:300e3d2c19067c1aec9d9b2bd3acbd43d53797a5836d70a23e437a5634bcd33a
+# | Status: Downloaded newer image for node:alpine
+# |  ---> d97a436daee9
+# | Step 2/6 : WORKDIR /app
+# |  ---> Running in e49fe433696e
+# | Removing intermediate container e49fe433696e
+# |  ---> 3b9d654ff534
+# | Step 3/6 : COPY package.json .
+# |  ---> bc771db1e810
+# | Step 4/6 : RUN npm install
+# |  ---> Running in 68856e944f70
+# | npm WARN deprecated fsevents@2.0.6: Please update: there are crash fixes
+# | npm WARN deprecated flatten@1.0.2: I wrote this module a very long time ago; you should use something else.
+# | npm WARN deprecated left-pad@1.3.0: use String.prototype.padStart()
+# | 
+# | > core-js@2.6.9 postinstall /app/node_modules/babel-runtime/node_modules/core-js
+# | > node scripts/postinstall || echo "ignore"
+# | 
+# | Thank you for using core-js ( https://github.com/zloirock/core-js ) for polyfilling JavaScript standard library!
+# | 
+# | The project needs your help! Please consider supporting of core-js on Open Collective or Patreon: 
+# | > https://opencollective.com/core-js 
+# | > https://www.patreon.com/zloirock 
+# | 
+# | Also, the author of core-js ( https://github.com/zloirock ) is looking for a good job -)
+# | 
+# | 
+# | > core-js-pure@3.1.4 postinstall /app/node_modules/core-js-pure
+# | > node scripts/postinstall || echo "ignore"
+# | 
+# | Thank you for using core-js ( https://github.com/zloirock/core-js ) for polyfilling JavaScript standard library!
+# | 
+# | The project needs your help! Please consider supporting of core-js on Open Collective or Patreon: 
+# | > https://opencollective.com/core-js 
+# | > https://www.patreon.com/zloirock 
+# | 
+# | Also, the author of core-js ( https://github.com/zloirock ) is looking for a good job -)
+# | 
+# | npm notice created a lockfile as package-lock.json. You should commit this file.
+# | npm WARN @typescript-eslint/eslint-plugin@1.6.0 requires a peer of typescript@* but none is installed. You must install peer dependencies yourself.
+# | npm WARN @typescript-eslint/parser@1.6.0 requires a peer of typescript@* but none is installed. You must install peer dependencies yourself.
+# | npm WARN ts-pnp@1.1.2 requires a peer of typescript@* but none is installed. You must install peer dependencies yourself.
+# | npm WARN @typescript-eslint/typescript-estree@1.6.0 requires a peer of typescript@* but none is installed. You must install peer dependencies yourself.
+# | npm WARN tsutils@3.17.0 requires a peer of typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta but none is installed. You must install peer dependencies yourself.
+# | npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.9 (node_modules/jest-haste-map/node_modules/fsevents):
+# | npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.9: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
+# | npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.9 (node_modules/chokidar/node_modules/fsevents):
+# | npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.9: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
+# | npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@2.0.6 (node_modules/fsevents):
+# | npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@2.0.6: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
+# | 
+# | added 1388 packages from 675 contributors and audited 902283 packages in 27.438s
+# | found 0 vulnerabilities
+# | 
+# | Removing intermediate container 68856e944f70
+# |  ---> f75c776463cc
+# | Step 5/6 : COPY . .
+# |  ---> 5b5656274331
+# | Step 6/6 : CMD ['npm', 'run', 'start']
+# |  ---> Running in dd78e20b8cf2
+# | Removing intermediate container dd78e20b8cf2
+# |  ---> 0c87b60e5d17
+# | Successfully built 0c87b60e5d17
+# | Successfully tagged ajay291491/react_app:latest
+# | [root@sathsang frontend]# docker image ls 
+# | REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
+# | ajay291491/react_app   latest              0c87b60e5d17        18 seconds ago      380MB
+# | node                   alpine              d97a436daee9        11 days ago         79.3MB
+# | hello-world            latest              fce289e99eb9        7 months ago        1.84kB
+# | [root@sathsang frontend]#
+#
+#
+# STEP 5 : Start the conatiner
+#
+# | [root@sathsang frontend]# docker run -p 3000:3000 ajay291491/react_app
+# | 
+# | > frontend@0.1.0 start /app
+# | > react-scripts start
+# | 
+# | Starting the development server...
+# | 
+# | Compiled successfully!
+# | 
+# | You can now view frontend in the browser.
+# | 
+# |   Local:            http://localhost:3000/
+# |   On Your Network:  http://172.17.0.2:3000/
+# | 
+# | Note that the development build is not optimized.
+# | To create a production build, use npm run build.
+# | 
+#
+# STEP 6 : Access the url
+#
+# | [root@sathsang kubernets]# curl http://172.17.0.2:3000/ > /dev/null
+# |   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+# |                                  Dload  Upload   Total   Spent    Left  Speed
+# | 100  1653  100  1653    0     0  1148k      0 --:--:-- --:--:-- --:--:-- 1614k
+# | [root@sathsang kubernets]# 
+#
+# STEP 7 : Use Docker Volume to map local /app/frontend/src/App.js file can be edited by 
+#
+# | [root@dockerstation01 frontend]# docker run -p 3000:3000 -v /app/node_modules -v $(pwd):/app ajay291491/react_app
+# |
+# | > frontend@0.1.0 start /app
+# | > react-scripts start
+# |
+# | Starting the development server...
+# |
+# | Compiled successfully!
+# |
+# | You can now view frontend in the browser.
+# |
+# |   Local:            http://localhost:3000/
+# |   On Your Network:  http://172.17.0.2:3000/
+# |
+# | Note that the development build is not optimized.
+# | To create a production build, use npm run build.
+# |
+# | Compiling...
+# | Compiled successfully!
+#
+# NOTE : On step 7 we have used couple of volume option, below is the details for the same
+# 
+# -v $(pwd):/app          => This means we are mapping local hosts PWD to /app of the container 
+# -v /app/node_modules    => This means the /app/node_modules of container run time will still exist regardless of above definition
+#
+#
+# * Docker-Compose - Create the Same react app which created above 
+# Now we will create the same app with the 'docker-compose' utility, you can see below steps to see the procedure 
+#
+# STEP 1 : Create the docker-compose.yml file 
+#
+# | [root@dockerstation01 frontend]# more docker-compose.yml
+# | version: '3'
+# | services:
+# |     react_app:						=> only one app we are creating and defined under services
+# |         build:						=> As we using a different name for Dockerfile as Dockerfile.dev, we need to define the build context
+# |             context: .					=> This means PWD
+# |             dockerfile: Dockerfile.dev			=> Name of the docker file located in the PWD
+# |         ports:
+# |             - '3000:3000'					=> Binding local and external port as 3000
+# |         volumes:
+# |             - /app/node_modules				=> This directory should be excluded from hosts volume mapping 
+# |             - .:/app					=> This directory should be includes to map from local hosts PWD to container's /app
+# | [root@dockerstation01 frontend]#
+#
+# 
+# STEP 2 : Run compose and bring up the appliaction as defined 
+#
+# | [root@dockerstation01 frontend]# docker-compose up 
+# | Creating network "frontend_default" with the default driver
+# | Building react_app
+# | Step 1/7 : FROM node:alpine
+# |  ---> d97a436daee9
+# | Step 2/7 : WORKDIR /app
+# |  ---> Using cache
+# |  ---> 1098e641e2d1
+# | Step 3/7 : COPY package.json .
+# |  ---> 3dd0ff5017e3
+# | Step 4/7 : COPY . .
+# |  ---> 1066c6fb8cd2
+# | Step 5/7 : RUN npm install
+# |  ---> Running in 6169e8d6bbb5
+# | 
+# | > core-js@2.6.9 postinstall /app/node_modules/babel-runtime/node_modules/core-js
+# | > node scripts/postinstall || echo "ignore"
+# | 
+# | Thank you for using core-js ( https://github.com/zloirock/core-js ) for polyfilling JavaScript standard library!
+# | 
+# | The project needs your help! Please consider supporting of core-js on Open Collective or Patreon: 
+# | > https://opencollective.com/core-js 
+# | > https://www.patreon.com/zloirock 
+# | 
+# | Also, the author of core-js ( https://github.com/zloirock ) is looking for a good job -)
+# | 
+# | 
+# | > core-js-pure@3.1.4 postinstall /app/node_modules/core-js-pure
+# | > node scripts/postinstall || echo "ignore"
+# | 
+# | Thank you for using core-js ( https://github.com/zloirock/core-js ) for polyfilling JavaScript standard library!
+# | 
+# | The project needs your help! Please consider supporting of core-js on Open Collective or Patreon: 
+# | > https://opencollective.com/core-js 
+# | > https://www.patreon.com/zloirock 
+# | 
+# | Also, the author of core-js ( https://github.com/zloirock ) is looking for a good job -)
+# | 
+# | npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.9 (node_modules/chokidar/node_modules/fsevents):
+# | npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.9: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
+# | npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.9 (node_modules/jest-haste-map/node_modules/fsevents):
+# | npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.9: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
+# | npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@2.0.6 (node_modules/fsevents):
+# | npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@2.0.6: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
+# | 
+# | added 1388 packages from 675 contributors and audited 902283 packages in 72.076s
+# | found 0 vulnerabilities
+# | 
+# | Removing intermediate container 6169e8d6bbb5
+# |  ---> 0e1adcddcc80
+# | Step 6/7 : COPY . .
+# |  ---> 0bcfc54c4924
+# | Step 7/7 : CMD ["npm", "run", "start"]
+# |  ---> Running in f77fb39e9e2f
+# | Removing intermediate container f77fb39e9e2f
+# |  ---> 35d41cc0e672
+# | Successfully built 35d41cc0e672
+# | Successfully tagged frontend_react_app:latest
+# | WARNING: Image for service react_app was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+# | Creating frontend_react_app_1 ... done
+# | Attaching to frontend_react_app_1
+# | react_app_1  | 
+# | react_app_1  | > frontend@0.1.0 start /app
+# | react_app_1  | > react-scripts start
+# | react_app_1  | 
+# | react_app_1  | Starting the development server...
+# | react_app_1  | 
+# | react_app_1  | Compiled successfully!
+# | react_app_1  | 
+# | react_app_1  | You can now view frontend in the browser.
+# | react_app_1  | 
+# | react_app_1  |   Local:            http://localhost:3000/
+# | react_app_1  |   On Your Network:  http://172.18.0.2:3000/
+# | react_app_1  | 
+# | react_app_1  | Note that the development build is not optimized.
+# | react_app_1  | To create a production build, use npm run build.
+# | react_app_1  | 
+# | 
+# |
+#
+# STEP 3 : Access the URL and confirm its working
+#
+# | [sathsang@sathsang ~]$ curl http://dockerstation01.svr.apac.sathsang.net:3000/ |echo
+# | 
+# |   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+# |                                  Dload  Upload   Total   Spent    Left  Speed
+# | 100  1653  100  1653    0     0   240k      0 --:--:-- --:--:-- --:--:--  269k
+# | (23) Failed writing body
+# | [sathsang@sathsang ~]$
 #
 #
 #
+#
+
 
 
