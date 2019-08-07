@@ -1739,6 +1739,364 @@
 # | (23) Failed writing body
 # | [sathsang@sathsang ~]$
 #
+# 
+# * Running a test case inside a container 
+# You can run the test case insider the conatiner using couple of approaches
+# 
+# 1. You can pass the test command along with the conatiner while you are running it, if its supported 
+# 2. You can also define 'tests' under 'docker-compose.yml' file to run tests while during the startup of a container 
+#
+# Example 1 : Running test case while starting a container 
+#
+# | [root@dockerstation01 frontend]# docker run frontend_react_app npm run test
+# |
+# | > frontend@0.1.0 test /app
+# | > react-scripts test
+# |
+# |
+# | PASS src/App.test.js
+# |   ✓ renders without crashing (21ms)
+# |
+# | Test Suites: 1 passed, 1 total
+# | Tests:       1 passed, 1 total
+# | Snapshots:   0 total
+# | Time:        2.448s
+# | Ran all test suites.
+# |
+# | q
+# | [root@dockerstation01 frontend]#
+#
+#
+# Example 2 : Running test case using a 'docker-compose.yml' tests 
+#
+# | [root@dockerstation01 frontend]# more docker-compose.yml 
+# | version: '3'
+# | services:
+# |     react_app:
+# |         build:
+# |             context: . 
+# |             dockerfile: Dockerfile.dev
+# |         ports: 
+# |             - '3000:3000'
+# |         volumes: 
+# |             - /app/node_modules
+# |             - .:/app
+# |     tests:
+# |         build:
+# |             context: .
+# |             dockerfile: Dockerfile.dev
+# |         volumes:
+# |             - /app/node_modules
+# |             - .:/app
+# |         command: ["npm", "run", "test"]
+# | [root@dockerstation01 frontend]# 
+# | [root@dockerstation01 frontend]# 
+# | [root@dockerstation01 frontend]# docker-compose up --build
+# | Building react_app
+# | Step 1/7 : FROM node:alpine
+# |  ---> d97a436daee9
+# | Step 2/7 : WORKDIR /app
+# |  ---> Using cache
+# |  ---> 1098e641e2d1
+# | Step 3/7 : COPY package.json .
+# |  ---> Using cache
+# |  ---> 3dd0ff5017e3
+# | Step 4/7 : COPY . .
+# |  ---> b61bf31d47df
+# | Step 5/7 : RUN npm install
+# |  ---> Running in 5da9e915c7ce
+# | 
+# | > core-js@2.6.9 postinstall /app/node_modules/babel-runtime/node_modules/core-js
+# | > node scripts/postinstall || echo "ignore"
+# | 
+# | Thank you for using core-js ( https://github.com/zloirock/core-js ) for polyfilling JavaScript standard library!
+# | 
+# | The project needs your help! Please consider supporting of core-js on Open Collective or Patreon: 
+# | > https://opencollective.com/core-js 
+# | > https://www.patreon.com/zloirock 
+# | 
+# | Also, the author of core-js ( https://github.com/zloirock ) is looking for a good job -)
+# | 
+# | 
+# | > core-js-pure@3.1.4 postinstall /app/node_modules/core-js-pure
+# | > node scripts/postinstall || echo "ignore"
+# | 
+# | Thank you for using core-js ( https://github.com/zloirock/core-js ) for polyfilling JavaScript standard library!
+# | 
+# | The project needs your help! Please consider supporting of core-js on Open Collective or Patreon: 
+# | > https://opencollective.com/core-js 
+# | > https://www.patreon.com/zloirock 
+# | 
+# | Also, the author of core-js ( https://github.com/zloirock ) is looking for a good job -)
+# | 
+# | npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.9 (node_modules/chokidar/node_modules/fsevents):
+# | npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.9: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
+# | npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.9 (node_modules/jest-haste-map/node_modules/fsevents):
+# | npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.9: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
+# | npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@2.0.6 (node_modules/fsevents):
+# | npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@2.0.6: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
+# | 
+# | added 1388 packages from 675 contributors and audited 902283 packages in 77.955s
+# | found 0 vulnerabilities
+# | 
+# | Removing intermediate container 5da9e915c7ce
+# |  ---> 18a692c2d75e
+# | Step 6/7 : COPY . .
+# |  ---> 0271d5e55aed
+# | Step 7/7 : CMD ["npm", "run", "start"]
+# |  ---> Running in f3d7d524ff64
+# | Removing intermediate container f3d7d524ff64
+# |  ---> 911985e97266
+# | Successfully built 911985e97266
+# | Successfully tagged frontend_react_app:latest
+# | Building tests
+# | Step 1/7 : FROM node:alpine
+# |  ---> d97a436daee9
+# | Step 2/7 : WORKDIR /app
+# |  ---> Using cache
+# |  ---> 1098e641e2d1
+# | Step 3/7 : COPY package.json .
+# |  ---> Using cache
+# |  ---> 3dd0ff5017e3
+# | Step 4/7 : COPY . .
+# |  ---> Using cache
+# |  ---> b61bf31d47df
+# | Step 5/7 : RUN npm install
+# |  ---> Using cache
+# |  ---> 18a692c2d75e
+# | Step 6/7 : COPY . .
+# |  ---> Using cache
+# |  ---> 0271d5e55aed
+# | Step 7/7 : CMD ["npm", "run", "start"]
+# |  ---> Using cache
+# |  ---> 911985e97266
+# | Successfully built 911985e97266
+# | Successfully tagged frontend_tests:latest
+# | Recreating frontend_react_app_1 ... done
+# | Creating frontend_tests_1       ... done
+# | Attaching to frontend_react_app_1, frontend_tests_1
+# | react_app_1  | 
+# | react_app_1  | > frontend@0.1.0 start /app
+# | react_app_1  | > react-scripts start
+# | react_app_1  | 
+# | react_app_1  | Starting the development server...
+# | react_app_1  | 
+# | react_app_1  | Compiled successfully!
+# | react_app_1  | 
+# | react_app_1  | You can now view frontend in the browser.
+# | react_app_1  | 
+# | react_app_1  |   Local:            http://localhost:3000/
+# | react_app_1  |   On Your Network:  http://172.18.0.2:3000/
+# | react_app_1  | 
+# | react_app_1  | Note that the development build is not optimized.
+# | react_app_1  | To create a production build, use npm run build.
+# | react_app_1  | 
+# | tests_1      | 
+# | tests_1      | > frontend@0.1.0 test /app
+# | tests_1      | > react-scripts test
+# | tests_1      | 
+# | tests_1      | PASS src/App.test.js
+# | tests_1      |   ✓ renders without crashing (27ms)
+# | tests_1      | 
+# | tests_1      | Test Suites: 1 passed, 1 total
+# | tests_1      | Tests:       1 passed, 1 total
+# | tests_1      | Snapshots:   0 total
+# | tests_1      | Time:        3.592s
+# | tests_1      | Ran all test suites.
+# | tests_1      | 
+# | 
+# |
+# | [root@dockerstation01 frontend]# docker ps 
+# | CONTAINER ID        IMAGE                COMMAND                  CREATED             STATUS              PORTS                    NAMES
+# | bb0c177c861d        frontend_react_app   "docker-entrypoint.s…"   2 minutes ago       Up 2 minutes        0.0.0.0:3000->3000/tcp   frontend_react_app_1
+# | edcc5f0c765c        frontend_tests       "docker-entrypoint.s…"   2 minutes ago       Up About a minute                            frontend_tests_1
+# | [root@dockerstation01 frontend]#
+#
+#
+# * Block in Dockerfile 
+# In Dockerfile every declaration you make with 'FROM' statement is recognised as a block 
+# You can have multiple blocks in the Same Dockerfile and these blocks can refer each other by tagging them. 
+# When you declare a Block you can create a alias for that block and then if you want to access something from the container in that block you can access. 
+#
+# Example : Below Dockerfile with multiple blocks 
+#
+# | [root@dockerstation01 frontend]# more Dockerfile
+# | #
+# | # {{  Block for bulding the apps }}
+# | #
+# | # Pulling node:alpine image with a block alias 'build_instance'
+# | FROM node:alpine as build_instance						=> Block which is created with alias 'build_instance'
+# |
+# | # Setting up working directory
+# | WORKDIR /app
+# |
+# | # Copy pakcage.json for npm install
+# | COPY package.json .
+# |
+# | # Perform NPM install
+# | RUN npm install
+# |
+# | # Performing React build
+# | CMD ["npm", "run", "build"]
+# |
+# |
+# | #
+# | # {{ Block for Starting the Production version of application via nginx }}
+# | #
+# | # Pulling the nginx image							=> Instance which launches 'nginx' web server 
+# | FROM nginx
+# |
+# | # Copy the build image '/app/build' from Conatiner with block alias 'build_instance' to nginix  document root
+# | COPY --from=build_instance /app/build /usr/share/nginx/html			=> Copying from container / block with alias 'uild_instance' to nginx container's document root
+# | [root@dockerstation01 frontend]#
+#
+# * Performing Multi stage Docker builds (Current React app deployed to prod react)
+# At times you might need to perform multi stage build using the same Dockerfile. 
+# For example we have created a react app and setup that in the development server. 
+# Now lets take that into the next level by deploying that to the production, to do that you will require couple of things 
+#
+# . Build the existing development app 
+# . Create a nginix container and copy only the build directories to that  
+#
+# NOTE : Once the build process is over you do not require other directories and files apart from the build directory 
+#
+# In this excersize we will be using couple of Docker 
+#
+# Udemy : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11437096#overview
+#
+# STEP 1 : Create Dockerfile to create a interim container for build and then copy over the build image to nginx container 
+#
+# | [root@dockerstation01 frontend]# more Dockerfile
+# | #
+# | # {{  Block for bulding the apps }}
+# | #
+# | # Pulling node:alpine image with a block alias 'build_instance'
+# | FROM node:alpine as build
+# | # |
+# | # Setting up working directory
+# | WORKDIR /app
+# | # |
+# | # Copy pakcage.json for npm install
+# | COPY package.json .
+# | # |
+# | # Perform NPM install
+# | RUN npm install
+# | COPY . .
+# | # |
+# | # Performing React build
+# | RUN npm run build
+# | # |
+# | # |
+# | #
+# | # {{ Block for Starting the Production version of application via nginx }}
+# | #
+# | # Pulling the nginx image
+# | FROM nginx
+# | # |
+# | # Copy the build image '/app/build' from Conatiner with block alias 'build_instance' to nginix  document root
+# | RUN mkdir -p /usr/share/nginx/html
+# | COPY --from=build /app/build /usr/share/nginx/html/
+# | [root@dockerstation01 frontend]
+#
+# STEP 2 : Run Docker build 
+#
+# | [root@dockerstation01 frontend]# docker build -t ajay291491/react_prod . 
+# | Sending build context to Docker daemon    535kB
+# | Step 1/9 : FROM node:alpine as build
+# |  ---> d97a436daee9
+# | Step 2/9 : WORKDIR /app
+# |  ---> Using cache
+# |  ---> 12fc9e2c1e0e
+# | Step 3/9 : COPY package.json .
+# |  ---> Using cache
+# |  ---> f48d4e4b2c96
+# | Step 4/9 : RUN npm install
+# |  ---> Using cache
+# |  ---> b0ca70d777f5
+# | Step 5/9 : COPY . .
+# |  ---> 40820a973a3a
+# | Step 6/9 : RUN npm run build
+# |  ---> Running in 16d4e2764e4f
+# | 
+# | > frontend@0.1.0 build /app
+# | > react-scripts build
+# | 
+# | Creating an optimized production build...
+# | Compiled successfully.
+# | 
+# | File sizes after gzip:
+# | 
+# |   36.44 KB  build/static/js/2.b41502e9.chunk.js
+# |   762 B     build/static/js/runtime~main.a8a9905a.js
+# |   592 B     build/static/js/main.70c965f8.chunk.js
+# |   517 B     build/static/css/main.2cce8147.chunk.css
+# | 
+# | The project was built assuming it is hosted at the server root.
+# | You can control this with the homepage field in your package.json.
+# | For example, add this to build it for GitHub Pages:
+# | 
+# |   "homepage" : "http://myname.github.io/myapp",
+# | 
+# | The build folder is ready to be deployed.
+# | You may serve it with a static server:
+# | 
+# |   npm install -g serve
+# |   serve -s build
+# | 
+# | Find out more about deployment here:
+# | 
+# |   https://bit.ly/CRA-deploy
+# | 
+# | Removing intermediate container 16d4e2764e4f
+# |  ---> 9275ce80b041
+# | Step 7/9 : FROM nginx
+# |  ---> e445ab08b2be
+# | Step 8/9 : RUN mkdir -p /usr/share/nginx/html
+# |  ---> Using cache
+# |  ---> d93bd2bfcc43
+# | Step 9/9 : COPY --from=build /app/build /usr/share/nginx/html/
+# |  ---> 11caf318459e
+# | Successfully built 11caf318459e
+# | Successfully tagged ajay291491/react_prod:latest
+#
+# STEP 3 : Validate the Docker image and start the conatiner 
+#
+# | [root@dockerstation01 frontend]#
+# | [root@dockerstation01 frontend]# docker images 
+# | REPOSITORY              TAG                 IMAGE ID            CREATED              SIZE
+# | <none>                  <none>              9275ce80b041        16 seconds ago       257MB
+# | ajay291491/react_prod   latest              11caf318459e        16 seconds ago       126MB
+# | <none>                  <none>              c6d262751382        About a minute ago   256MB
+# | <none>                  <none>              0b886574ecc9        5 minutes ago        247MB
+# | <none>                  <none>              f5c1b6280302        6 minutes ago        256MB
+# | <none>                  <none>              ef62bf21449f        13 minutes ago       247MB
+# | <none>                  <none>              8c73f402a1c4        15 minutes ago       256MB
+# | <none>                  <none>              9f7d8478c0f7        15 minutes ago       256MB
+# | <none>                  <none>              82b535bf2f96        15 minutes ago       256MB
+# | <none>                  <none>              94abc5aea952        16 minutes ago       79.8MB
+# | <none>                  <none>              33577cb89b91        16 minutes ago       227MB
+# | <none>                  <none>              7d86be4e3d85        22 minutes ago       227MB
+# | <none>                  <none>              1c8346e31bda        28 minutes ago       256MB
+# | <none>                  <none>              7a3175ef4eb5        28 minutes ago       256MB
+# | <none>                  <none>              927be43c0826        33 minutes ago       256MB
+# | node                    alpine              d97a436daee9        12 days ago          79.3MB
+# | nginx                   latest              e445ab08b2be        2 weeks ago          126MB
+# | hello-world             latest              fce289e99eb9        7 months ago         1.84kB
+#
+# STEP 4 : Access the website and understand the logs 
+#
+# | [root@dockerstation01 frontend]# docker run -p 8080:80 11caf318459e
+# | 192.168.122.1 - - [07/Aug/2019:15:38:11 +0000] "GET / HTTP/1.1" 200 2045 "-" "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0" "-"
+# | 192.168.122.1 - - [07/Aug/2019:15:38:12 +0000] "GET /static/css/main.2cce8147.chunk.css HTTP/1.1" 200 994 "http://dockerstation01.svr.apac.sathsang.net:8080/" "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0" "-"
+# | 192.168.122.1 - - [07/Aug/2019:15:38:12 +0000] "GET /static/js/2.b41502e9.chunk.js HTTP/1.1" 200 118777 "http://dockerstation01.svr.apac.sathsang.net:8080/" "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0" "-"
+# | 192.168.122.1 - - [07/Aug/2019:15:38:12 +0000] "GET /static/js/main.70c965f8.chunk.js HTTP/1.1" 200 1078 "http://dockerstation01.svr.apac.sathsang.net:8080/" "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0" "-"
+# | 192.168.122.1 - - [07/Aug/2019:15:38:12 +0000] "GET /static/media/logo.5d5d9eef.svg HTTP/1.1" 200 2671 "http://dockerstation01.svr.apac.sathsang.net:8080/" "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0" "-"
+# | 172.17.0.1 - - [07/Aug/2019:15:38:38 +0000] "GET / HTTP/1.1" 200 2045 "-" "curl/7.61.1" "-"
+# | 172.17.0.1 - - [07/Aug/2019:15:39:01 +0000] "GET / HTTP/1.1" 200 2045 "-" "curl/7.61.1" "-"
+# | 172.17.0.1 - - [07/Aug/2019:15:39:16 +0000] "GET / HTTP/1.1" 200 2045 "-" "curl/7.61.1" "-"
+# | 
+
+#
 #
 #
 #
