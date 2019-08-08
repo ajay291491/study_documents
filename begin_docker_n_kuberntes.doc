@@ -2095,10 +2095,92 @@
 # | 172.17.0.1 - - [07/Aug/2019:15:39:01 +0000] "GET / HTTP/1.1" 200 2045 "-" "curl/7.61.1" "-"
 # | 172.17.0.1 - - [07/Aug/2019:15:39:16 +0000] "GET / HTTP/1.1" 200 2045 "-" "curl/7.61.1" "-"
 # | 
-
+#
+#------------------------------------------------------------------------------------------------------------------
+#  Chapter 07 - CICD and Deployment to AWS Elasticbeanstalk
+#
+#  Udemy : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11437116#overview
+#------------------------------------------------------------------------------------------------------------------
+#
+# - In this lesson learned about pushing the existing Dockerfile and associated files to a git repo
+# - Then integrated git repo with a Travis CI and CICD tool. 
+# - Then upadte the .travis.yml to the repo and commit that to repo
+# - Then push the code and made sure the code gets build in Travis CI. 
+# - Once the Travis build is successful then we have setup a AWS Elasticbeanstalk 
+# - Then upadte the .travis.yml to the repo with the Deployment details of the elasticbeanstalk
+# - Then we commit the code base
+# - Then the application gets build and accessible 
+#
+# Few key configurations used in this chapter given below. 
+#
+# . Git repo             : https://github.com/ajay291491/docker-react.git
+# . Travis               : https://travis-ci.org/ajay291491/docker-react
+# . AWS Elasticbeanstalk : https://us-east-2.console.aws.amazon.com/elasticbeanstalk/home?region=us-east-2#/applications
+#
+# . Dockerfile 
+#
+# | [root@dockerstation01 frontend]# more Dockerfile
+# | #
+# | # {{  Block for bulding the apps }}
+# | #
+# | # Pulling node:alpine image with a block alias 'build_instance'
+# | FROM node:alpine as build
+# | # |
+# | # Setting up working directory
+# | WORKDIR /app
+# | # |
+# | # Copy pakcage.json for npm install
+# | COPY package.json .
+# | # |
+# | # Perform NPM install
+# | RUN npm install
+# | COPY . .
+# | # |
+# | # Performing React build
+# | RUN npm run build
+# | # |
+# | # |
+# | #
+# | # {{ Block for Starting the Production version of application via nginx }}
+# | #
+# | # Pulling the nginx image
+# | FROM nginx
+# | EXPOSE 80				=> This config used by Travis and AWS Elasticbeanstalk during build
+# | # |
+# | # Copy the build image '/app/build' from Conatiner with block alias 'build_instance' to nginix  document root
+# | RUN mkdir -p /usr/share/nginx/html
+# | COPY --from=build /app/build /usr/share/nginx/html/
+# | [root@dockerstation01 frontend]# 
 #
 #
+# . Travis config file 
 #
+# | [root@dockerstation01 frontend]# more .travis.yml 
+# | sudo: required
+# | services:
+# |     - docker		=> Type of service to be used for build
+# | before_install:
+# |     - docker build -t ajay291491/docker-react -f Dockerfile.dev .		=> Build procedure 
+# | 
+# | script:
+# |     - docker run -e CI=true ajay291491/docker-react npm run test -- --coverage	=> test case 
+# | 
+# | deploy:
+# |     provider: elasticbeanstalk							=> defining AWS elasticbeanstalk as provider 
+# |     region: "us-east-2"								=> AWS region
+# |     app: "docker-react"								=> app name created in AWS elasticbeanstalk
+# |     env: "DockerReact-env"								=> Environment in elasticbeanstalk
+# |     bucket_name: "elasticbeanstalk-us-east-2-298337959615"				=> S3 bucket used for this 
+# |     bucket_path: "docker-react"							=> Bucket path is the app name 
+# |     on:
+# |         branch: master								=> which branch to be used 
+# |     access_key_id: $AWS_ACCESS_KEY							=> Access key ID setup within Travis project setting / Collected from AWS IAM as programatic user
+# |     secret_access_key:
+# |         secure: "$AWS_SECRET_KEY"							=> Access key setup within Travis project setting / Collected from AWS IAM as programatic user
+# | [root@dockerstation01 frontend]# 
+#
+#
+# NOTE : Whole training about this can be found at https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11437116#overview
 #
 
 
