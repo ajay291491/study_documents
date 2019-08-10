@@ -2182,6 +2182,205 @@
 #
 # NOTE : Whole training about this can be found at https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11437116#overview
 #
-
-
-
+#------------------------------------------------------------------------------------------------------------------
+# Chapter 08 - Complex Application's Development workflow
+#
+# Udemy : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11437274#overview
+#------------------------------------------------------------------------------------------------------------------
+#
+# In Chapter 08 , 09 and 10 we will be bringing together a complex application with various components such as 
+# . redis
+# . postgres
+# . nginx router for client and API/Server
+# . React based Client
+# . Node based worker
+# . Node based server 
+#
+# Detailed workflow : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11437294?start=32#bookmarks
+# Nginix routing    : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11437294?start=340#bookmarks
+#
+# NOTE : All above application will be instantiating a container while running and all these appliaction will be communicating each other via Docker network. 
+#
+# * Key taks in this Topic 
+#
+# 1. Download source code for worker , server and client to /app
+# 2. Create Dockerfile.yml for worker, server and client
+# 3. Build worker, server and client 
+# 4. Start worker, server and client 
+# 5. Go to project root and create docker-compose 
+# 6. Defines supported services 
+#    - Postgres
+#    - Redis 
+# 7. Define server service
+#    - define build context
+#    - build from Dockerfile.dev in server directory
+#    - exclude the /app/node_modules volume to get inherited 
+#    - map volume ./server with /app
+# 8. Set the environment variables for server
+# 	- redis environment variables 
+#	- postgres environment variables 
+#	
+# 9. Define client service 
+#   - define build context 
+#   - build from Dockerfile.dev in client directory
+#   - exclude the /app/node_modules volume to get inherited 
+#   - map volume ./client with /app
+#  
+# 10. Define worker service 
+#   - define build context 
+#   - build from Dockerfile.dev in worker directory
+#   - exclude the /app/node_modules volume to get inherited 
+#   - map volume ./worker with /app
+#  
+# 11. Create nginx service 
+#   - Create nginx directoty under complex root dir 
+#   - Create default.conf with port details 
+#   - create Dockerfile.dev for nginx with custom config 
+#   - Update the Service  under docker-compose.yml with nginx
+#   
+# 12. Run docker compose and make sure application up and running in 3050
+#
+# Expectation : All above mentioned services are expected to run only in the local development box in this chapter 
+#
+#
+# * Key Files 
+#
+# | [root@dockerstation01 complex]# pwd
+# | /app/complex
+# | [root@dockerstation01 complex]# more worker/Dockerfile.dev 
+# | FROM node:alpine
+# | WORKDIR /app
+# | COPY ./package.json ./
+# | COPY . .
+# | RUN npm install  
+# | CMD ["npm", "run", "dev"]
+# | 
+# | [root@dockerstation01 complex]# more client/Dockerfile.dev 
+# | FROM node:alpine
+# | WORKDIR '/app'
+# | COPY ./package.json ./
+# | RUN npm install
+# | COPY . .
+# | CMD ["npm", "run", "start"]
+# | 
+# | [root@dockerstation01 complex]# more server/Dockerfile.dev 
+# | FROM node:alpine
+# | WORKDIR "/app"
+# | COPY . .
+# | COPY ./package.json ./
+# | RUN npm install
+# | COPY . .
+# | CMD ["npm", "run", "dev"]
+# | 
+# | [root@dockerstation01 complex]# more nginx/default.conf 
+# | upstream client {
+# |   server client:3000;		-> request from Browser will be routed to 3000
+# | }
+# | 
+# | upstream api {			-> bakend communication will be routed to port 5000
+# |   server api:5000;
+# | }
+# | 
+# | server {
+# |   listen 80;
+# | 
+# |   location / {
+# |     proxy_pass http://client;
+# |   }
+# | 
+# |   location /socketjs-node {
+# |   proxy_pass http://client;
+# |   proxy_http_version 1.1;
+# |   proxy_set_header Upgrade $http_upgrade;
+# |   proxy_set_header Connection "Upgrade";
+# |   }
+# | 
+# | 
+# |   location /api {
+# |     rewrite /api/(.*) /$1 break;
+# |     proxy_pass http://api;
+# |   }
+# | 
+# | }
+# | [root@dockerstation01 complex]# more nginx/Dockerfile.dev 
+# | FROM nginx
+# | COPY ./default.conf /etc/nginx/conf.d/default.conf
+# | 
+# | [root@dockerstation01 complex]# 
+# | [root@dockerstation01 complex]# more docker-compose.yml 
+# | version: '3'
+# | services:
+# | 
+# |   postgres:
+# |     image: 'postgres:latest'			-> Creating 'postgres' container with an image from docker hun
+# | 
+# |   redis:
+# |     image: 'redis:latest'				-> Creating 'redis' container with an image from docker hun
+# | 
+# |   nginx:						-> Custom nginx build on top of the image from Docker hub
+# |     restart: always 
+# |     build:
+# |       dockerfile: Dockerfile.dev
+# |       context: ./nginx
+# |     ports:
+# |       - '3050:80'
+# | 
+# |   api:						-> backend APi referencing to ./server directory 
+# |     build: 
+# |       dockerfile: Dockerfile.dev
+# |       context: ./server
+# |     volumes: 
+# |     #- /app/node_modules				-> Volume to exclude in mapping
+# |       - ./server:/app				-> Volume to map with local 
+# |     environment:			
+# |       - REDIS_HOST=redis				-> variable will be active in container's 'env' will be referenced by node application in its codebase
+# |       - REDIS_PORT=6379
+# |       - PGUSER=postgres
+# |       - PGHOST=postgres
+# |       - PGDATABASE=postgres
+# |       - PGPASSWORD=postgres_password
+# |       - PGPORT=5432
+# | 
+# |   client:						-> Client or react application 
+# |     build:
+# |       dockerfile: Dockerfile.dev
+# |       context: ./client
+# |     volumes:
+# |       - /app/node_modules				-> VOlumes to exclude 
+# |       - ./client:/app				-> VOlume to map
+# | 
+# |   worker:						-> worker node 
+# |     environment:					-> variables used in container runtime in 'env' will be referenced by node
+# |       - REDIS_HOST=redis
+# |       - REDIS_PORT=6379
+# |     build:
+# |       dockerfile: Dockerfile.dev
+# |       context: ./worker
+# |     volumes: 
+# |       - /app/node_modules				-> Volumes to  exclude
+# |       - ./worker:/app				-> Volumes to map
+# | [root@dockerstation01 complex]# 
+# | 
+#
+#
+#------------------------------------------------------------------------------------------------------------------
+# Chapter 09 - Complex Application's CICD pipeline setup via Travis CI
+#
+# Udemy : https://www.udemy.com/docker-and-kubernetes-the-complete-guide/learn/lecture/11437274#overview
+#------------------------------------------------------------------------------------------------------------------
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
