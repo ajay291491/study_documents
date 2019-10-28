@@ -1,0 +1,202 @@
+#-------------------------------------------------------------------------------------------------------------------
+#		Chapter 01 - Introduction and Key terms
+#-------------------------------------------------------------------------------------------------------------------
+#
+# * What is an Availability Zone 
+# An availability zone is a one or more than one data centers in one city or place. Together an availbity zone zone make sure the availability of services for that zone
+# Examples : us-east-1a
+#
+# * What is a Region
+# Region is a group of availability zones, this might me with respect to one country or a state. 
+# Examples : Singapore, Sydney, Ohio 
+#
+# * Edge Location 
+# Its a content delivery network (CDN), its a caching point from where users can download their data locally. 
+# For example, if someone from Singapore trying to access a file location USA, then the edge location within Singapore will help to provide the caching content. 
+#
+# * Scope of AWS certified solution architect 
+# - Compute 
+# - Storage 
+# - Database
+# - Network and Content Delivery
+# - Security Identity & Compliance 
+#
+#
+#-------------------------------------------------------------------------------------------------------------------
+#		Chapter 02 - Identity and Access Management (IAM) 101 
+#-------------------------------------------------------------------------------------------------------------------
+# * What is IAM 
+# IAM will help you to admister you accounts and groups in AWS. This is very important in managing AWS. 
+# It has mainly few components as below, 
+#
+# - User	: This is an end user
+# - Group	: COllection of users
+# - Policy	: These are set of rules which defines a user or group should have what level of access, these are represented in Json format
+# - Roles 	: 
+#
+# Note : IAM supports PCI cimpliance which is a payment card industry framework
+#
+# * What is a root account 
+# Root account is the account you have used to signed up into the AWS console, genrally this will be an email address. 
+#
+# * What is AWS console 
+# This is single place where you can access all the AWS service. 
+# My custom console : https://ajay291491.signin.aws.amazon.com/console 
+#
+# * Creating an user 
+# Login to Console  -> Security, Identity and Compliance -> IAM -> Users -> Add User
+# . Provide Username 
+# . Provide group details 
+# . Assign policies to the group 
+# . Submit 
+# . Download the CSV if needed. 
+#
+# * What is access key id and access secret
+# Access key ID and secret are used to access an user account programatically, they are never used to login to the console.
+# You can setup that by going to 
+#
+# Login to Console  -> Security, Identity and Compliance -> IAM -> Users -> Select user -> Select security Credentials 
+#
+# * What is Roles
+# Roles are used to grant permission into your aws resource, you can create them by 
+# Login to Console  -> Security, Identity and Compliance -> IAM -> Users -> Select Roles -> Create Roles 
+#
+# * Billing Alarm 
+# Billing alarm can be useful to get notification during the usage. 
+# There are various different options in billing available, to enable billing you will need to do folowing 
+#
+# Login to Console -> Select 'My Account' -> ' My billing Dashboard' -> Billing Preferences -> Receive Billing Alerts 
+#
+# Once you have enabled billing preference, then you will need to go to "Billing Dashboard" in could watch to setup your alerts 
+#
+# Login to Console -> Services -> Cloud Watch -> Bills -> Create alarm
+#
+#
+#-------------------------------------------------------------------------------------------------------------------
+#		Chapter 03 -  Simple Storege Services (S3)
+#-------------------------------------------------------------------------------------------------------------------
+# 
+# * What is S3
+# S3 is one of the oldest AWS service available and it is an object storage which helps you store files and data. 
+# S3 is an object storage an it cannot  be used for installing operating systems for that purpose you need look for another block storage. 
+# S3 comes in various different flavours, according to the cost and requirements
+#
+# Key things to note about S3 
+# - S3 is an object storage which help you to store only the files and data 
+# - S3 bucket name should an unique name, because based on that name there will be a web url getting created to access the files. 
+# - Bucket is the top level folder name in the S3 storage 
+# - When you upload a file it will give a HTTP code 200 to mean its successful
+# - S3 enables version controlling 
+# - Its provides metadata (data about the data stored) to control the version control
+# - S3 provides 99.99% availability and durability 
+# - S3 provides different tiers in the storage 
+# - S3 provides encryption 
+# - You can store data upto 5 TB
+# - This is an unlimited storage 
+# - bucket namespace should be universal 
+# - You can use the ACl to control the resource 
+#
+# Reading and writing to S3 
+# - When you create a object it will be available immediately 
+# - When you PUT of UPDATE an obeject in S3, it will take couple of seconds to get it updated 
+#
+# * S3 - Different Tiers
+# There are different tiers of storage available in S3
+#
+# - S3 : Standard 
+#   . It offers 99.99% availability 
+#   . It offers 99.99999999999% durability 
+#   . It is stored redudantly accross multiple devices in multiple fascilities. 
+#   . It can sustain the loss of 2 fascilities together 
+#
+# - S3 : Standard IA
+#   . This is designed for accessing the highly redudant data which gets accessed in-frequently
+#   . But this gets charges for everytime when you access the data 
+#
+# - S3 : One zone IA
+#   . Compare to Stadard 1A this is limited to only one availablity zones 
+#   . Data is less redudant compare to the above 
+#
+# - S3 : Intelligent tiering 
+#   . This is a new feature which uses Machine learning 
+#   . This automatically map your data to the right tier according to the access of the data 
+#
+# Summary : https://www.udemy.com/aws-certified-solutions-architect-associate/learn/lecture/13886254?start=526#bookmarks
+#
+# * S3 - Glacier (data archival solutions)
+# S3 Glacier is a cheaper and reliable storage service which you can use to storage the data which you want to keep it for a long time. 
+# You can say your legal documents which need to access only times when needed can be put in here. 
+# There are two types of S3 glacier available. 
+#
+# - S3 : Glacier
+#   . Secure, durable low cost solution for data archival 
+#   . You can store any amount of data which will be cheaper than on-premisis data 
+#   . retrival time can be configurable from minutes to hours 
+#
+# - S3 : Glacier Deep Archive 
+#   . This is the cheapest available 
+#   . Data retrival can take upto 12 hours 
+#
+# Summary : https://www.udemy.com/aws-certified-solutions-architect-associate/learn/lecture/13886254?start=576#bookmarks
+#         : https://www.udemy.com/aws-certified-solutions-architect-associate/learn/lecture/13886254?start=600#bookmarks
+#
+# Exam Tips : https://www.udemy.com/aws-certified-solutions-architect-associate/learn/lecture/13886254?start=600#bookmarks
+#
+#
+#-------------------------------------------------------------------------------------------------------------------
+#		Chapter 05 -  Database
+#-------------------------------------------------------------------------------------------------------------------
+# Amazon has various different promises when it comes to database, based on the customer needs they can request for right solution 
+# It also provides a fascility of read replicas which can allow you to read the database from a seperate node from write, which can be used for high read intense applications
+# Major type of database available are 
+#
+# * RDS (Relation Database system)
+# These are database running on virtual machines, however customer won't be having access to RDS. 
+# Any patching and maintanance of RDS is taken care by Amazon itself. 
+# Below are ket RDS promises available 
+# - MySql 
+# - SQL 
+# - Oracle 
+# - PostgresQL
+# - MariaDB
+#
+# * Aurora 
+# This is a relational database system which provided by Amazon and it runs on a serverless architecture. 
+#
+# * Dynamo DB (NoSQL)
+# This ia a no SQL Db which provided by AWS. 
+# This will help you to store multi dimensional data outside the traditional SQL Db which relies only on rown and columns model 
+#
+# * Elastic Cache 
+# These are the caching technologies available in AWS, there are mainly two of them 
+# - Memcahe  : This can be used for small application require less amount of caching 
+# - Redis    : This can be used for caching on larger data for long hours 
+#
+# * Redshift
+# This is a data warehousing technology provided by Amazon. 
+# This is used for business intelligence and available only on one availability zone. 
+# This can have a copy of the backup on the S3 storage 
+#
+#
+#-------------------------------------------------------------------------------------------------------------------
+#		Chapter 06 - Route 53 (DNS)
+#-------------------------------------------------------------------------------------------------------------------
+#
+# In AWS DNS and loadbalancing technologies are termed as Route 53. 
+# There are mainly 6 load balancing technologies available in AWS 
+#
+# 1. Sample Routing        : This is a round robin based routing and we cannot associate health check with this 
+# 2. Weighed Routing       : Here you can specify how much percentage traffic you want to keep this to one IP over another
+# 3. Latency Based routing : Here routing will be based on the latency you experience between multiple IPs
+# 4. Region based routing  : This will help you to route the traffic based on the region 
+# 5. Failover Routing      : This can be used in case for auto failover incase the service is not available for any IPs
+# 6. Multi Value Routing   : This is similar to the simple routing with health check 
+#
+# NOTE : Most of the above routing you can associate with the a health check.
+#      : In the health check you can associate a service or port and you can request to keep monitor it for any failure to redirect traffic based on that 
+#
+#
+#
+#
+
+  
