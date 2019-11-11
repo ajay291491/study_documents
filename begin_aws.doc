@@ -21,6 +21,23 @@
 # - Network and Content Delivery
 # - Security Identity & Compliance 
 #
+# * Installing AWS CLI
+# Install aws cli using your favorite package and then configure the AWS cli using the keys
+#
+# | root@sathsang-Predator-G3620:/study_docs/git_backup/study_documents# aws configure
+# | AWS Access Key ID [****************BOLC]:
+# | AWS Secret Access Key [****************NvGD]:
+# | Default region name [us-east-1]:
+# | Default output format [json]:
+# | root@sathsang-Predator-G3620:/study_docs/git_backup/study_documents#
+#
+# Once you have configured your cli, then you can run commands
+#
+# |
+# | oot@sathsang-Predator# aws s3 ls
+# | 2019-08-08 13:45:12 elasticbeanstalk-us-east-2-298337959615
+# | root@sathsang-Predator#
+# |
 #
 #-------------------------------------------------------------------------------------------------------------------
 #		Chapter 02 - Identity and Access Management (IAM) 101 
@@ -35,7 +52,7 @@
 # - Roles 	: Roles are created mainly for AWS resources such as EC2 or S3 etc to give permission to access other resources
 #
 # Note : IAM supports PCI cimpliance which is a payment card industry framework
-#      : AWS IAM roles are held at the global level 
+#      : AWS IAM roles are held at the global level
 #
 # * What is a root account 
 # Root account is the account you have used to signed up into the AWS console, genrally this will be an email address. 
@@ -72,6 +89,67 @@
 #
 # Login to Console -> Services -> Cloud Watch -> Bills -> Create alarm
 #
+#  * What is a policy
+# Policy is something which tells whether a user has a permission to a resource or not, Policies are normally defined in the JSON language.
+# Once the policies are defined and published then they can be attached to groups or users to grant defined permission to the end users.
+# Policies are mainly defined into two different catagories they are
+#
+# - Managed policies  : These policies are managed and defined by Amazon
+# - Inline Policy     : These are on-off policies defined for specific or custom purpose which can attached to users or groups
+#
+# Example : Below is an example for a policy
+#
+# |{
+# |  "Version": "2012-10-17",
+# |  "Statement": [
+# |    {
+# |      "Action": [                    --> Type of action in the policy
+# |        "ec2:Describe*",
+# |        "ec2:StartInstances",
+# |        "ec2:StopInstances"
+# |      ],
+# |      "Resource": "*",
+# |      "Effect": "Allow"              --> Action can be allow or denied
+# |    },
+# |    {
+# |      "Action": "elasticloadbalancing:Describe*",
+# |      "Resource": "*",
+# |      "Effect": "Allow"
+# |    },
+# |    {
+# |      "Action": [
+# |        "cloudwatch:ListMetrics",
+# |        "cloudwatch:GetMetricStatistics",
+# |        "cloudwatch:Describe*"
+# |      ],
+# |      "Resource": "*",
+# |      "Effect": "Allow"
+# |    },
+# |    {
+# |      "Action": "autoscaling:Describe*",
+# |      "Resource": "*",
+# |      "Effect": "Allow"
+# |    }
+# |  ]
+# |}
+#
+# * What is ARN Name in AWS
+# ARN is the amazon resource name which helps to identify the resource uniquely in AWS.
+# Every resource in AWS has ARN name and its has a standard format
+#
+# Syntax : arn:partition:service:region:account-id:resource-id
+#          arn:partition:service:region:account-id:resource-type/resource-id
+#          arn:partition:service:region:account-id:resource-type:resource-id
+#
+# Examples : Below are examples for ARN
+#
+# | arn:aws:iam::123456789012:user/Development/product_1234/*
+# | Resource":"arn:aws:iam::123456789012:user/*
+# | Resource":"arn:aws:iam::123456789012:group/*
+# | arn:aws:s3:::my_corporate_bucket/*
+# | arn:aws:s3:::my_corporate_bucket/Development/*
+#
+# NOTE : https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html
 #
 #-------------------------------------------------------------------------------------------------------------------
 #		Chapter 03 -  Simple Storege Services (S3)
