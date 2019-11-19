@@ -292,6 +292,24 @@
 # - You cannot delete a VPC if there are resource in that VPC.
 #
 # * Routing Table
-# This does the routing between network IPs 
-
+# This does the routing between network IPs which help in determining the source and destination
+# Below are few key things you need to note about routing table 
+# - When you create a VPC there will be two route table configured by defaul, one "local" which determines local traffic with in VPC
+# - Second route will be to the IGW this will dtermine the traffic to the internet gateway
+# - By default the route table to internet gateway will be 0.0.0.0/*, which means any resource can access IGW.
+#
+# * Internetgateway
+# IGW is the way for any resource to connect to internet.
+# - There can be only one IGW which can be attached to a VPC
+# - Routing to the IGW can be done through the route table 
+# - IGW has two states which is "attached" and "detached". On a detached state this will communicate with inetrnet through there are routes
+#
+# * Network ACL
+# This is an optional layer which control the access to VPC like a firewall. 
+# - There will be 6 subnets created when there will be a VPC gets created.
+# - One NACL will act as a firewall for all the 6 subnets associated with the VPC
+# - You can have the Inbound rules which tell what external resource can access VPC with what port number
+# - You can have outbound rules which tells what source can send traffic via what port
+# - NACL always have a number, rules are processed in lowest order, which means lowest ACL rule will override if there are duplicate
+# 
   
