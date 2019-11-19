@@ -274,8 +274,21 @@
 # NOTE : Most of the above routing you can associate with the a health check.
 #      : In the health check you can associate a service or port and you can request to keep monitor it for any failure to redirect traffic based on that 
 #
+#-------------------------------------------------------------------------------------------------------------------
+#		Chapter 07 - VPC
+#-------------------------------------------------------------------------------------------------------------------
+# VPC is a virtual isolation layer of resources in AWS. If you create an account there will be a default VPC attached with it.
+# A VPC mainly has many components with in it which control the resource access. Few of the key components you should be aware are 
 #
-#
-#
+# - Internet Gateway : Using this component any resource in the VPC can reach from inside or outside to internet
+# - Subnet           : This is the subnet which decides network isolation with in a VPC, you can have more than one subnet in VPC
+# - NACL (Network Access control list) : This decides the access controls like which IP and port can access resource on what subnets etc.
+# - Routing Table    : Similar to Unix routing this decides from where to where the network should be routed
+# 
+# Below are the few key specialities of VPC 
+# - They are highly available 
+# - They are highly redudant 
+# - Bydefault one Internet Gateway will be attached to VPC, you can have multiple IGW but only one can be attached
+# - You cannot delete a VPC if there are resource in that VPC.
 
   
