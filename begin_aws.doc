@@ -290,5 +290,8 @@
 # - They are highly redudant 
 # - Bydefault one Internet Gateway will be attached to VPC, you can have multiple IGW but only one can be attached
 # - You cannot delete a VPC if there are resource in that VPC.
+#
+# * Routing Table
+# This does the routing between network IPs 
 
   
