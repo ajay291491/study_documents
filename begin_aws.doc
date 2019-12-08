@@ -77,6 +77,8 @@
 #
 # * What is Roles
 # Roles are used to grant permission for one AWS resource to another.
+# For example an EC2 resource want access to an S3 storage then its going to be perimitted via roles
+# Roles will always have some attached policies which will in fact provide the actual permission to the resource when it gets allocated.
 # Login to Console  -> Security, Identity and Compliance -> IAM -> Users -> Select Roles -> Create Roles 
 #
 # * Billing Alarm 
