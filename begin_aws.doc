@@ -48,8 +48,8 @@
 #
 # - User	: This is an end user
 # - Group	: COllection of users
-# - Policy	: These are set of rules which defines a user or group should have what level of access, these are represented in Json format
-# - Roles 	: Roles are created mainly for AWS resources such as EC2 or S3 etc to give permission to access other resources
+# - Policy	: These are set of rules which defines what level of access and actions can be performed, these are represented in Json format
+# - Roles 	: Roles are created mainly for AWS resources to give permission to access other resources for exampe, role for EC2 to access S3
 #
 # Note : IAM supports PCI cimpliance which is a payment card industry framework
 #      : AWS IAM roles are held at the global level
@@ -76,7 +76,7 @@
 # Login to Console  -> Security, Identity and Compliance -> IAM -> Users -> Select user -> Select security Credentials 
 #
 # * What is Roles
-# Roles are used to grant permission into your aws resource, you can create them by 
+# Roles are used to grant permission for one AWS resource to another.
 # Login to Console  -> Security, Identity and Compliance -> IAM -> Users -> Select Roles -> Create Roles 
 #
 # * Billing Alarm 
