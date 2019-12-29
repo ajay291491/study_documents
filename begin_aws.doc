@@ -51,7 +51,7 @@
 # - Policy	: These are set of rules which defines what level of access and actions can be performed, these are represented in Json format
 # - Roles 	: Roles are created mainly for AWS resources to give permission to access other resources for exampe, role for EC2 to access S3
 #
-# Note : IAM supports PCI cimpliance which is a payment card industry framework
+# Note : IAM supports PCI compliance which is a payment card industry framework
 #      : AWS IAM roles are held at the global level
 #
 # * What is a root account 
@@ -162,22 +162,37 @@
 # S3 is an object storage an it cannot  be used for installing operating systems for that purpose you need look for another block storage. 
 # S3 comes in various different flavours, according to the cost and requirements
 #
-# Key things to note about S3 
+# * What is Object storage means for S3
+# S3 or Simple storage service is called as an object storage which allows you to store files
+# The reason it is called as an object is storage is because it consist of
+#
+# Key          : This represents the name of the object 
+# Value        : This is simply the data and its made up of sequance of bytes on the disk)
+# version ID   : This is helpful for versioning the data and helpful for identifying the version and its copies 
+# MetaData     : Its the data about the data you are storing
+# Subresources : Access control list of S3 
+#
+# * Key Fatures about S3 
 # - S3 is an object storage which help you to store only the files and data 
 # - S3 bucket name should an unique name, because based on that name there will be a web url getting created to access the files. 
 # - Bucket is the top level folder name in the S3 storage 
 # - When you upload a file it will give a HTTP code 200 to mean its successful
 # - S3 enables version controlling 
 # - Its provides metadata (data about the data stored) to control the version control
-# - S3 provides 99.99% availability and durability 
+# - S3 provides 99.99% availability and 99.99999999999% durability 
 # - S3 provides different tiers in the storage 
 # - S3 provides encryption 
 # - You can store data upto 5 TB
 # - This is an unlimited storage 
 # - bucket namespace should be universal 
 # - You can use the ACl to control the resource 
+# 
+# * What is S3 Lifecycle management 
+# This allows you to perform certain action based on certain life cycle, couple of examples are 
+# - Perform archive to S3 glacier after 30 days 
+# - Move data to another S3 after 90 days etc 
 #
-# Reading and writing to S3 
+# * Reading and writing to S3 
 # - When you create a object it will be available immediately 
 # - When you PUT of UPDATE an obeject in S3, it will take couple of seconds to get it updated 
 #
@@ -186,17 +201,19 @@
 #
 # - S3 : Standard 
 #   . It offers 99.99% availability 
-#   . It offers 99.99999999999% durability 
+#   . It offers 99.99999999999% durability (9 9s after .)
 #   . It is stored redudantly accross multiple devices in multiple fascilities. 
 #   . It can sustain the loss of 2 fascilities together 
 #
 # - S3 : Standard IA
 #   . This is designed for accessing the highly redudant data which gets accessed in-frequently
 #   . But this gets charges for everytime when you access the data 
+#   . Cost lower than S3 Standard and charges apply for retrival
 #
 # - S3 : One zone IA
 #   . Compare to Stadard 1A this is limited to only one availablity zones 
 #   . Data is less redudant compare to the above 
+#   . Cost is less than above two as your redudancy is limited to only one availability zone
 #
 # - S3 : Intelligent tiering 
 #   . This is a new feature which uses Machine learning 
@@ -218,14 +235,39 @@
 #   . This is the cheapest available 
 #   . Data retrival can take upto 12 hours 
 #
-# Summary : https://www.udemy.com/aws-certified-solutions-architect-associate/learn/lecture/13886254?start=576#bookmarks
-#         : https://www.udemy.com/aws-certified-solutions-architect-associate/learn/lecture/13886254?start=600#bookmarks
+# S3 Table : https://www.udemy.com/course/aws-certified-solutions-architect-associate/learn/lecture/13886254?start=602#bookmarks
+#
+# Summary  : https://www.udemy.com/aws-certified-solutions-architect-associate/learn/lecture/13886254?start=576#bookmarks
+#          : https://www.udemy.com/aws-certified-solutions-architect-associate/learn/lecture/13886254?start=600#bookmarks
 #
 # Exam Tips : https://www.udemy.com/aws-certified-solutions-architect-associate/learn/lecture/13886254?start=600#bookmarks
 #
+# * What is S3 Transfer accelaration 
+# AWS S3 transfer accelation service enables customers to transfer files faster, safer and secure. 
+# This takes advantages of the amazon's CloudFront Edge locations to accelrate the transfer. 
+# This comes into effect mostly when you perform a cross region file replication or file transfer, i.e you are trying to upload file to US-East1 bucket from Sydney region
+# When a data arrives at the Edge location then it gets transferred to main S3 bucket via the amazon backbone network. 
+# This way customers will be able to get the transfered faster and securely. 
+#
+# * Pros and Cons of S3 
+# 
+# Pros
+# - S3 is an object storage which allows to upload files 
+# - File size can be from 0 to 5 TB
+# - There is unlimited storage 
+# - S3 uses universal namespacing, i.e when you create an S3 bucket you will need to create a unique bucket name 
+# - You can enable MFA while deleting the object from S3 
+# - While uploading a file you will get HTTP status code 200
+#
+# Cons 
+# - You cannot install operating system on the S3 bucket 
+# - You cannot install database on the S3 bucket 
+#
+# NOTE : S3 is a major portion of the exam and You need to reas 'S3 Faq' for more details . 
+#
 #
 #-------------------------------------------------------------------------------------------------------------------
-#		Chapter 05 -  Database
+# Chapter 05 -  Database
 #-------------------------------------------------------------------------------------------------------------------
 # Amazon has various different promises when it comes to database, based on the customer needs they can request for right solution 
 # It also provides a fascility of read replicas which can allow you to read the database from a seperate node from write, which can be used for high read intense applications
