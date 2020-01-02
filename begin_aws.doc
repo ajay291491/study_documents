@@ -265,6 +265,25 @@
 #
 # NOTE : S3 is a major portion of the exam and You need to reas 'S3 Faq' for more details . 
 #
+# * S3 Security 
+# When you create a S3 bucket it gets created as private and if you want to manage the permission on S3, it offers offers two levels of security 
+# - Bucket policy       : This manages the security at the bucket level 
+# - Access control list : This manages the security at the object level 
+#
+# * S3 Encryption
+# S3 offers two encryption methods 
+# - Encryption in transit : This is the process of encrypting the data using an https while the data is travelling between 
+# - Encryption at REST    : This is the process of encrypting the data it self, this can be managed in thre ways 
+#   Encryption done by S3 
+#   Encryption done using cuctsomer provided keys
+#   Encryption done using the AWS keys
+#
+# * Versioning in S3
+# Versioning is a powerful tool in S3 which helps to perform version controlling as well as it act as a backup tool. 
+# When \
+#
+# {{ Add more details here }}
+#   
 #
 #-------------------------------------------------------------------------------------------------------------------
 # Chapter 05 -  Database
