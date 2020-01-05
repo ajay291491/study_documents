@@ -274,16 +274,62 @@
 # S3 offers two encryption methods 
 # - Encryption in transit : This is the process of encrypting the data using an https while the data is travelling between 
 # - Encryption at REST    : This is the process of encrypting the data it self, this can be managed in thre ways 
-#   Encryption done by S3 
-#   Encryption done using cuctsomer provided keys
-#   Encryption done using the AWS keys
+#   Encryption done by S3 : S3 managed keys SSE-S3 (Server side encryption by S3) 
+#   Encryption done using cuctsomer provided keys  : SSE-C (Server side encryption using client provided keys)
+#   Encryption done using the AWS keys : SSE-KMS (Serverside encryption using Amazon Key Management service)
 #
 # * Versioning in S3
 # Versioning is a powerful tool in S3 which helps to perform version controlling as well as it act as a backup tool. 
-# When \
+# When you have a file which can change historically and at any point of time there could be a chance that you might need to restore to older version, then in that case enabling versioning will be good. 
+# When you Enable versioning then there will be more storage gets used since all versions of the files are getting stored as versions. 
+# When you delte a object completely from S3, then make sure you are deleting all versionins of that object removed. 
 #
-# {{ Add more details here }}
-#   
+# * S3 Public and Private 
+# When you create a bucket it will be by default in private state and if you want to enable Public access to a object then you will need to go to console and set the permission level to Public. 
+# Also when you have versioning enabled and when you upload the new version of the object permission will be revoked and you will need to set the Public permission again for that object.
+#
+# * S3 Lifecycle management 
+# Lifecycle management is used to transition an S3 bucket to another storage tier after certain time. 
+# If you want to move you object from S3 standard to some other storage tier after certain time then lifecycle management helps. 
+#
+# Example : Below is an example for S3 Lifecycle management 
+#
+# | root@sathsang-Predator-G3620:/study_docs/aws/JPMC_AWS# aws s3api get-bucket-lifecycle-configuration --bucket ajay291testbucket
+# | {
+# |     "Rules": [
+# |         {
+# |             "Expiration": {
+# |                 "Days": 365
+# |             },
+# |             "ID": "ajay291lifecycle",
+# |             "Filter": {
+# |                 "Prefix": ""
+# |             },
+# |             "Status": "Enabled",
+# |             "Transitions": [
+# |                 {
+# |                     "Days": 20,
+# |                     "StorageClass": "GLACIER"	=> This is for the current versions 
+# |                 }
+# |             ],
+# |             "NoncurrentVersionTransitions": [
+# |                 {
+# |                     "NoncurrentDays": 7,
+# |                     "StorageClass": "DEEP_ARCHIVE"  => This is for the previous versions 
+# |                 }
+# |             ],
+# |             "NoncurrentVersionExpiration": {
+# |                 "NoncurrentDays": 365
+# |             },
+# |             "AbortIncompleteMultipartUpload": {
+# |                 "DaysAfterInitiation": 7
+# |             }
+# |         }
+# |     ]
+# | }
+# | root@sathsang-Predator-G3620:/study_docs/aws/JPMC_AWS#
+# |
+#
 #
 #-------------------------------------------------------------------------------------------------------------------
 # Chapter 05 -  Database
