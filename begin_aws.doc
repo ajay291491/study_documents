@@ -294,7 +294,7 @@
 #
 # Example : Below is an example for S3 Lifecycle management 
 #
-# | root@sathsang-Predator-G3620:/study_docs/aws/JPMC_AWS# aws s3api get-bucket-lifecycle-configuration --bucket ajay291testbucket
+# | # aws s3api get-bucket-lifecycle-configuration --bucket ajay291testbucket
 # | {
 # |     "Rules": [
 # |         {
@@ -327,9 +327,66 @@
 # |         }
 # |     ]
 # | }
-# | root@sathsang-Predator-G3620:/study_docs/aws/JPMC_AWS#
+# | #
 # |
 #
+# * S3 - Cross region replication
+# Cross region replication is used to replicate the data from one region to another region in aws.
+# There are few keys things we need to note when we are looking at cross region replication.
+#
+# - Versioning must be enabled for the bucket before we enable replication 
+# - Region must be unique for source and desination buckets 
+# - You can create replication for the same account or into another account 
+# - You will need to create a role which is required for the replication and it will be associated to buckets 
+# - Only the new objects getting created only after the point from where the replication enabled will be replicated
+# - If you mark a delete marker on any of the object then that will not get replicated to destination bucket 
+#
+# Example : Below example shows us about the cross region replication in S3
+#
+# aws s3api get-bucket-replication --bucket ajay291s3bucket 
+# | {
+# |     "ReplicationConfiguration": {
+# |         "Role": "arn:aws:iam::304832273789:role/service-role/s3crr_role_for_ajay291s3bucket_to_ajay291s3bucketreplication",
+# |         "Rules": [
+# |             {
+# |                 "ID": "ajay291replicationrole",
+# |                 "Priority": 1,
+# |                 "Filter": {},
+# |                 "Status": "Enabled",
+# |                 "Destination": {
+# |                     "Bucket": "arn:aws:s3:::ajay291s3bucketreplication"	=> Destination bucket
+# |                 },
+# |                 "DeleteMarkerReplication": {
+# |                     "Status": "Disabled"
+# |                 }
+# |             }
+# |         ]
+# |     }
+# |  }
+# | #
+#
+# * S3 - Transfer accelaration 
+# S3 transfer accelaration is a feature provided to upload the files more faster from multiple regions across the world. 
+# To perform tranfer acceleration amazon make use of the AWS cloud Front Edge network, which is the backbone for amazon.
+# To upload via cloud front edge network you will get a distinct url which will help to upload to edge network and from there cloud front will transfer your data to the bucket. 
+# We can use below URL to test the S3 transfer accelaration for various locations. 
+#
+# URL : https://s3-accelerate-speedtest.s3-accelerate.amazonaws.com/en/accelerate-speed-comparsion.html
+#
+# * S3 - Cloud Front 
+# Cloud front is a content delivery network which used to cache media contents like videos, files, photos etc. 
+# Below are the key terminilogies we need to be aware of cloud front 
+#
+# - Edge Location : This is the location where content will be cached and this seperate from AWS region or avalability zone 
+# - origin        : This is the origin of all the files that will be distributed by the CDN, this can be a S3 bucket  or EC2 instance or ELB or Route 53
+# - Distribution  : This is the name given to the CDN which consist of collection of edge location 
+#
+# Note : key usage of using Cloud front is enable faster access for web and media contents through the edge location by providing caching when multiple users accesing it from same region 
+#  Web distribution : This is used for web contents 
+#  RTMP : used for media contents 
+#  TTL  : Objects are configured live until the TTL, it  is basically the caching time
+#
+# NOTE : You can clear the cached contents, but it is chargable  
 #
 #-------------------------------------------------------------------------------------------------------------------
 # Chapter 05 -  Database
