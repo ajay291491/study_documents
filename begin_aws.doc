@@ -580,5 +580,66 @@
 # | }
 #
 #
+# * Stacks 
+# When you use AWS CloudFormation, you manage related resources as a single unit called a stack. 
+# You create, update, and delete a collection of resources by creating, updating, and deleting stacks. 
+# All the resources in a stack are defined by the stack's AWS CloudFormation template. 
+# Suppose you created a template that includes an Auto Scaling group, Elastic Load Balancing load balancer, and an Amazon Relational Database Service (Amazon RDS) database instance. 
+# To create those resources, you create a stack by submitting the template that you created, and AWS CloudFormation provisions all those resources for you. 
+# You can work with stacks by using the AWS CloudFormation console, API, or AWS CLI.
+#
+# Example : Below are the sample commands you can check to understand about stacks 
+#
+# | # aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE
+# | [
+# |     {
+# |         "StackId": "arn:aws:cloudformation:us-east-2:123456789012:stack/myteststack/
+# | 644df8e0-0dff-11e3-8e2f-5088487c4896",
+# |         "TemplateDescription": "AWS CloudFormation Sample Template S3_Bucket: Sample template showing how to create a publicly accessible S3 bucket. **WARNING** This template creates an
+# | S3 bucket. You will be billed for the AWS resources used if you create a stack from this template.",
+# |         "StackStatusReason": null,
+# |         "CreationTime": "2013-08-26T03:27:10.190Z",
+# |        "StackName": "myteststack",
+# |         "StackStatus": "CREATE_COMPLETE"
+# |     }
+# | ]
+# | #
+#
+# | # aws cloudformation describe-stacks --stack-name myteststack
+# | {
+# |     "Stacks":  [
+# |         {
+# |             "StackId": "arn:aws:cloudformation:us-east-2:123456789012:stack/myteststack/a69442d0-0b8f-11e3-8b8a-500150b352e0",
+# |             "Description": "AWS CloudFormation Sample Template S3_Bucket: Sample template showing how to create a publicly accessible S3 bucket. **WARNING** This template creates an S3 bucket.
+# | You will be billed for the AWS resources used if you create a stack from this template.",
+# |             "Tags": [],
+# |             "Outputs": [
+# |                 {
+# |                     "Description": "Name of S3 bucket to hold website content",
+# |                     "OutputKey": "BucketName",
+# |                     "OutputValue": "myteststack-s3bucket-jssofi1zie2w"
+# |                 }
+# |             ],
+# |             "StackStatusReason": null,
+# |             "CreationTime": "2013-08-23T01:02:15.422Z",
+# |             "Capabilities": [],
+# |             "StackName": "myteststack",
+# |             "StackStatus": "CREATE_COMPLETE",
+# |             "DisableRollback": false
+# |         }
+# |     ]
+# | }
+# | #
+#
+#
+# * Changesets 
+# If you need to make changes to the running resources in a stack, you update the stack. 
+# Before making changes to your resources, you can generate a change set, which is a summary of your proposed changes. 
+# Change sets allow you to see how your changes might impact your running resources, especially for critical resources, before implementing them.
+# For example, if you change the name of an Amazon RDS database instance, AWS CloudFormation will create a new database and delete the old one. 
+# You will lose the data in the old database unless you've already backed it up. 
+# If you generate a change set, you will see that your change will cause your database to be replaced, and you will be able to plan accordingly before you update your stack. 
+#
+#
 
 
