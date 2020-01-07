@@ -478,4 +478,107 @@
 # - You can have outbound rules which tells what source can send traffic via what port
 # - NACL always have a number, rules are processed in lowest order, which means lowest ACL rule will override if there are duplicate
 # 
-  
+#-------------------------------------------------------------------------------------------------------------------
+#		Chapter 08 - CloudFormation
+#-------------------------------------------------------------------------------------------------------------------
+# CloudFormation is an automated way to provision the aws resources in an Infrastructure as a code.
+# It has mainly three compnents which helps to drive the whole automation around, they are 
+#
+# - Templates 
+# - Stacks 
+# - Changesets  
+#
+# * Templates 
+# Templates are manifest files which contain infromation about how a resource or group of resource need to be provisioned. 
+# This can be written either in JSON or YAML syntax. This will have definition about various resources how that needs to be configured. 
+# Templates has mainly few sessions and each are described below.
+#
+# Syntax : Below is a high level syntax of the Templates 
+#
+# | { 
+# |	"AWSTemplateFormatVersion" : "2020-01-07",
+# |	"Description" : "Sample Template to Launch an EC2 Instance",
+# |	"Parameters" : { # input parameter details goes here and one sample given below 
+# |		Parameter_01{
+# |			"Description" : "note about the parameter getting passed",
+# |			"Type"	: "Valid type"}
+# |	}
+# |	"mapping"  : { # mapping details goes here }
+# | "Resource" : { # resource definitions goes here }
+# |	"output"   : { # output you want to show from stack you can mention here }
+# | }
+# 
+# - Parameters 
+# Inputs which is getting passed into the template while creating the stack, we can mainly define the type and description about a paramter here.
+# There few valid types allowed for parameters they are catagorized into two types they are general and aws parameters.
+# 
+# . General Parameter types : Below are the few general parameters allowed
+#   String : "Resource123"
+#   Number : 100
+#   List (Number) : [1, 2, 3]
+#   CommaDelimitedList : ["t2.nano", "t2.micro", "t2.small"] 
+#
+# . AWS parameter types : Below are few sample aws parameter types 
+#   AWS::EC2::Image::ID				: "ami-i566757"
+#   AWS::EC2::Instance::ID			: "i-12hjh876"
+# 	AWS::EC2:: SecurityGroup::Id 	: "sg-ashak7c"
+# 
+# NOTE : Please see url for complete Types : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
+#
+# - Mapping 
+# The optional Mappings section matches a key to a corresponding set of named values. 
+# For example, if you want to set values based on a region, you can create a mapping that uses the region name as a key and contains the values you want to specify for each specific region. 
+# You use the Fn::FindInMap intrinsic function to retrieve values in a map.
+# 
+# Example : Below is sample for mapping 
+# 
+# | "Mappings" : {
+# | "RegionMap" : {
+# |   "us-east-1"      : { "HVM64" : "ami-0ff8a91507f77f867"},
+# |   "us-west-1"      : { "HVM64" : "ami-0bdb828fd58c52235"},
+# |   "eu-west-1"      : { "HVM64" : "ami-047bb4163c506cd98"},
+# |   "ap-southeast-1" : { "HVM64" : "ami-08569b978cc4dfa10"},
+# |   "ap-northeast-1" : { "HVM64" : "ami-06cd52961ce9f0d85"}
+# |  }
+# | } 
+#
+# - Resource 
+# This is the session on the template where you define the targetted resource and their properties. 
+# AWS has almost all aws resource types available for you to define via the cloud formation template and it is documented below.
+# URL : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html
+# 
+# | "Resources" : {
+# |   "EC2Instance": {
+# |		"Type": "AWS::EC2::Instance"
+# |		"Properties" : {
+# |			"ImageId" : {"FindInMap": ["RegionMap", {"Ref", "AWS::Region"}, "HVM64"]},
+# |			"InstanceType" : "t2.nano", 
+# |			"NetworkInterface": [{
+# |				"AssociatePublicIpAddress" : "true",
+# |				"DeviceIndex" : "0",
+# |	 			"GroupSet": [{"Ref": "SecurityGroup"}],
+# |				"SubnetId": {"Ref": "Subnet"}
+# |				}],
+# |		}
+# |	}
+# 
+# - output 
+# When you want to provide an output from the stack then you will need to define the corresponding outputs in template. 
+# This is an optional parameter in the template and you can define multiple outputs in the template.
+# To get the a value assigned to a output we can either use the 'href' function if its a simple and direct method and 'Getatt' for complex lookups.
+#
+# | "Outputs" : {
+# | "BackupLoadBalancerDNSName" : {
+# |   "Description": "The DNSName of the backup load balancer",  
+# |   "Value" : { "Fn::GetAtt" : [ "BackupLoadBalancer", "DNSName" ]},
+# |   "Condition" : "CreateProdResources"
+# | },
+# | "InstanceID" : {
+# |   "Description": "The Instance ID",  
+# |   "Value" : { "Ref" : "EC2Instance" }
+# |  }
+# | }
+#
+#
+
+
