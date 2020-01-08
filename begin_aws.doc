@@ -388,6 +388,29 @@
 #
 # NOTE : You can clear the cached contents, but it is chargable  
 #
+# * AWS Snowball
+# Snowwall is a petabyte capable data tranferring devices which comes in two different flavors
+# - 80 TB
+# - 50 TB
+# Using snowball adresses few of the most common challenges such as
+# - Ease the large scale data transfer including the network costs 
+# - Long transfer times and security concerns 
+# - Transferring data with snowball is fast, simple and secure 
+# - It provides a tamper resistant enclosure 
+# - Provides a industry standard Trusted Platform Module (TPM) designed to encure the security and chain of custody
+#
+# * AWS Snowball Edge 
+# Snowwall Edge is 50TB storage transfer as well as compute capable device which helps you to have a device onboard to transfer data as well as compute capabilities. 
+# This can run Lamda functions to process the data which it has. One of the major airline uses snowball Edge onboard to provide its capablities for testing. 
+#
+# * AWS Snowmobile 
+# Snowmobile is a technology which used by AWS to move Exabytes of data which is a large shipping container docked on a Truck
+# It can transfer 100 PB per snowmobile. 
+#
+# * Exam Tips for Snowmobile 
+# What is snow mobile : 
+# It can export and import data from and to S3
+#
 #-------------------------------------------------------------------------------------------------------------------
 # Chapter 05 -  Database
 #-------------------------------------------------------------------------------------------------------------------
