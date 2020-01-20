@@ -664,5 +664,111 @@
 # If you generate a change set, you will see that your change will cause your database to be replaced, and you will be able to plan accordingly before you update your stack. 
 #
 #
+#-------------------------------------------------------------------------------------------------------------------
+#		Chapter 08 - Applications 
+#-------------------------------------------------------------------------------------------------------------------
+#
+# * SQS (MQ - Pull based Messaging Queue Service)
+# This is a very old service which offered by AWS, this offers a pull based messaging queue system  which helps to decouple your resource from queue. 
+# This is a distributed queue system which helps to store messages in the queue until a computer resource is available to process them.
+# Messages stored on the queue can be accesses by application using the SQS API service. 
+#
+# Below are few key features of SQS 
+# . SQS offers minimum 1 min to maximum 14 days retention where default retention is for 4 days 
+# . SQS offers a pull method to get message, which means the application has to push the message to queue and also another application need to pull the message from queue
+# . SQS offers default 256KB of text in any format
+# . For larger files it offers a solution via S3 which can store upto 2GB
+#
+# . What is Visibility Timeout 
+# When a message picked up by a server for processing then that message will disappear in the SQS queue for some time since it is getting processed, this is called visibility timeout.
+# But with in certain time if that message is not processed then it is expected to comeback and another server will attempt to process the message again. 
+# In this situation there are chances that you message might get delivered twice. 
+#
+# NOTE : The maximum visibilty timeout which can configured is 12 Hours 
+#
+# There are mainly two types of queue 
+# - Standard Queue
+#   Offers best effort ordering, generally order in the same order it goes. But the ordering not guaranteed.  
+#   This Gurantees the messages will be delivered atleast once. 
+#   But the messages can get delivered more than once 
+#
+# - FIFO Queue
+#   This is FIFO, it support first in first out
+#
+# . What is long polling 
+# This is way to save the cost, in a normal short polling an EC2 instance will be constantly polling the service. 
+# But when it comes to long polling it will wait for a message to arrive in the queue and then it return the message or long poll times out.
+#
+# * SWF (Task workflow)
+# Amazon SWF is a simple workflow service which provides the capability of creating a series of workflow tasks. 
+# This is a web service which makes it easy to coordinate work across various distributed application components. 
+# This enables for various different use cases 
+# - Including media processing 
+# - Web application backends 
+# - Business processing workflows 
+# - analtical pipeline 
+# - also for coordination tasks 
+#
+# There mainly three core conepts which we need to understand about SWF
+# 
+# 1. Workflow Starters : This is the component which intiate the workflow, an example could be an Ansible API
+# 2. Deciders          : This component keeps track of the status from previous action and it decides what to do next 
+# 3. Activity workers  : This carry out the activity tasks
+#
+# Example : Buying a book from amazon will trigger lot of backend workflows such as checking stock, making payment, human interaction to  physicaly shipping the book, ackowldging the receipt etc 
+#
+# . What is a task 
+# SWF triggers a series of tasks and tasks represent various invocation step in an application step which can be performed by executable code, api calls or by human interaction 
+#
+# Exam Tips 
+#  . SQS workflow execution last upto 1 year 
+#  . This offers a task oreinted API 
+#  . SWF make sure the task is assigned only once and it will never get duplicated 
+#  . SWF keeps track of all tasks and events in an application 
+#
+#
+# * SNS (Simple Notification Service - Push based Messaging)
+# This service is used for pushing notification into various different services. 
+# This allows developers to push notification to users immedietly for subscribed useres. 
+# Any messages delovered to the SNS platform will be stored redudantly in multiple availability zones 
+# This allows you to push notification to below platforms. 
+# - Apple 
+# - Google 
+# - Fire OS
+# - Windows devices 
+# - All android devices
+# - Baidu Cloud push 
+#
+# SNS has mainly three components to work together 
+#
+# - Publisher  : This is the person or organization or function which publish the topics to the subscribers 
+# - Topics     : Its a topic regarding some subject where someone will be scbscribed for the message, like stock market, youtube channel
+# - Subscriber : End user email or device or component which subscibe to a topic 
+#
+# It supports various end points as subscribers such as HTTP, HTTPS , Email, Email-JSON, SQS, AWS LAMBDA, SMS, platform application end point
+#
+# NOTE : on top of the push notification services SNS can be used to send SMS messages 
+#
+# * Elastic Transcoder
+# Amazon Elastic transcoder are used to transcode low resolution videos to high resolution videos. 
+# To make a elastic transcoder work you will require three essential components 
+#
+# - Input S3 Bucket  : This is where you will keep your source format videos 
+# - Pipeline         : This pipeline picks up the video from input S3 bucket and does the processing and Save that to the Output S3 bucket
+# - Output S3 Bucket : This is the destination bucket for all the processed video from the Transcoder 
+#
+#
+# * API gateway 
+# API Gateway is used for connecting to AWS resource using an API. This can be configured to autoscale and as well as throttle API gateway to prevent attack.
+# - API gateway has caching capabilities, which means if multiple users asking for the same GET requests it can serve the content from cache until the TTL expires 
+# - TTL values can be configured 
+# - API gateway is low coast and scale automatially 
+# - You can throttle API gateway to prevent attack 
+# - You can log results of API gateway to CloudWatch 
+# - In case you are using Javascript or AJAX if you are calling the API gateway, make sure you enable CORS to accept content from multi domains such as s3, ec3 etc 
+# - CORS is enforced by client 
+#
+#
+#
 
 
