@@ -346,7 +346,7 @@
 # aws s3api get-bucket-replication --bucket ajay291s3bucket 
 # | {
 # |     "ReplicationConfiguration": {
-# |         "Role": "arn:aws:iam::304832273789:role/service-role/s3crr_role_for_ajay291s3bucket_to_ajay291s3bucketreplication",
+# |         "Role": "arn:aws:iam::account_no:role/service-role/s3crr_role_for_ajay291s3bucket_to_ajay291s3bucketreplication",
 # |         "Rules": [
 # |             {
 # |                 "ID": "ajay291replicationrole",
@@ -768,7 +768,195 @@
 # - In case you are using Javascript or AJAX if you are calling the API gateway, make sure you enable CORS to accept content from multi domains such as s3, ec3 etc 
 # - CORS is enforced by client 
 #
+# * Kenisis 
+# Amazon Kenisis is a platform on AWS which is used to handle streaming data from various different sources. 
+# Kenisis is mainly devided into three catagories
+#
+# 1. Kenisis Streams 
+# - Kenisis Streams consist of shards 
+# - Data producers will send the data to streams in kenisis 
+# - Retention is from 24 hours to 7 days 
+# - Shrads are kind of partition within the Stream which collective group similar data for streaming  	
+#
+# 2. Kenisis Firehose 
+# - Firehose doesn't allow persistant storage of data within 
+# - As soon as the data arrives you will need to do something with the data 
+# - Normally data from Kenisis firehose will be passed to S3 buckets and from there it will get transferred to destination such as splunk, ELK or Redshift
+#
+# 3. Kenisis Analytics 
+# - This can work with combination with stream or firehose to perform data analytics 
+# - This will be working inside the Streams and Firehose 
+#
+# * Congnito 
+# Congnito is a web identity federation service which provided by amazon which can be integrated with application 
+# This also has an integration with many major social media account federation services such as google, facebook and amazon 
+# This helps to manage authentication services for your application without much code written for that into your codebase 
+# This helps to synchronise the data and action between multiple different devices for your application such as password change from phone reflect in desktop etc 
+#
+# There are mainly two pools in Cognito which works together to provide the authenication and autherization service 
+#
+# . User Pools 
+# User pools will be the component in Cognito which helps to vefiry the user credentials of an user. 
+# There can be two ways users can be available in Cognito, one is maintaing user information in Cognito and other is using identity providers such as facebook or google.
+# When your application makes a request to authetnicate an user it will act as a broker between the identity provider and make sure user exist and its password is correct 
+# Once the Username and password are validated then the identity provider such as google or facebook will issue a JWT token as a confirmation of authetication is done 
+# Using this JWT your application an again contact the COgnito Identity pool to get the aws resources. 
+#
+# NOTE : User Pools are stritly for User registration, authentication and account recovery 
+#
+# . Identity Pools
+# Identity Pools are pools which gives the access to the AWS resources based on the JWT token issued by the identity providers 
+# Up on successful authentication they grant access to AWS resources such as S3, DynamoDB, RDS etc 
+# What identity provider does is it will Grant the IAM role to access the AWS resource based on the authenticated JWT provided by the authetication provider
+# 
+# . SNS in action 
+# Cognito uses a SNS push based method to synchronise and update all the devices if there are changes like password or other user preference in application. 
 #
 #
-
+#-------------------------------------------------------------------------------------------------------------------
+#		Chapter 09 - Lambda 
+#-------------------------------------------------------------------------------------------------------------------
+#
+# * What is Lambda
+# It is called as as server less computing or Function as a service which helps you to run the code on demand without hanving a need of an infrastructure. 
+# Lambda will be triggered on demand and will perform an action as requested in the codebase. 
+# There are few reason someone should choose Lambda over an infrastructure component to run your small on demand jobs 
+#
+# - Event Driven : Lambda is event driven which can be triggered based on various triggers 
+# - Scheduler    : Lambda can be configured with cron based scheduling or on perticular schedules 
+# - APi Driven   : Lambda can be used from another application to trigger code  
+# - Cost         : Lambda is very cost effective because it charges only for the time it runs and the resource consumed during that time.
+# - Scaling      : Lambda is capable of scaling which means if multiple requests comes in it will scale up the concurrent instances
+#
+# Commnaly used lambda fucntions 
+# - Data stream processing 
+# - Image processing 
+# - Running batch jobs
+#
+# Limitations of Lambda 
+# - Uncompressed File size : 250 MB
+# - Compressed File Size   :  50 MB
+# - Stoarge Max size       : 512 MB
+# - Execution Duration Max : 300 seconds (5 Mins)
+# - Concurrent Functions   : 100 
+# - Minimum Memory         : 128 MB
+# - Maximum Memory         : 1.5 GB
+# - CPU                    : Automated scaling according to requests 
+#
+# * Structure of Lambda function 
+# Below format is the normal syntax of the Lambda function 
+#
+# Syntax : 
+#
+# | def handler_name(event, context):
+# |    => Start your code 
+# |    => End your code 
+# |    return result
+#
+# Lambda functions has mainly two components first one is event and another one is context. 
+#
+# Event   : Event contains the information about what triggers the lambda function, this will be normally defined as a dict in th event parameter 
+# Context : Run time information about the lambda such as memory info, size, log integrations etc 
+#
+# * Creating a Lambda function
+# When creating a lambda function there should be a few components we need to be aware of 
+#
+# Name     : This should be the name of the lambda function 
+# Runtime  : Which runtime environment you want to use for the lambda function 
+# Role     : This should be the role with right level of policy permissions 
+# Policy   : Make sure you have enabled the policy with all resource level access so that Lambda can access the resource 
+# Test     : This should be the test case which need to be validated for the lambda 
+#
+# Example : Below is a sample Lambda function created to take Backup on DynamoDb which created with Table Name "Inventory"
+#
+# | root@sathsang-Predator-G3620:/study_docs/aws/JPMC_AWS# aws lambda get-function --function-name DynamoBakups
+# | {
+# |     "Configuration": {
+# |         "FunctionName": "DynamoBakups",
+# |         "FunctionArn": "arn:aws:lambda:us-east-1:account_no:function:DynamoBakups",
+# |         "Runtime": "python3.6",
+# |         "Role": "arn:aws:iam::account_no:role/service-role/DynamoBakups-role-kjlcbl9s",
+# |         "Handler": "lambda_function.lambda_handler",
+# |         "CodeSize": 272,
+# |         "Description": "",
+# |         "Timeout": 3,
+# |         "MemorySize": 128,
+# |         "LastModified": "2020-01-27T07:48:35.788+0000",
+# |         "CodeSha256": "/Eu1PKa/ji0QEGvWl/Gns2sDoD4YQxtm6g50PcmmvoM=",
+# |         "Version": "$LATEST",
+# |         "TracingConfig": {
+# |             "Mode": "PassThrough"
+# |         },
+# |         "RevisionId": "26fffccb-02ca-4eb5-987c-8fdf8bdc712e"
+# |     },
+# |     "Code": {
+# |         "RepositoryType": "S3",
+# |         "Location": "https://prod-04-2014-tasks.s3.us-east-1.amazonaws.com/snapshots/account_no/DynamoBakups-9e4f1d40-c42d-4e7e-a659-de932731e7a3?versionId=WcE2vGRYzM0VXWvbfc7fH7Y2DnJqblxa&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEAgaCXVzLWVhc3QtMSJGMEQCIB%2BoBHNKltX6q0NSzMr1EB8hP72eEhvzDhRpcyGOtIWZAiAjdbxbZjGYIi8FwGjuRGO1IDhdEM%2FGd1zkloJHUqdYayq9Awig%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDc0OTY3ODkwMjgzOSIMLZdyHEJFiM3GRjQQKpEDz1D9S4YmVE3Hk4r9RWcKuRjCGJ0IcABQ8AEmToiR1%2Fa%2BSwcdOEx%2FTmVe31GlIzXvRU0oIGfgNlqjVrk5wRc2y%2F9z%2Beit9o2f3lRWyaX%2FQf0FqpVDyDrRgFdbVbQ0CcWd2a4BjsLopBpiY816oUc0ujrPNh%2B7IDHUpE15SWcdM6Akj%2BzaTmubYwtHAhMHflTZ3BhiV763X7ONjgxkUsZO6Aqp5zeAOgUm1%2FA5ynOdkaFxw6c8p7NwAA9EoFK4pjN5oLYxyeDMrjF5qdJ0f6zYVF5d8VQuWyEyEvy27s6BMmBZTsEX97jTehZutr0SniKzLMiPhSsaPLu7CeIyvROaVdAh0u55PwnEs4nk2YPl3ah6WSrgR7mg6gfu2Q2G1Kmq4zoUqLJrQdItZZ61CovE8ccFxS39hleBkPT3h6eZbyep0YS9TfERh8JLm3mc7uWusAktvNpPqBQ8j4nTWX8qiMhgFbP6RN%2BouwWlICPTCJ%2F3k5nL6Su5PiXazh9xpEsDkaorl89BCgD62fA5Q6vs4AQwyKi68QU67AHk2Sj03FUfY3L0b2rYueaMnTqTAEud%2FYiAUxdg2Fb9yhWMrUGjG1SriGkKU49CLpQixBuQa76m9rdxCywgBcOkOe7IzkyKuJt6S0uQdWlEGlzEHdKODfPcxWFUQvR1QYWnnlNTxCqiJR1Rr7xXzB781aWymE%2FTH8HudWPHN%2BSgWeBlQUU5xVt6QpXYCtnwvIAthuOJVEENulekkLUrrAu2UF%2BI6iskN2qSIaKozoqDpzu%2BkcrLmmuLRebYOp4C53SFRIwGrTlAHP0BwxmmWkeEFSlwTALvjNcKVndq0D4bZfJf4SAF0witfHRw6A%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20200127T075626Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=ASIA25DCYHY37BW5ZMOL%2F20200127%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=75a75d9a52948891d3533b67939230fa81b4c669ac4af2dbce6cd72f1d3e070d"
+# |     }
+# | }
+# | root@sathsang-Predator-G3620:/study_docs/aws/JPMC_AWS#
+# |
+# |
+#
+# Example Code : 
+#
+# | import boto3
+# |
+# | client = boto3.client('dynamodb')             => Connecting to DyanmoDB using Boto3 
+# |
+# | def lambda_handler(event, context):
+# |     client.create_backup(
+# |         TableName = "Inventory",              => DyanmoDB Table name 
+# |         BackupName = "MyAutomaticBackup"      => DynamoDB backup name 
+# |         )
+# |
+#
+# * How to Create lambda using external code 
+# This will be often possible that you will be developing the lamda code outside the lamda editor and want to push that lambda 
+# There are mainly two ways you can achieve this for both you will need to zip the lambda function with all the code and dependacy required for it. 
+#
+# 1. Create a zip file local in your desktop and upload them using the AWS CLI 
+# 2. Upload the code zip file to an s3 bucket and then publish that using the AWS CLI 
+#
+# Syntax : 
+#
+# | $ aws lambda create-function \
+# |   --region us-east-1 \
+# |   --function-name MyNewLambda \
+# |   --zip-file c://my_code.zip  or  --code S3Bucket=bucket-name, S3Key=zip-file-obj-key
+# |   --role arn:aws:iam:account-id:role/my_lambda_role \
+# |   --handler hello_python.my_handler \
+# |   --runtime python3.6
+# |   --timeout 15
+# |   --memory-size 512
+#
+# * Lambda and CloudWatch 
+# When you invoke any action that by default gets updated to CloudWatch, which means you can find more details about the Lambda function during the runtime in the cloudWatch logs 
+# If you want to give more detailed information in cloud watch you can add more logging by using logging framework 
+#
+# Example : We are refactoring the existing lambda function to add more logs 
+#
+# | import boto3
+# | import logging
+# |
+# | client = boto3.client('dynamodb')
+# | logger = logging.getLogger()
+# | logger.setLevel(logging.INFO)
+# |
+# |
+# | def lambda_handler(event, context):
+# |     logger.info("Function {} has started".format(context.function_name))
+# |     client.create_backup(
+# |         TableName = "Inventory",
+# |         BackupName = "MyAutomaticBackup"
+# |         )
+#
+# Now lets see how that is working in CloudWatch 
+#
+#
+#
+#
+~                                                                                                                                                                                                            
+~                                                                                                                                                                                                            
+~                           
 
