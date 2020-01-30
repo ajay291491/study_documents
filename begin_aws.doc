@@ -412,6 +412,61 @@
 # It can export and import data from and to S3
 #
 #-------------------------------------------------------------------------------------------------------------------
+# Chapter 04 - Compute 
+#-------------------------------------------------------------------------------------------------------------------
+# 
+# * What is EC2
+# EC2 is Amazon's compute power which help you to boot server a few minutes with the capacity and flexibility you needed for the pricing. 
+# Based on the Billing there are mainly few types of instances available in AWS 
+#
+# . On Demand EC2 Instance 
+#   These instances are spin up on demand as requested and can be terminated when needed, Billing will be Hourly or per second basis.
+#   But the pricing will be fixed and there won't be any changes to the standard pricing and you will pay as you go without any commitment.
+#   This will be a idle solution for developer to test their code and shutdown when they do not need it. 
+#
+# . Reserved Instance
+#   These instances will be on reservation for the capacity you request for. 
+#   They offer a significant amount of discount on hourly pricing for the instances.
+#   Reserved instances offered based on on 1 year or 3 year contract terms 
+#
+# . Spot Instances 
+#   These kind of instances allow you to bid for instances on the price  you want. 
+#   This is a way amazon sells their reserved unused capacity instances. 
+#   This will even provide greater savings for you, but the instances can be terminates if the demand and prices goes up than you bid for. 
+#   IMPORTANT : If an instance gets terminated in the middle of an hour by amazon then you will not get chanrged, but if thats gets terminated by you then you will get charged. 
+#
+# . Dedicated Instances 
+#   These are dedictaed instances which can be used similar to a physical server 
+#   These instances can be used if you have licence or regulatory requirement to build a decidated servers. 
+#
+# Based on the capacity and performance EC2 isntances are catagorized into several different catagories which can be given below. 
+#
+# https://aws.amazon.com/ec2/instance-types/
+#
+# * Key things to note about EC2
+# Here are few things you will need to remember when you are dealing with EC2
+#
+# . Public and Private keys
+#   When you create the EC2 instance there will be a provision to create a Key pair once you generate the keys then you will be able to download the private key from the amazon. 
+#   You will need to set the private key permission to '400' in order the keys to be working
+#   Public key for that will remain the EC2 instance and that will get validated during the authentication. 
+#   If you are using a Putty to connect to EC2 instance, then you will need to convert your '.pem' file into '.ppk' file using the puttygen utility, else it will not be able to connect  
+#
+# . Termination Protection 
+#   If you want to protect your instance against any accidental termination then you can enable termination protection. 
+#   Termination protection will not allow to terminate the instance until you go ahead and disable that option. 
+#
+# . HDD & Encryption 
+#   You can enable encryption to all the Hard disk devices in EC2 including the Root device 
+#   By default the root disk device will be named as '/dev/xvda' 
+#   
+# . Delete on Termination 
+#   If you have enabled delete on termination then the EBS volume won't be getting deleted when the instance is getting terminated 
+#   By default root voalume '/dev/xvda' will get terminated when the instance is getting terminated 
+#
+#
+#
+#-------------------------------------------------------------------------------------------------------------------
 # Chapter 05 -  Database
 #-------------------------------------------------------------------------------------------------------------------
 # Amazon has various different promises when it comes to database, based on the customer needs they can request for right solution 
@@ -952,6 +1007,86 @@
 # |         )
 #
 # Now lets see how that is working in CloudWatch 
+#
+# | $ aws logs start-query \
+# | --log-group-name '/aws/lambda/hello-world-insight' \
+# | --start-time 1546009200 \
+# | --end-time 1546020000 \
+# | --query-string 'fields @timestamp, @message
+# | | sort @timestamp desc
+# | | limit 4'
+# | 
+# | 
+# Output
+# | 
+# | {
+# |     "queryId": "01251c78-7e7b-4c8b-872d-0864390183fs"
+# | }
+# | 　　
+# | 
+# | $  aws logs get-query-results --query-id '01251c78-7e7b-4c8b-872d-0864390183fs'
+# | {
+# |     "results": [
+# |         [
+# |             {
+# |                 "field": "@timestamp",
+# |                 "value": "2018-12-28 17:59:16.155"
+# |             },
+# |             {
+# |                 "field": "@message",
+# |                 "value": "REPORT RequestId: 3a67f8af-0aca-11e9-be16-c16d11edadca\tDuration: 0.41 ms\tBilled Duration: 100 ms \tMemory Size: 128 MB\tMax Memory Used: 20 MB\t\n"
+# |             }
+# |         ],
+# |         [
+# |             {
+# |                 "field": "@timestamp",
+# |                 "value": "2018-12-28 17:59:16.155"
+# |             },
+# |             {
+# |                 "field": "@message",
+# |                 "value": "END RequestId: 3a67f8af-0aca-11e9-be16-c16d11edadca\n"
+# |             }
+# |         ],
+# |         [
+# |             {
+# |                 "field": "@timestamp",
+# |                 "value": "2018-12-28 17:59:16.154"
+# |             },
+# |             {
+# |                 "field": "@message",
+# |                 "value": "value1 = Hello,World!!\n"
+# |             }
+# |         ],
+# |         [
+# |             {
+# |                 "field": "@timestamp",
+# |                 "value": "2018-12-28 17:59:16.154"
+# |             },
+# |             {
+# |                 "field": "@message",
+# |                 "value": "START RequestId: 3a67f8af-0aca-11e9-be16-c16d11edadca Version: $LATEST\n"
+# |             }
+# |         ]
+# |     ],
+# |     "statistics": {
+# |         "recordsMatched": 18.0,
+# |         "recordsScanned": 18.0,
+# |         "bytesScanned": 1504.0
+# |     },
+# |     "status": "Complete"
+# | }
+#
+# * Exam Tips 
+# - Lambda Scales out automatically 
+# - Lambda functions are indipendant, which means 1 event = 1 function 
+# - One Lambda function and can invoke several other lambda functions 
+# - Lambda is serverless 
+# - Know what services are serverless in AWS 
+# - Lambda architecture can be extremely complicated, AWS X-RAY allow you to debug what is happening 
+# - Lambda can do things globally, You can use it to backup S3 buckets to other S3 buckets etc 
+# - Various triggers available for lambda 
+#
+#
 #
 #
 #
