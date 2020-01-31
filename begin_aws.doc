@@ -464,6 +464,128 @@
 #   If you have enabled delete on termination then the EBS volume won't be getting deleted when the instance is getting terminated 
 #   By default root voalume '/dev/xvda' will get terminated when the instance is getting terminated 
 #
+# * Security groups 
+# Security groups are virtual firewalls associated with the instances created in the VPC. 
+# This can help you to allow inbout traffic and outbound traffic on specific ports from specific or all IPs. 
+# Below are few features to remember about the ecurity group
+#
+# - By default Security will deny traffic from all IPs and Ports 
+# - You can add IPs and allowed ports or range of ports in Security group 
+# - When you add an inbound rule it will add similar outbound rule also for the instance
+# - Security groups are called stateful
+# - You can have multiple security groups on the same instance 
+# - You can have multiple instances attached to a security group
+# - You cannot sepcifically block any IP or Ports on Security group, but by default all ports and IPs and blocked except the one you have allowed. 
+#
+# * EBS - Elastic Block Storage 
+# EBS are the virtual hard disks in AWS. EBS is mainly devided into two catagories 
+# 
+# 1. Solid State Drive (SSD)
+#    
+#    - General Purpose SSD  (GP2)         : Capacity from 1TB - 16TB, IOPS = 16000
+#    - Provisioned IOPS SSD (io1)         : Capacity from 4TB - 16TB, IOPS = 64000
+#
+# 2. Hard Disk Drives (HDD)
+#
+#   - Throughput Optimized HDD (st1)      : Capacity from 500G - 16T, IOPS = 500
+#   - Cold HDD                 (sc1)      : Capacity from 500G - 16T, IOPS = 250
+#   - EBS Magnatic             (standard) : Capacity from 1G   - 1T,  IOPS = 40 - 200
+#
+# . Key details about EBS
+#   - Each EBS volume can be attached to an instance and not more than that
+#   - An instanced can be attached with multiple EBS instance based on the allowed capacity for the account. 
+#   - In case need more capacity than the allocated EBS storage you will need to submit a support case for that 
+#   - EBS volume created will be specific to that availability zones and it will be only available to use in the instance from the same availbility zone 
+#
+# * EBS Snapshots
+#   Snapshots are the point in time copy for the volume which will be stored on the S3 storage. 
+#   In order to make a snaphot available in another region you will need to copy the snapshot to another region 
+#   Snapshot can be used to restore an existing volume or to create a new volume of out of it. 
+#   Snaphost can be taken from both root volume and additional volumes.
+#
+# . Deleting EBS and EC2 Instances
+#   When you delete an EC2 instance then the associated root volume will be deleted automatically 
+#   Additional volumes attached to the Instance will be still available after the delete, that you can manually delete if you want 
+#
+# . Resizing the Volume 
+#   Resizing of the volume is supported but filesystem level changes for the volume need to be done from the Operating system level for the current running instances. 
+#
+# . Creating AMI for another region 
+#   To create an AMI you can take the snapshot from the root volume and then it be promoted to an AMI.
+#   Then copy the AMI to the other region 
+#   Then create instance in that region from the same AMI which is just provisioned  
+#
+# . Creating Volume for another region 
+#   To create volume on another region you can follow the steps to create a snapshot first 
+#   Then Copy the snapshot to another region and then create a volume out of it. 
+#
+# * Instant Store Volumes 
+# Instant store volumes are temporary storage volumes which can be enabled for caching, buffer, scratching data or any other temporary content data
+# Instant store volumes must not be used for any of the long term storage requirement since it can be lost at anytime 
+# Instant store volumes are backed by an underlying host but, in case of an unavailbilty of the underlying host you will loose all the data in the volume. 
+# Instant store volumes backed instanced cannot be stop or start, but you can restart them but data will remain even after the restart. 
+# But if you terminate the instance then the data will be lost and that cannot be retrieved, but in case of EBS you have an option to retain the volume 
+#
+# * EBS Encryption 
+# EBS root and non root volumes can be encrypted and AWS does the does the encryption and stores the keys in AWS KMS
+# Its uses KMS to store the Customer master keys while creating the volume. EBS ueses AES-256 algorithm to encrypt the volume 
+# Encryption will be working on below areas.
+# - All data at rest in the volume 
+# - All data moving between volume and instance
+# - All snapshot taken from the volume 
+# - All volumes created from the snapshot 
+#
+# . How to Encrypt a volume which is not encrypted 
+#   You can create encrypted snapshot from the volume which is currently not encrypted and then create a volume from that snapshot.
+#   Once you create a encrypted snapshot you won't be able to create a Unencrypted volume from that snapshot 
+#   Also you cannot share a encrypted snapshot between AWS accounts 
+#
+# * Amazon CloudWatch 
+# Amazon CloudWatch helps to monitor the performance and metrics from almost all the amazon resources. 
+# Cloud Watch will normally monitor the metrics such as cpu usage, network throughput, disk IO etc 
+# Cloudwatch monitor the events every 5 minutes and it be customized to 1 minute
+# You can create cloudwatch alarm to trigger notifications 
+#
+# NOTE : memory monitoring is not default enabled 
+# Standard Monitoring : 5 Mins
+# Detailed Monitoring : 1 Mins 
+# Can Create - Dashboards, alerts, notfication 
+# Logging    - You also also send logs to Cloudwatch logs 
+#
+# * Amazon CloudTrial 
+# Cloud Trial stands for audit related monitoring which helps us to understand who did what action. 
+# This is veryhelpful in understanding on why, who and what did exactly on what time. 
+#
+# * Userdata and metadata 
+# user data shows the details about the boot strap details 
+# Metadata will show the details about the Ec2 instance metadata 
+# To get metadatta or userdata from an instanve you can run below commands 
+#
+# user-data : http://169.254.169.254/latest/user-data 
+# meta-data : http://169.254.169.254/latest/meta-data 
+#
+# * EFS - Elastic File System 
+# Its a kind of NFS file system within AWS which supports NFSv4 protocol
+# Supports upto 1000 of concurrent NFS connections 
+# Can scale upto petabytes 
+# Data stored in Multiple AZ within the region
+# Read after write consistency 
+#
+# * EC2 Placement Groups 
+# There are mainly three types of placement groups available for EC2 based on how they are placed. 
+#
+# 1. Clustered Placement group 
+#    This type of instances are placed together closly within an AZ. 
+#    This can be used for low latency application such as high freequency trading 
+#
+# 2. Spread Placement group 
+#    Striclty places small group of instances placed in an distint underlying hardware to reduce correlated failures 
+#    Can provision in multiple AZ, Spread placement groups have a specific limitation that you can only have a maximum of 7 running instances per Availability Zone
+#
+# 3. Partitioned Placement Groups
+#    Spreads your logical group of instances in multiple logical parittions of hardware without sharing hardware for each instance groups 
+#    This is ideal for high workload application such as kafka, hadoop, Cassandra 
+#    Can provision in multiple AZ
 #
 #
 #-------------------------------------------------------------------------------------------------------------------
@@ -476,7 +598,7 @@
 # * RDS (Relation Database system)
 # These are database running on virtual machines, however customer won't be having access to RDS. 
 # Any patching and maintanance of RDS is taken care by Amazon itself. 
-# Below are ket RDS promises available 
+# Below are the RDS promises available 
 # - MySql 
 # - SQL 
 # - Oracle 
@@ -485,10 +607,11 @@
 #
 # * Aurora 
 # This is a relational database system which provided by Amazon and it runs on a serverless architecture. 
+# Aurora currently support MySQL and PostgreSql databases. 
 #
 # * Dynamo DB (NoSQL)
-# This ia a no SQL Db which provided by AWS. 
-# This will help you to store multi dimensional data outside the traditional SQL Db which relies only on rown and columns model 
+# This is a no-SQL database which provided by AWS. 
+# This will help you to store multi dimensional data outside the traditional SQL DB which relies only on rown and columns model 
 #
 # * Elastic Cache 
 # These are the caching technologies available in AWS, there are mainly two of them 
@@ -497,8 +620,41 @@
 #
 # * Redshift
 # This is a data warehousing technology provided by Amazon. 
-# This is used for business intelligence and available only on one availability zone. 
+# This is used for data warehousing and business intelligence, this available only on one availability zone. 
 # This can have a copy of the backup on the S3 storage 
+#
+# * How RDS databases are managed. 
+# RDS databases are running on an EC2 instance but those instances are managed by AWS, which means any maintenance on the underlying RDS infra is managed by Amazon. 
+# But there is an exception to Aurora which is server less technology. 
+#
+# * RDS backups 
+# There are mainly two types of backups are available in RDS
+#
+# 1. Automated backups 
+#    Automated backups are done automatically and which has a retention period from 1 - 35 days. 
+#    Automated backups are stored in an S3 storage and it will be free. 
+#    AWS will take full backups and transaction logs as part of the automated backups 
+#    When DB gets restored it will be restored to the latest available daily backup and apply transaction logs relevant to that day
+#    Automated backups are triggered on the given window and IOPS will be suspended during the DB backups 
+#
+# 2. Manual backups 
+#    Manual backups are manual snapshot copies of the database and they are stored even after you have delete the database. 
+#    In case there isn't any manual backup available for the database which is getting deleted then automated backups will also get deleted
+#
+# * RDS database restore 
+# When you restore a RDS database then it is going to be a new RDS instance with new DNS FQDN. 
+# You cannot restore the database back to an existing database from which you have take the backups 
+#
+# * RDS Encryption 
+# Encryption is supported in AWS RDS and it does encryption at rest using AWS KMS service. 
+# It support encryption in Oracle, MS SQL, mySQL, PostGreSQL, MariaDB and Aurora 
+# Once the RDS service is encrypted it will encrypt the DB, underlying storage, automated backups, manual snapshots and read replicas, 
+#
+# * RDS Storage autoscaling 
+# This feature will help to increase the storage size automatically if the specified storage space is reached. 
+#
+# 
+#
 #
 #
 #-------------------------------------------------------------------------------------------------------------------
