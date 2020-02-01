@@ -710,20 +710,57 @@
 # - Memcahe  : This can be used for small application require less amount of caching 
 # - Redis    : This can be used for caching on larger data for long hours 
 #
+# Adding Elasticache will help you to improve the performance of your web application and database 
+# Redis support Multi A-Z 
+# You can backup and restore redis 
 #
 #-------------------------------------------------------------------------------------------------------------------
 #		Chapter 06 - Route 53 (DNS)
 #-------------------------------------------------------------------------------------------------------------------
 #
-# In AWS DNS and loadbalancing technologies are termed as Route 53. 
-# There are mainly 6 load balancing technologies available in AWS 
+# In AWS DNS technology are termed as Route 53. 
+# Using AWS console's Route 53 you can register for a DNS domain and it can take from couple of hours to maximum 3 days for it to complete the registration. 
+# There is a limit of 50 domain names you can own in route 53, but it can increased by contacting AWS support 
 #
-# 1. Sample Routing        : This is a round robin based routing and we cannot associate health check with this 
-# 2. Weighed Routing       : Here you can specify how much percentage traffic you want to keep this to one IP over another
-# 3. Latency Based routing : Here routing will be based on the latency you experience between multiple IPs
-# 4. Region based routing  : This will help you to route the traffic based on the region 
-# 5. Failover Routing      : This can be used in case for auto failover incase the service is not available for any IPs
-# 6. Multi Value Routing   : This is similar to the simple routing with health check 
+# * What is Route 53 Health checks
+# Health checks are a way to test your underlying IP associated with a DNS record is currently available. 
+# health check can be configured under route 53 session with following parameters 
+# - IP Address & Hostname 
+# - Port number 
+# - Protocol 
+# - Path (optional, i.e if running web server use the index.html as the path to verify the health)
+#
+# NOTE : If a IP address fails on health check that will be removed from Route 53 until it passes the health checks 
+#      : You can also set SNS notification alert in case any health check is failed. 
+#
+# * Routing Policies 
+# There are mainly 6 routing policies are available in AWS 
+#
+# 1. Simple Routing        
+#    In Simple routing you will be associate one or multiple IPs to a DNS record. 
+#    This will do a round robin based routing and we cannot associate health check with this 
+#
+# 2. Weighed Routing       
+#    Here you can specify how much percentage traffic you want to keep this to one IP over another
+#    For Example you can say 30% to one IP, 35% to another IP and another 35% to another IP etc 
+#    You can associate health check with weighed routing so that in case any of the IP is unavailable DNS will make sure it will route traffic to another one available 
+#
+# 3. Latency Based routing 
+#    Here routing will be based on the latency experienced between the enduser and destination server 
+#    Normally this should route you to the closest regional server until and unless if there isn't any internet based latency 
+#    You can associate health check with Latency based routing as well.
+#
+# 4. Geolocation based routing
+#    This will help you to route the traffic based on the region. 
+#    This means using this you can route your users from APAC to one server where APAC spcific contents are delivered and users from other region to other network.
+#
+# 5. Failover Routing      
+#    This can be used in case for auto failover incase the service is not available for any IPs
+#    In case of failover routing you will require a primary where all your primary traffic should flow to, also a secondary IP where trafic should failover to 
+#    You will need to associate health check with Primary and secondary to make sure route 53 is monitoring the health of th eprimary IP
+#
+# 6. Multi Value Routing 
+#    This is similar to the simple routing with health check 
 #
 # NOTE : Most of the above routing you can associate with the a health check.
 #      : In the health check you can associate a service or port and you can request to keep monitor it for any failure to redirect traffic based on that 
