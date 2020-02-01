@@ -604,57 +604,111 @@
 # - Oracle 
 # - PostgresQL
 # - MariaDB
+# - Aurora : This is a relational database system which provided by Amazon and it runs on a serverless architecture. Aurora currently support MySQL and PostgreSql databases. 
 #
-# * Aurora 
-# This is a relational database system which provided by Amazon and it runs on a serverless architecture. 
-# Aurora currently support MySQL and PostgreSql databases. 
+# * RDS Key things to Know 
+#
+# . How RDS databases are managed. 
+#   RDS databases are running on an EC2 instance but those instances are managed by AWS, which means any maintenance on the underlying RDS infra is managed by Amazon. 
+#   But there is an exception to Aurora which is server less technology. 
+#
+# . RDS backups : There are mainly two types of backups are available in RDS
+#
+#   1. Automated backups 
+#      Automated backups are done automatically and which has a retention period from 1 - 35 days. 
+#      Automated backups are stored in an S3 storage and it will be free. 
+#      AWS will take full backups and transaction logs as part of the automated backups 
+#      When DB gets restored it will be restored to the latest available daily backup and apply transaction logs relevant to that day
+#      Automated backups are triggered on the given window and IOPS will be suspended during the DB backups 
+#
+#   2. Manual backups 
+#      Manual backups are manual snapshot copies of the database and they are stored even after you have delete the database. 
+#      In case there isn't any manual backup available for the database which is getting deleted then automated backups will also get deleted
+#
+# . RDS database restore : When you restore a RDS database then it is going to be a new RDS instance with new DNS FQDN. You cannot restore to the original database back.
+#
+# . RDS Encryption 
+#   Encryption is supported in AWS RDS and it does encryption at rest using AWS KMS service. 
+#   It support encryption in Oracle, MS SQL, mySQL, PostGreSQL, MariaDB and Aurora 
+#   Once the RDS service is encrypted it will encrypt the DB, underlying storage, automated backups, manual snapshots and read replicas, 
+#
+# . RDS Storage autoscaling : This feature will help to increase the storage size automatically if the specified storage space is reached. 
+#
+# * RDS Multi-AZ
+# RDS multi AZ provides replication for your primary database. 
+# When you Enable multi AZ there will be replica which gets created in another availability zone in the same region
+# replication will be taken care by AWS and it will be done on a synchrnous basis 
+# In the event of a disaster or failure of the primary DB, amazon will switch the DNS to the replica and DB will be still available
+#
+# * RDS read replica 
+# Read replicas allow you to have the read only copies of the RDS database and this primarily stands for performance not for DR.
+# This will be useful when it comes to cases of high read intense application. Read replicas syncs in an Asynchrouns replication mode. 
+# Read Replicas are supported by below DBs 
+# - Oracle 
+# - MySql
+# - PostgreSQL
+# - Aurora 
+# - MariaDB
+#
+# Note : MS SQL is not supported for read replicas 
+#
+# Few keys things to note about RDS are below 
+# - For read replicas to work automatic backup needs to be turned on 
+# - Maximim 5 copies of Read replica are possible 
+# - We can create read replica of read replica, but need to watch out for latency 
+# - Read replicas are supported in multi region as well, so that you can have high read only application can be accesses for multi regions 
+# - Read replicas has its own seperate DNS endpoint other than the Primari DB
+# - Read replica can  be promoted to primary DB, but that will break the replication 
+#
+# - Read replicas can be failed over to primary by rebooting it 
+# - Encryption can be enabled on read replias by AWS KMS
+# 
 #
 # * Dynamo DB (NoSQL)
-# This is a no-SQL database which provided by AWS. 
+# This is a no-SQL database service for application need consistant and millisecond latency at any scale. 
+# It is fully managed and support both documentation and key-value data models. 
+# Its flexible data model and reliable performamce makes it reliable database for mobile, gaming and IOT applications 
 # This will help you to store multi dimensional data outside the traditional SQL DB which relies only on rown and columns model 
+#
+# - Data is stored in underlying SSD storage which improves the performance 
+# - Spread across 3 geographically distinct data centers 
+#
+# . Read Modes in DynamoDB
+#   1. Eventual Consistant Reads : If you want to read the data with in 1 sec after writing to DynamoDB and its replicas, you can eventually consistent mode 
+#   2. Strongly consistant Reads : If you app doesn't even wait for 1 sec after writing and upating to all copies, then you will need to use Strongly consistant mode
+#
+# * Redshift 
+# Redshift is amazon's data warehousing or business intellegence solution. 
+# This works in a node concept where it can have a single node or multi node configuration 
+# - Single node : has a capacity of 160 GB
+# - MUlti Node  : This consist of one Leader node and multiple compute node 
+#               : Leader node will receive the data from multiple nodes and queries 
+#               : Compute node will process the requsts, maximum of 128 compute nodes can be provisioned
+#
+# . Few features 
+#  - It is currently available in only one availability zone. 
+#  - Redhsift always maintain 3 copies of data
+#  	- Original Copy of the data 
+#  	- Replica copy of the data 
+#  	- Backup stoared in S3
+#  - Redshift provides a backup retention of 35 days 
+#  - Redshift also support asynchrouns data replication of S3 in another region 
+#  - Redshift support encryption at rest using AES-256 encryption and also support encryption in rest using SSL
+#
+# * Aurora 
+# Aurora is a fully managed database provided by amazon which provides the capabilities of both traditional mysql and postgresql database along with capabilities of new open source DBs. 
+# Aurora is 5 x times faster than traditional MySQL database
+# Aurora is 3 X times faster than the traditional PostGreSql DBs 
+# It maintains 2 copies of data one availability zone and data will be always replicated in 3 availability zones, so total 6 copes of data will be available 
+# You can start from 10GB and it can scale upto maximum of 64 TB. 
+# It also supports replication over multiple regions in case your application require geographically available read replicas. 
+# Incase you have unpredicted workloads then you can use the AWS Aurora serverless which can start, stop and scale according to application demands. 
+#
 #
 # * Elastic Cache 
 # These are the caching technologies available in AWS, there are mainly two of them 
 # - Memcahe  : This can be used for small application require less amount of caching 
 # - Redis    : This can be used for caching on larger data for long hours 
-#
-# * Redshift
-# This is a data warehousing technology provided by Amazon. 
-# This is used for data warehousing and business intelligence, this available only on one availability zone. 
-# This can have a copy of the backup on the S3 storage 
-#
-# * How RDS databases are managed. 
-# RDS databases are running on an EC2 instance but those instances are managed by AWS, which means any maintenance on the underlying RDS infra is managed by Amazon. 
-# But there is an exception to Aurora which is server less technology. 
-#
-# * RDS backups 
-# There are mainly two types of backups are available in RDS
-#
-# 1. Automated backups 
-#    Automated backups are done automatically and which has a retention period from 1 - 35 days. 
-#    Automated backups are stored in an S3 storage and it will be free. 
-#    AWS will take full backups and transaction logs as part of the automated backups 
-#    When DB gets restored it will be restored to the latest available daily backup and apply transaction logs relevant to that day
-#    Automated backups are triggered on the given window and IOPS will be suspended during the DB backups 
-#
-# 2. Manual backups 
-#    Manual backups are manual snapshot copies of the database and they are stored even after you have delete the database. 
-#    In case there isn't any manual backup available for the database which is getting deleted then automated backups will also get deleted
-#
-# * RDS database restore 
-# When you restore a RDS database then it is going to be a new RDS instance with new DNS FQDN. 
-# You cannot restore the database back to an existing database from which you have take the backups 
-#
-# * RDS Encryption 
-# Encryption is supported in AWS RDS and it does encryption at rest using AWS KMS service. 
-# It support encryption in Oracle, MS SQL, mySQL, PostGreSQL, MariaDB and Aurora 
-# Once the RDS service is encrypted it will encrypt the DB, underlying storage, automated backups, manual snapshots and read replicas, 
-#
-# * RDS Storage autoscaling 
-# This feature will help to increase the storage size automatically if the specified storage space is reached. 
-#
-# 
-#
 #
 #
 #-------------------------------------------------------------------------------------------------------------------
