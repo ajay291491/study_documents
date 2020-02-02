@@ -768,13 +768,35 @@
 #-------------------------------------------------------------------------------------------------------------------
 #		Chapter 07 - VPC
 #-------------------------------------------------------------------------------------------------------------------
+#
+#* What is VPC 
 # VPC is a virtual isolation layer of resources in AWS. If you create an account there will be a default VPC attached with it.
+# You can also create custom VPC apart from the default VPC which is getting created. 
 # A VPC mainly has many components with in it which control the resource access. Few of the key components you should be aware are 
 #
-# - Internet Gateway : Using this component any resource in the VPC can reach from inside or outside to internet
-# - Subnet           : This is the subnet which decides network isolation with in a VPC, you can have more than one subnet in VPC
+# * VPC Peering 
+# - You can connect one VPC to another VPC by enabling proper routing 
+# - You can connect between VPC in same account as well as in different account 
+# - Once Enable VPC peering instances in two different VPC will behave like they are in same account
+# - Peering is always start like config, which means if you enable peering for one VPC to another multiple only that VPC which connect across all can communicate 
+# - Transitive peering is not allowed which means if there are VPC want to communicate via a proxy VPC its not allwed, VPC need to peer each other to communicate 
+#
+# * CIDR Blocks and reserved IPS 
+# When you create a VPC you will be able to create CIDR block for that VPC, highest range allowed is x.x.x.x/16 (65,536 IPs) and lowest allowed is x.x.x.x/28 (16 IPs)
+# From these CIDR blocks you can create smaller subnet as required for your use. 
+# When you create a VPC there will be five IPs will be reserved by amazon for its own backend and reserved purpose, they are 
+# . x.x.x.0   -> Subnet ID 
+# . x.x.x.1   -> VPC Router Address
+# . x.x.x.2   -> DNS address 
+# . x.x.x.3   -> reserved for future 
+# . x.x.x.255 -> Boradcast address 
+#
+# * Key Components of VPC 
+# - Internet Gateway        : Using this component any resource in the VPC can reach from inside or outside to internet
+# - Virtual Private gateway : VGW will help you to connect to a VPN gateway 
+# - Subnet                  : This is the subnet which decides network isolation with in a VPC, you can have more than one subnet in VPC
 # - NACL (Network Access control list) : This decides the access controls like which IP and port can access resource on what subnets etc.
-# - Routing Table    : Similar to Unix routing this decides from where to where the network should be routed
+# - Routing Table           : Similar to Unix routing this decides from where to where the network should be routed
 # 
 # Below are the few key specialities of VPC 
 # - They are highly available 
@@ -801,8 +823,304 @@
 # - One NACL will act as a firewall for all the 6 subnets associated with the VPC
 # - You can have the Inbound rules which tell what external resource can access VPC with what port number
 # - You can have outbound rules which tells what source can send traffic via what port
-# - NACL always have a number, rules are processed in lowest order, which means lowest ACL rule will override if there are duplicate
+# - NACL always have a number, rules are processed in lowest order, which means lowest ACL rule will override if there are duplicate in higher order 
+# - Also if any specific DENY or ALLOW rule you want to include, make sure you are including them in the lower number so that blanket level rules won't override them 
+#
+# . Few Key things to remember about NACL
+#   - You VPC automatically comes with a NACL and by default all traffic will be allowed
+#   - YOu can create custom NACL, but by default that will DENY all traffics 
+#   - You can associate subnets with NACL, as soon as you associate the subnet all NACL rules will be applied to the subnets 
+#   - You can block IP address only using NACL not Security groups 
+#   - You can only add port number to NACL, not service name. Once you add port number then assciated service name automatically will appear in NACL list 
+#   - You can associate only one NACL to one subnet, but a NACL can have multiple subnets
+#   - NACL are stateless, which means you will need to add inbound and outbound rules seperately 
+#
+# * VPC Flow Logs 
+# VPC Flow logs are similar to tcpdump in Linux which helps to capture the VPC traffic. 
+# TO create VPC Flologs you will need to dirst create the CloudWatch Log group, you can also log Flow Logs to S3 bucket 
+# Once you have the flow logs created then you can create the IAM roles for Flow logs 
+# Once that is done you can create the flow logs. 
+#
+# . Below are few key things to remember about VPC Flowlogs 
+#  - All Internal DNS related traffic is not logged 
+#  - YOu cannot tag Flow logs at the moment 
+#  - Traffic related to 169.25.169.254 are not logged 
+#  - DHCP trafic is not logged 
+#  - IP reservation traffic are not logged 
+#
+# * Direct Connect 
+# Direct Connect is a way of connecting between Amazon and Customer datacenter or office or colocation 
+# This enables a dedicated line between amazon and customer DCs which will help in achieving high throughput as well as low cost
+# To Achive this there will direct connect cage pair will be established, one pair from AWS end and another one from Customer end 
+# Once both devices are connected and started communicating then the direct connect will be established 
 # 
+# * VPC Lab - Working with Public Ec2 and Private EC2 instances 
+#
+# STEP 1 : You will need to create a custom VPC which has a CIDR block range of 10.0.0.0/16
+#
+# | root@sathsang-Predator-G3620:/data/amazon# aws ec2 describe-vpcs --vpc-id vpc-0c5e5696e3d771ab5 --profile default
+# | {
+# |     "Vpcs": [
+# |         {
+# |             "CidrBlock": "10.0.0.0/16",
+# |             "DhcpOptionsId": "dopt-1a827c71",
+# |             "State": "available",
+# |             "VpcId": "vpc-0c5e5696e3d771ab5",
+# |             "OwnerId": "298337959615",
+# |             "InstanceTenancy": "default",
+# |             "Ipv6CidrBlockAssociationSet": [
+# |                 {
+# |                     "AssociationId": "vpc-cidr-assoc-05e9b0e12c951cf52",
+# |                     "Ipv6CidrBlock": "2600:1f16:86c:8c00::/56",
+# |                     "Ipv6CidrBlockState": {
+# |                         "State": "associated"
+# |                     }
+# |                 }
+# |             ],
+# |             "CidrBlockAssociationSet": [
+# |                 {
+# |                     "AssociationId": "vpc-cidr-assoc-032386be3c892e79c",
+# |                     "CidrBlock": "10.0.0.0/16",
+# |                     "CidrBlockState": {
+# |                         "State": "associated"
+# |                     }
+# |                 }
+# |             ],
+# |             "IsDefault": false,
+# |             "Tags": [
+# |                 {
+# |                     "Key": "Name",
+# |                     "Value": "ajay291491VPC"
+# |                 }
+# |             ]
+# |         }
+# |     ]
+# | }
+# | root@sathsang-Predator-G3620:/data/amazon# 
+# | 
+#
+# STEP 2 : You need to create two subnets one with 10.0.1.0/24 and 10.0.2.0/24 
+#
+# | root@sathsang-Predator-G3620:/data/amazon# aws ec2 describe-subnets --subnet-id subnet-03040158cc669902f
+# | {
+# |     "Subnets": [
+# |         {
+# |             "AvailabilityZone": "us-east-2a",
+# |             "AvailabilityZoneId": "use2-az1",
+# |             "AvailableIpAddressCount": 250,
+# |             "CidrBlock": "10.0.1.0/24",
+# |             "DefaultForAz": false,
+# |             "MapPublicIpOnLaunch": true,
+# |             "State": "available",
+# |             "SubnetId": "subnet-03040158cc669902f",
+# |             "VpcId": "vpc-0c5e5696e3d771ab5",
+# |             "OwnerId": "298337959615",
+# |             "AssignIpv6AddressOnCreation": false,
+# |             "Ipv6CidrBlockAssociationSet": [],
+# |             "Tags": [
+# |                 {
+# |                     "Key": "Name",
+# |                     "Value": "10.0.1.0_us-east-2a_ajay291491"
+# |                 }
+# |             ],
+# |             "SubnetArn": "arn:aws:ec2:us-east-2:298337959615:subnet/subnet-03040158cc669902f"
+# |         }
+# |     ]
+# | }
+# | root@sathsang-Predator-G3620:/data/amazon# 
+# | root@sathsang-Predator-G3620:/data/amazon# aws ec2 describe-subnets --subnet-id subnet-0deb3da61bc229aec
+# | {
+# |     "Subnets": [
+# |         {
+# |             "AvailabilityZone": "us-east-2b",
+# |             "AvailabilityZoneId": "use2-az2",
+# |             "AvailableIpAddressCount": 250,
+# |             "CidrBlock": "10.0.2.0/24",
+# |             "DefaultForAz": false,
+# |             "MapPublicIpOnLaunch": false,
+# |             "State": "available",
+# |             "SubnetId": "subnet-0deb3da61bc229aec",
+# |             "VpcId": "vpc-0c5e5696e3d771ab5",
+# |             "OwnerId": "298337959615",
+# |             "AssignIpv6AddressOnCreation": false,
+# |             "Ipv6CidrBlockAssociationSet": [],
+# |             "Tags": [
+# |                 {
+# |                     "Key": "Name",
+# |                     "Value": "10.0.2.0_us-east-2b_ajay291491"
+# |                 }
+# |             ],
+# |             "SubnetArn": "arn:aws:ec2:us-east-2:298337959615:subnet/subnet-0deb3da61bc229aec"
+# |         }
+# |     ]
+# | }
+# | root@sathsang-Predator-G3620:/data/amazon# 
+# | 
+#
+# STEP 3 : Attach an internet gateway with the VPC, so that VPC will be able to communicate with the internet
+#
+# | root@sathsang-Predator-G3620:/data/amazon# aws ec2  describe-internet-gateways --query "InternetGateways[?contains(InternetGatewayId, 'igw-06301d49b08f3b4a9')]"
+# | [
+# |     {
+# |         "Attachments": [
+# |             {
+# |                 "State": "available",
+# |                 "VpcId": "vpc-0c5e5696e3d771ab5"
+# |             }
+# |         ],
+# |         "InternetGatewayId": "igw-06301d49b08f3b4a9",
+# |         "OwnerId": "298337959615",
+# |         "Tags": [
+# |             {
+# |                 "Key": "Name",
+# |                 "Value": "ajay291491_IGW"
+# |             }
+# |         ]
+# |     }
+# | ]
+# | root@sathsang-Predator-G3620:/data/amazon# 
+# | 
+#
+# STEP 4 : Attch one of the Subnet to VPC so that it can comunicate with the Internet 
+#
+# | root@sathsang-Predator-G3620:/data/amazon# aws ec2 describe-subnets --query "Subnets[?contains (SubnetId, 'subnet-0deb3da61bc229aec')]"
+# | [
+# |     {
+# |         "AvailabilityZone": "us-east-2b",
+# |         "AvailabilityZoneId": "use2-az2",
+# |         "AvailableIpAddressCount": 250,
+# |         "CidrBlock": "10.0.2.0/24",
+# |         "DefaultForAz": false,
+# |         "MapPublicIpOnLaunch": false,
+# |         "State": "available",
+# |         "SubnetId": "subnet-0deb3da61bc229aec",
+# |         "VpcId": "vpc-0c5e5696e3d771ab5",
+# |         "OwnerId": "298337959615",
+# |         "AssignIpv6AddressOnCreation": false,
+# |         "Ipv6CidrBlockAssociationSet": [],
+# |         "Tags": [
+# |             {
+# |                 "Key": "Name",
+# |                 "Value": "10.0.2.0_us-east-2b_ajay291491"
+# |             }
+# |         ],
+# |         "SubnetArn": "arn:aws:ec2:us-east-2:298337959615:subnet/subnet-0deb3da61bc229aec"
+# |     }
+# | ]
+# | root@sathsang-Predator-G3620:/data/amazon# 
+#
+#
+# STEP 5 : Launch two EC2 instance and make sure one connect to a private subnet and other to public subnet, create ssh rule for security group
+#
+# STEP 6 : Once the Instance is launched then access the Public subnet instance one from Public subnet
+#
+# STEP 7 : Add the private subnet to allow SSH, ICMP, HTTP protocols from the Public Subnet to access it 
+#
+#
+# * NAT gateways 
+# NAT gateways uses the  network translation protocol which helps to instance in private subnet to communicate with the public subnet. 
+# This also do not allow the instances to be accessed from public network. 
+# NAT gaetways supports redudancy on one availability zone and its limited to only one availability zone at the moment. 
+# NAT Gateways scales from 5 Gb to 45 GB at the moment 
+# NAT gateways are completely managed by Amazon and no need to patch them. 
+# NAT gateways will be automatically allocated with an Elastic IP address while creating them, when you delete the NAT instance the elastic IP won't get deleted instead it will only get disassociated 
+# 
+# Below is the stape to Create a NAT gateway 
+# 1. Create a NAT gateway from AWS Console 
+# 2. Choose a public subnet you want to associate the NAT gateway 
+# 3. You will need to generate an elastic IP as part of the creation 
+# 4. Once you created the NAT gateway then you will need to associate that NAT gateway with one or more priviate subnets routing table
+# 5. Once the association is done, instances from the private subnet will be able to communicate with the Internet using the NAt gateways 
+#
+# . Things to remeber about the NAT gateways 
+#   - NAT gateways do not have security groups so you cannot set any restrictions there 
+#   - To setup restriction to what to be accessed from the Ineternet you can setup that in Security group of instance or NACL at the subnet level 
+#
+# * NAT Instances 
+# NAT Instaces are used for enabling internet or public network connectivity for the Private subnet instances 
+# To Create NAT instances you will need to locate amzn-nat-ami and then launch the instance in the public subnet 
+# Once you have launched the instance make sure you have to disable the "Source and Destination check"
+# Once that is done then You will need to configure the route for private subnet with the NAY instance, so that it will commununicate via the elastic IP configured for NAT 
+# Once the Elastic IP configured then you can go to the instance in provate subnet to make sure its communicating 
+#
+#-------------------------------------------------------------------------------------------------------------------
+#		Chapter 07 - Elatic Load balancer 
+#-------------------------------------------------------------------------------------------------------------------
+#
+# * What is a Load balancer 
+# Load balancer will help to distribute the traffic to various different underlying instance to load the traffic. 
+# Based on the methods, load balancer are different types 
+#
+# 1. Appliation load balancer 
+# 2. Network Load Balancer
+# 3. Classic Load Balancer 
+#
+# * Application Load balancer 
+# Application load balancer normally operate in the layer 7 (application) and they mostly handle the http/ https based traffic. 
+# Application load balancers are more of an intelligent devices which is cpable of doing decission making. 
+# This is best suite for application with modern architecture such as micro services and containers. 
+# It is capable of routing the traffc based on the content on the input traffico
+# Application load balancer works on the model of "Target groups" to route traffic
+# . Target Groups
+#   Target groups allows to route traffic to group of instance where the listener rules gets matched. 
+#   Listner will be configured with specific rules which helps to deltermine few conditions and based on the condition the traffic will be routed 
+#
+# * Network Load Balancer 
+# Network Load balancers are operate at the Layer 4 (Transport) of the OSI model. 
+# This load balancer can be used with application which is dealing with TCP and UDP layer
+# This Load balancer provides the highest performance among any other load balancers 
+#
+# * Classic Load balancer 
+# Class Load balancer are the oldest among the load balancers and they are capable of catering to http /https and TCP/UDP traffic as well. 
+# Classic load balancer do not have much logical capabilities of application load balancer, but it can send traffic in round robin method 
+# Classic load balancer works on layer 4 to route the traffic between TCP and UDP traffic 
+# Classic load balancer works in layer 7 to route traffic between https/ https 
+# 
+# * Exam tips for Load balancers 
+# - Load balancer will have a DNS name, but you won't be getting the IPS address for the same 
+# - Health checks will check the health status of the instance underlying to the load balancer 
+# - Instances monitored in ELB are mentioned as In Service or Out of Service
+#
+# * Stickey Session 
+# When you want a traffic from a user to be sent to a same instance under the load balancer because of cache the app might store then you can enable sticky session 
+# Sticky session will allow you to send traffic from a specific user to a specific instance  for the whole session. 
+# You can enable the sticky session for appliaction load balancer as well, but at the target group level
+#
+# * Cross zone load balancing 
+# When you enable cross zone load balancing it will help to send equal traffic to the instances in different availability zones 
+# Suppose lets you have enabled weighed routing on your Route 53 to send 50% traffic to east-1 and east-2 and east-1 you have 5 instance and east-2 you have 1 instances 
+# In this case server in east-2 is expected to get lot of load since it is weighed routing. 
+# In case you enable cross zone routing load balancing has the capability to understad he amount of instances in both regions and based on that it will re-route traffic low loaded zone instances 
+# This will infact help to leverage the total load across various instances 
+#
+# * Pattern based load balancing 
+# When there are scenarios such as in case of an application where you want to send audio related traffic to one zone image related traffic to another zone 
+# Then you can send pattern based routing such as image based routing to one url and audio related traffic to one load balancer etc 
+#
+# * Auto Scaling groups 
+# Auto scaling groups will help you to create redudant instances when you are planning to host an application 
+# ASG has mainly two parts when you are planning to launch as ASG 
+#
+# 1. Launch Configuration 
+#    Launch configurations are kind of boiler plate which tells what kind of configuration it should be using to launch an ASG
+#    This will request to create below parameter as part of the ASG creation 
+#    - I am Role 
+#    - AMI
+#    - Monitoring to be set to Y/N
+#    - Storage 
+#    - Security Group 
+#    - Key Pair 
+#
+# 2. Creating a ASG
+#    Once You have a launch config available then you will be able to create a ASG from that 
+#    Once you Create an ASG you will need to provide below information 
+#    - ASG Name 
+#    - ASG size 
+#    - Scaling Policy - Min and max 
+#    - Scaling Policy - Monitoring based on CPU usage 
+#    - Warm up and Colling period - Amount of time before launching or terminating an instance after the last scale up or scale down event 
+#    - Notification via SNS ( If you have a cloud watch monitoring enabled you enable also a SNS push to create an alert incase of a scale up or scale down event)
+#
 #-------------------------------------------------------------------------------------------------------------------
 #		Chapter 08 - CloudFormation
 #-------------------------------------------------------------------------------------------------------------------
