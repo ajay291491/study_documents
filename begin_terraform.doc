@@ -1,0 +1,128 @@
+#---------------------------------------------------------------------------------------------------------------------
+#	Chapter 01 - Terraform Introduction
+#---------------------------------------------------------------------------------------------------------------------
+#
+# * What is Terrform
+# Terraform is a infrastructure provisioning tool which helps to define your infrastructure as a code. 
+# Terraform is developed by Hashi Corp and key difference between Terraform and config management tools are they works on top OS leyer to manage OS and application.
+# But Terraform works to define your infrastructure as a code. This also helps you to maintain the state of your infrsatructure
+#
+# You can install a copy of Terraform by following below url https://www.terraform.io/downloads.html
+#
+# * Hahicorp Configuration Language (Terraform HCL)
+# This is the programming language to write manifest in Terraform, This language is called HCL and it posses a declarative nature language. 
+# This DSL language is used to create Terraform modules and it has mainly few areas 
+#
+# - Providers  : This decides what underlying provider should be used for the manifest such as aws, azure, google etc 
+# - Variables  : These are types of variables you can define in Terraform
+# - Resources  : Resources are resources we are defining to create under the provioder 
+# - Outputs    : Return values of a terraform module 
+#
+# * Key Terraform commands on High Level
+#
+# $ terraform console 	=> This will open a terraform interactive console 
+# $ terraform init 	=> This will help to download all the modules from Providers such as aws 
+# $ terraform plan 	=> This will show based on .tf file what config will be applied 
+# $ Terraform apply 	=> This apply the manifest as written in the .tf file 
+#
+# * Terraform Variable Types
+# Terraform mainly has 2 variable types at highr level and they are further devided into few more 
+#
+# - Simple Variables 
+#   . String : To represent strings 
+#   . Number : To represent numbers 
+#   . Bool   : To represent Boolean values 
+#
+# Syntax : 
+#
+# variable "my_varibales" {
+# 	type = "variable_type"
+# 	default = "some default value"
+# }
+#
+# Example : Below example shows about Terraform sample string variable 
+# | [root@minikube01 config]# cat main.tf
+# | variable "myvar" {
+# |   type = "string"
+# |   default = "Hello Terraform"
+# | }
+# | [root@minikube01 config]# terraform console
+# | > Terraform 0.11 and earlier required type constraints to be given in quotes,
+# | but that form is now deprecated and will be removed in a future version of
+# | Terraform. To silence this warning, remove the quotes around "string".
+# |
+# | > var.myvar
+# | Hello Terraform
+# | >
+#
+# - Complex Variables 
+# There are further more complex variable types we will see them in detail now 
+#
+# . List 
+# These are variables which we will be using to represent a list of strings or numbers 
+#
+# Syntax : 
+#
+# variable "my_list" {
+# 	type = list
+# 	default = [value1, value2, value3, etc]
+# }
+#
+# Example : Below example shows how to define a list 
+#
+# | [root@minikube01 config]# cat   main.tf
+# | variable "serial_numbers" {
+# |     type = list
+# |     default = [1, 2 ,3, 4]
+# | }
+# | [root@minikube01 config]# terraform console
+# | > var.serial_numbers
+# | [
+# |   1,
+# |   2,
+# |   3,
+# |   4,
+# | ]
+# | > var.serial_numbers[2]
+# | 3
+# | >
+#
+# . Map
+# Map is a key value pair similar to a python dictionary, you can define a map as below 
+#
+# syntax : 
+#
+# variable "my_variable" {
+# 	type = map(string)
+# 	default = {
+# 		key_1 = value_1
+# 		key_2 = value_2
+# 	}
+# }
+#
+# Example : Below example shows how to define a variable 
+#
+# | [root@minikube01 config]# cat  main.tf
+# | variable "month_and_weather" {
+# |     type = map(string)
+# |     default = {
+# |             jan = "winter"
+# |                 may = "summer"
+# |                 jul = "mansoon"
+# |     }
+# | }
+# | [root@minikube01 config]# terraform console
+# | > var.month_and_weather["jan"]
+# | winter
+# | >
+# |
+#
+# NOTE : There are couple of more variables available which are not commnaly used 
+#
+# Object : Which is simiar to a Map 
+# Tuple  : This is simialr to a list but can have multiple different types in it 
+#
+#
+#
+#
+
