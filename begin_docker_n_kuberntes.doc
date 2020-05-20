@@ -2592,6 +2592,199 @@
 # | }
 # | [root@dockerstation01 complex]# 
 # | 
+#
+#------------------------------------------------------------------------------------------------------------------
+# Chapter 11 - Onwards to Kubernetes
+#
+# Udemy : https://www.udemy.com/course/docker-and-kubernetes-the-complete-guide/learn/lecture/11482922#overview
+#------------------------------------------------------------------------------------------------------------------
+#
+# * What is Kubernetes
+# Kubernetes is an utility which will help to run multiple containers on multiple systems.
+#
+# * Why you need Kubernetes
+# Traditionally when you perform a scaling operation in a micro service architecture it will scale multiple containers instantly, regardless the service which require actual scaling.
+# To solve this problem kubernetes gives you the liberty to scale up or down only of the type of containers which required to be scaled up or down.
+# This will help you manage your billing much more efficiently only based on what you need.
+#
+# * What is a MiniKube
+# Minikube is an utility to configure the kubernetes in a development environment where you can start practice or test your containers.
+# This utility actually spins up a virtual  machine where you will be able to submit your requests via kubectl and your containers will be deployed to teh nodes.
+#
+# * What are key managed services for kubernetes 
+# When you are looking for kubernetes in production then you will need to look for managed services provided by cloud providers. 
+# Couple of main providers are 
+#
+# EKS - Amazon's elastic KUbernetes service 
+# GKE - Google Kubernetes Engine
+#
+# * API Version 
+# When you define a config file in Kubernetes it defined how you can define an object in that config file. 
+# Based on different API verion you will have different object also available 
+#
+# Syntax : apiVersion: <api_version>
+#
+# * What is Kubernetes Objects 
+# In Kubernetes objects are used to represent the state of sereveral components in the cluster such as,
+# - Deployed containarized application and their workloads 
+# - Their networking 
+# - Disk resources 
+# - Information about what cluster is doing 
+#
+# When you define a object in the Yaml config file you will represent it as "Kind"
+#
+# Basic objects are 
+# . Pod
+# . Service
+# . Volume
+# . Namespace
+#
+# Kubernetes rely on higher level abstraction which rely on controllers to build upon the basic objects and provide addition functionality and convenience feature, this include 
+# . Deployment
+# . DaemonSet
+# . StatefulSet
+# . ReplicaSet
+# . Job
+#
+# Syntax - kind: <object_name>
+#
+# * What is pod 
+# Pod is the smallest unit in a kubernetes cluster which used to run a single container or a group of continers. 
+# It is not posible to run a conatiner alone in k8s, it has to be part of a pods, when container runs from a pods it will have its own unique ID. 
+# You can run multiple different type of container in same pod, if there are reason to include such as a logging or backup sidecar container.
+#
+# - Metadata : Metadata is the identity of that pod when its getting referred in other obejcts 
+#              A pod will have a name and label as part of the meta-data. 
+#              name : will help to identify the container in kubectl output or logs 
+#
+# - labels   : Labels are used to refer the pod object in another objects such as networking components etc 
+#              Label will always have a key value pair and this will be the pair declared as 'selector' in other objects such as networking serice etc to identify the pods.
+#
+#
+# - spec    : spec is going to where we are going to define the container details and key details are 
+#             name  : name of the conatiner 
+#             image : This should be a valid path for a conatiner image in docker hub or other image repository 
+#             ports : Here we will defining 'containerPort' as a list of ports which we are going to expose from the container 
+#                     This will be depend on which port application is starting  
+#
+# Reference : https://kubernetes.io/docs/concepts/workloads/pods/pod/
+#
+# Syntax : 
+#
+# apiVersion: v1
+# kind: pod 
+# metadata: 
+#   name: <name_of_pod>
+#   labels:
+#     <key> : <value>
+# spec: 
+#   containers:
+#     - name: name of container
+#       image: <path_of_the_image>
+#       ports: 
+#         - containerPort: <port_number>
+#     
+# Example : Below example show sample config and its various components in config file 
+#
+# | root@sathsang-Predator-G3620:/apps/kubernetes/client_app# cat client-pod.yaml
+# | apiVersion: v1	==> api version
+# | kind: Pod		==> Object pod for containarized apps 
+# | metadata:
+# |     name: client-pod
+# |     labels:
+# |             components: web
+# | spec:
+# |   containers:
+# |     - name: client
+# |       image: stephengrider/multi-client
+# |       ports:
+# |         - containerPort : 3000
+# | root@sathsang-Predator-G3620:/apps/kubernetes/client_app# 
+#
+#
+# * What is Service 
+# Service is a way to enable networking components for the pods running containers. 
+# Service identifies its asociated pods by using "selector" which refers to a key value pair defined under the "metadata:label" section in the pods.
+#
+# There are mainly four types of services kubernetes offering 
+#
+# . NodePort 	 : Exposes the Service on each Node’s IP at a static port (the NodePort). A ClusterIP Service, to which the NodePort Service routes, is automatically created.
+# . ClusterIP	 : Exposes the Service on a cluster-internal IP. Choosing this value makes the Service only reachable from within the cluster. This is the default ServiceType.
+# . LoadBalancer : Exposes the Service externally using a cloud provider’s load balancer. NodePort and ClusterIP Services, to which the external load balancer routes, are automatically created.
+# . ExternalName : Maps the Service to the contents of the externalName field (e.g. foo.bar.example.com), by returning a CNAME record
+#
+# While defining a service below are the key fields you will be defining 
+#
+# . metadata : here we can define the name of the service and it will be appearing in the kubectl and logs output 
+# . spec     : here is where we define which type of port and other details, few key details are given below 
+#              type     : type of port you are enabling 
+#              Ports    : list of port mapping information 
+#                port       : Port you are opening externally
+#                targetPort : port binding with the container
+#              selector : here we connect the pod by adding the key value pair defined under "metadata:label" in the pod
+#
+# Reference : https://kubernetes.io/docs/concepts/services-networking/service/
+#
+# Syntax : 
+# apiVersion: v1
+# kind: Serice
+# metadata:
+#   name: <name_of_the_service>
+# spec:
+#   type: <Type of port exposing>
+#   ports:
+#     - port: 
+#       target_port: <port_targeted_in_pod>
+#       nodeport: <optional, if you want to expose a node port for other apps>
+#   selector:
+#     <key> : <value> (as defined in the pods label)
+#
+# Example : Below example shows how to define a port
+#
+# | root@sathsang-Predator-G3620:/apps/kubernetes/client_app# cat client-node-port.yaml
+# | apiVersion : v1	==> api version
+# | kind: Service	==> Object Service for Networking components 
+# | metadata:
+# |   name: client-node-port
+# | spec:
+# |   type: NodePort	==> Opening nodeport
+# |   ports:
+# |     - port: 3050		==> Port exposed to external
+# |       targetPort: 3000	==> Port opened on container
+# |       nodePort: 31515	==> Node port getting opened
+# |   selector:
+# |     component: web
+# |
+# | root@sathsang-Predator-G3620:/apps/kubernetes/client_app#
+#
+#
+# * How to apply Pods and Service Objects 
+# Once you have created the Pods and Service Object YAML files then you can follow below steps to apply them
+#
+# | $ kubectl apply -f client-pod.yaml
+# | pod/client-pod created
+# | $
+#  
+# | $ kubectl apply -f client-node-port.yaml
+# | service/client-node-port created
+# | $
+#  
+# | $ kubectl get pods
+# | NAME         READY   STATUS    RESTARTS   AGE
+# | client-pod   1/1     Running   0          39s
+# | $
+# |
+#  
+# | $ kubectl get services
+# | NAME               TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)          AGE
+# | client-node-port   NodePort    10.96.55.16   <none>        3050:31515/TCP   11s	==> In this case you will be able to access the application using NodePort
+# | kubernetes         ClusterIP   10.96.0.1     <none>        443/TCP          24h
+# | $
+#  
+# | $ curl -k http://192.168.99.100:31515
+# | <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name="theme-color" content="#000000"><link rel="manifest" href="/manifest.json"><link rel="shortcut icon" href="/favicon.ico"><title>React App</title><link href="/static/css/main.c17080f1.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div><script type="text/javascript" src="/static/js/main.a2449523.js"></script></body></html>$
+# | $
+# 
+#
+#
 
-#
-#
