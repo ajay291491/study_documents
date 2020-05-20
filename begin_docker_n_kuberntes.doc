@@ -2786,5 +2786,61 @@
 # | $
 # 
 #
+# * Nodes in Kubernetes 
+# Kuberntes have mainly two different types of nodes, one is "Master" or its called Kube-api server and other one is "Worker Nodes". 
+# When you perform a kubetctl apply then there will be a set of process happens between master and worker nodes, details are explained below. 
 #
-
+# Master : Master or kube api server is responsible for running the entire cluster configurations
+#          When you run a kubectl command, that time you are directly interacting with the kube api server 
+#          WHen you request to create a set of containers in a pod, that time master will go and look for any pods of that running in any worker nodes, if not it will start them.
+#          On top of this if any of the pods are not running sufficeint number of containers in pods then it will take action to bring it on to the requested level.
+#          If any containers gets terminated, then Master will take necesary action to bring them back by restart 
+#
+# Worker node : Worker nodes are resposisble run the pods and containers as requested by the master. 
+#
+# To understand this in detail go through : https://www.udemy.com/course/docker-and-kubernetes-the-complete-guide/learn/lecture/11482942#overview
+#
+# * Tips * 
+#
+# $ kubectl get pods      			=> This will list the pods 
+# $ KUbectl get services  			=> This will list the services
+#
+# $ kubectl describe <pod> <pod_name>  		=> This will decribe the pod with lot of details 
+# $ kubectl describe service service_name 	=> This will describe the service details 
+#
+# $ kubectl get nodes -o wide			=> This will list the nodes
+# $ kubectl describe nodes <node_name>		=> This will give the details about the nodes 
+#
+#------------------------------------------------------------------------------------------------------------------
+# Chapter 12 - Maintaining sets of containers with Deployments 
+#
+# Udemy : https://www.udemy.com/course/docker-and-kubernetes-the-complete-guide/learn/lecture/11482954#overview
+#------------------------------------------------------------------------------------------------------------------
+#
+# * Imperative approach vs Declarative 
+# In Kubernetes you can manage your cluster pods and services in two different ways mainly. 
+# 
+# 1. Imperative  : This is the method where you will be using list of kubectl command to configure your desired state.
+# 2. Declarative : In this method you will be defining your desired state in the config file and you will let kubernetes to manage the state based on the same.
+#
+# * How to update the config for an existing pods 
+# To update the config for an existing pod we can update config file and then apply the same. 
+# However objects like pods has only very few flexibility such as container image etc and doesn't allow to change property such as ContainerPort etc 
+# To accomodate such changes we will need to change from using pods to Deployment object another kubernetes object which provides more flexibility to support more changes.
+#
+# * Pods vs Deployment
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
