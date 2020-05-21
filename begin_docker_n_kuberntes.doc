@@ -2811,6 +2811,7 @@
 # $ kubectl get nodes -o wide			=> This will list the nodes
 # $ kubectl describe nodes <node_name>		=> This will give the details about the nodes 
 #
+#
 #------------------------------------------------------------------------------------------------------------------
 # Chapter 12 - Maintaining sets of containers with Deployments 
 #
@@ -2829,6 +2830,204 @@
 # To accomodate such changes we will need to change from using pods to Deployment object another kubernetes object which provides more flexibility to support more changes.
 #
 # * Pods vs Deployment
+# Pods are normally good at dealing with development when you are dealing with production you will need to look for another kind object "Deployment"
+# Reason for choosing Deployment vs Pods is given below 
+# 
+# Pods       : Runs a single set of containers 
+#            : Good for Dev purpose 
+#            : Rarely used in Production or not at all 
+#
+# Deployment : Runs a set of identical pods, one or more 
+#            : Monitor the state of each pod and updates as necessary according to changes to failures in pods 
+#            : Good for Dev and Production 
+#
+#
+# * Deployment
+# Deployment is ued to run set of identical pods in a kubernetes cluster. Below is the syntax to define the Deployment 
+#
+# Syntax : Below is a sample Syntax 
+#
+# apiVersion: apps/v1				=> This is the API version which supports Deplyment kind object
+# kind: Deployment				=> Here e choose kind as Deplyment instead Pod
+# metadata:
+#   name: <name of pod deployment>		=> Name of the pod deployment which identied in kubectl comands and logs 
+# spec:
+#   replicas: <number of replicas needed>	=> Number of replicas need to create 
+#   selector:					=> This selctor will look at the label inside the templte defnition and process accordingly, kind of repetative but needed
+#     matchLabels:
+#       <key>: <value>
+#   template:					=> This will be location where all Pod related config will be updated, similar Pod kind object
+#     metadata:
+#       labels: 
+#         <key>: <value>
+#     spec:
+#       conatiners:
+#         - name : <name of container>
+#           image: path of conatiner image
+#           ports:
+#             - containerPort: <port_number>
+#
+# Example : Below is a sample using Deployment, which use the same service config mentioned in last chapter 
+#
+# | $ cat client-DeploymentMethod.yaml
+# | apiVersion: apps/v1
+# | kind: Deployment
+# | metadata:
+# |   name: client-deployment
+# | spec:
+# |   replicas: 1
+# |   selector:
+# |     matchLabels:
+# |       component: web
+# |   template:
+# |     metadata:
+# |       labels:
+# |         component: web
+# |     spec:
+# |       containers:
+# |         - name: client
+# |           image: stephengrider/multi-client
+# |           ports:
+# |             - containerPort : 3000
+# |
+# | $
+#
+# | $ kubectl apply -f client-DeploymentMethod.yaml                                                        
+# | deployment.apps/client-deployment created
+# | $                                                        
+# | $ kubectl get pods
+# | NAME                                 READY   STATUS    RESTARTS   AGE
+# | client-deployment-5dfb6bf966-9xnl5   1/1     Running   0          9s
+# | $
+# | $ kubectl get deployment
+# | NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+# | client-deployment   1/1     1            1           20m
+# | $
+#
+# * How to scale the deployments 
+# If you want to increase or decrease the number of replicas in the kubernetes then you can update the key 'replicas' key in the spec 
+# Once you have done then perform below command tp apply the configuration.
+#
+# Example : We are increaseing the replicas to 5 using the above config 
+#
+# | $ kubectl get deployments
+# | NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+# | client-deployment   1/1     1            1           15h
+# | $ 
+# | $ kubectl apply -f client-DeploymentMethod.yaml 
+# | deployment.apps/client-deployment configured
+# | $ 
+# | $ kubectl get deployments
+# | NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+# | client-deployment   5/5     5            5           15h
+# | $ 
+#
+#
+# * Challenges with updating new container images in kubernetes 
+# If you build a new image for your application and you are trying to deploy the same into kubernetes there could be challenges in getting your deployments. 
+# Challenges can be based on three scenarios 
+#
+# Scenario 1 : You have marked container image with "<container_name>:latest" or just <container>.
+#              In this situation when you perform kubectl apply, kuberntes won't deploy the new image since there is no change detected on the deployment config file.
+#
+# Scenario 2 : If you are using Image tagging for the container images you are building and you maintain that in the config file 
+#              Lets assume you are using deployment pipeline to build your container and then update the kuberntes cluter, this will also create the problem
+#              Since your container tag is getting updted during pipeline, you do not have a chance to update tge deployment config 
+#
+# There are couple of solutions you can make use to overcome this, but all of them has its downside 
+#
+# Solution 1 : Kill the existing pods using 'kubectl delete pods <pod_name>' command this will try to launch the new container from new image.
+# Solution 2 : manually update the tag number in the eployment config and then apply the same 
+# Solution 3 : Update the Image name for the deployment using the imperative method. This is more of a imperative method
+#
+# Syntax :  kubectl set image deployment/<deployment_name> <container_name>=<image_with_tag>
+#
+# Example : Below example shows how to update deployment 
+#
+# | $ kubectl set image deployment/client-deployment client=stephengrider/multi-client:v5
+# | deployment.apps/client-deployment image updated
+# | $
+#
+# | $ kubectl get deployments
+# | NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+# | client-deployment   4/5     5            4           16h
+# | $
+#
+# | $ kubectl get pods
+# | NAME                                 READY   STATUS        RESTARTS   AGE
+# | client-deployment-5dfb6bf966-kgt6p   0/1     Terminating   0          59m
+# | client-deployment-6c59d7566f-2zw48   1/1     Running       0          14s
+# | client-deployment-6c59d7566f-cb96f   1/1     Running       0          23s
+# | client-deployment-6c59d7566f-dscxp   1/1     Running       0          23s
+# | client-deployment-6c59d7566f-ghng8   1/1     Running       0          23s
+# | client-deployment-6c59d7566f-trxg5   1/1     Running       0          11s
+# | $
+#  
+# | $ kubectl describe pod client-deployment-6c59d7566f-ghng8 |grep Image
+# |     Image:          stephengrider/multi-client:v5
+# |     Image ID:       docker-pullable://stephengrider/multi-client@sha256:5e2a93a2bcd1ab55756fca4de120ca3ad13ac7965ae1cd9435f6cc9f464cec4e
+# | $
+#
+#
+# * Tips * 
+#
+# $ kubectl get deployments 				=> To list the deployments 
+# $ kubectl describe deployment <deployment_name>	=> To get the details about the deployments 
+#
+# $ kubectl set image deployment/<deployment_name> <container_name>=<image_with_tag>  => This will help you to set the image value for a deployment
+#
+#
+#------------------------------------------------------------------------------------------------------------------
+# Chapter 13 - Multi Container App with Kubernetes
+#
+# Udemy : https://www.udemy.com/course/docker-and-kubernetes-the-complete-guide/learn/lecture/11500808#overview
+#------------------------------------------------------------------------------------------------------------------
+# 
+# In this chapter we will try to move the complex app which we put together as part of the Elastic beanstalk into Kubernetes 
+# We ill take an approach to delete the existing deployment we have created and then we will create new configs using Service ClusterIP and will deploy that minikube initially 
+# Then we will take to the Kubernernetes production environment 
+# 
+# * How to delete existing Deployment 
+# We can delete the existing deployments using below imperative method, details given with an example 
+#
+# Syntax : kubectl delete deployments <deployment_name>
+#
+# Example : Deleting a deployment 
+#
+# | $ kubectl get deployments
+# | NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+# | client-deployment   5/5     5            5           18h
+# | $ kubectl delete deployment client-deployment 
+# | deployment.apps "client-deployment" deleted
+# | $ 
+#
+#
+# * How to delete an existing service 
+# use below imperative method to delete a service in cluster 
+#
+# Syntax : kubectl delete services <service_name>
+#
+# | $ kubectl get services
+# | NAME               TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)          AGE
+# | client-node-port   NodePort    10.96.55.16   <none>        3050:31515/TCP   24h
+# | kubernetes         ClusterIP   10.96.0.1     <none>        443/TCP          2d1h
+# | $ kubectl delete services client-node-port
+# | service "client-node-port" deleted
+# | $ kubectl get services
+# | NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+# | kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   2d1h
+# | $ 
+#
+#
+# * ClusterIP
+# As mentioned in the earlier chapter ClusterIP will only expose the internal IP of the deployment which are currently running. 
+# Configuring a clusterIP will be useful for components in the kubernetes cluster to access each other. 
+# Suppose lets a a frontend pod within the cluster want to reachout to a backend pod then the only method by which it can reachout internally by using the ClusterIP.
+# In a nutshell ClusterIP will helps the pods to communicate each other
+#
+#
+#
+#
 #
 #
 #
