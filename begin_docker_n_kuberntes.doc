@@ -3027,6 +3027,8 @@
 #
 # Example : Deploying using a cluster IP
 #
+# STEP 1: Deploy client application in minikube
+#
 # | $ tree k8s/					=> New config files created 
 # | k8s/
 # | ├── client-clusterIP-service.yaml
@@ -3089,8 +3091,193 @@
 # | 
 # | 
 #
+# STEP 2 : Deploy server application and its services 
 #
+# | $ tree k8s
+# | k8s
+# | ├── client-clusterIP-service.yaml
+# | ├── client-deployment.yaml
+# | ├── server-clusterIP-service.yaml
+# | ├── server-deployment.yaml
+# | └── worker-deployment.yaml
+# | 
+# | 0 directories, 5 files
+# | $
+# | $ cat k8s/server-deployment.yaml 
+# | apiVersion: apps/v1
+# | kind: Deployment
+# | metadata:
+# |   name: server-deployment
+# | spec:
+# |   replicas: 3
+# |   selector:
+# |     matchLabels:
+# |       component: server
+# |   template:
+# |     metadata:
+# |       labels:$
+# |         component: server
+# |     spec:
+# |       containers:
+# |         - name: server
+# |           image: stephengrider/multi-server
+# |           ports:
+# |             - containerPort: 5000
+# | $ 
+# | $ cat k8s/server-clusterIP-service.yaml 
+# | apiVersion: v1
+# | kind: Service
+# | metadata:
+# |   name: server-cluster-ip-service
+# | spec:
+# |   type: ClusterIP
+# |   selector:
+# |     component: server
+# |   ports:
+# |     - port: 5000
+# |       targetPort: 5000
+# | $ 
 #
+# STEP 3 : Deploying worker application and it doesn't need a CliusterIP Service needed
+#
+# | $ cat k8s/worker-deployment.yaml 
+# | apiVersion: apps/v1
+# | kind: Deployment
+# | metadata:
+# |   name: worker-deployment
+# | spec:
+# |   replicas: 1
+# |   selector:
+# |     matchLabels:
+# |       component: worker
+# |   template:
+# |     metadata:
+# |       labels:
+# |         component: worker
+# |     spec:
+# |       containers:
+# |         - name: worker
+# |           image: stephengrider/mult-worker
+# | $ 
+#
+# STEP 4 : Applying all deployment and Services configured above 
+#
+# | $ kubectl apply -f k8s
+# | service/client-cluster-ip-service unchanged
+# | deployment.apps/client-deployment unchanged
+# | service/server-cluster-ip-service created
+# | deployment.apps/server-deployment created
+# | deployment.apps/worker-deployment created
+# | $ 
+# | $ kubectl get deployments 
+# | NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+# | client-deployment   3/3     3            3           114m
+# | server-deployment   0/3     3            0           10s
+# | worker-deployment   0/1     1            0           10s
+# | $ 
+# | $ kubectl get pods 
+# | NAME                                 READY   STATUS    RESTARTS   AGE
+# | client-deployment-5dfb6bf966-kchkt   1/1     Running   0          119m
+# | client-deployment-5dfb6bf966-pcjvz   1/1     Running   0          119m
+# | client-deployment-5dfb6bf966-vwfpj   1/1     Running   0          119m
+# | server-deployment-5fdbfcfc99-7zhlr   1/1     Running   0          5m27s
+# | server-deployment-5fdbfcfc99-m94dh   1/1     Running   0          5m27s
+# | server-deployment-5fdbfcfc99-xqr7x   1/1     Running   0          5m27s
+# | worker-deployment-56f6bf5bb8-4vp2z   1/1     Running   0          7s
+# | $
+# | 
+# | 
+#
+# STEP 5 : Applying redis configuration 
+#
+# | $ tree k8s/
+# | k8s/
+# | ├── client-clusterIP-service.yaml
+# | ├── client-deployment.yaml
+# | ├── redis-clusterIP-service.yaml
+# | ├── redis-deployment.yaml
+# | ├── server-clusterIP-service.yaml
+# | ├── server-deployment.yaml
+# | └── worker-deployment.yaml
+# | 
+# | 0 directories, 7 files
+# | $
+# | $
+# | $ cat  k8s/redis-deployment.yaml 
+# | apiVersion: apps/v1
+# | kind: Deployment
+# | metadata:
+# |   name: redis-deployment
+# | spec:
+# |   replicas: 1
+# |   selector:
+# |     matchLabels:
+# |       component: redis
+# |   template:
+# |     metadata:
+# |       labels:
+# |         component: redis
+# |     spec:
+# |       containers:
+# |         - name: redis
+# |           image: redis
+# |           ports:
+# |             - containerPort: 6379
+# | 
+# | $
+# | $
+# | $ cat  k8s/redis-clusterIP-service.yaml 
+# | apiVersion: v1
+# | kind: Service
+# | metadata:
+# |   name: cluster-ip-service
+# | spec:
+# |   selector:
+# |     component: redis
+# |   type: ClusterIP
+# |   ports:
+# |     - port: 6379
+# |       targetPort: 6379$ 
+# | $ 
+# | $ 
+# | $
+# | $ kubectl apply -f k8s
+# | service/client-cluster-ip-service unchanged
+# | deployment.apps/client-deployment unchanged
+# | service/cluster-ip-service created
+# | deployment.apps/redis-deployment created
+# | service/server-cluster-ip-service unchanged
+# | deployment.apps/server-deployment unchanged
+# | deployment.apps/worker-deployment unchanged
+# | $ 
+# | $ 
+# | $ kubectl get pods
+# | NAME                                 READY   STATUS    RESTARTS   AGE
+# | client-deployment-5dfb6bf966-kchkt   1/1     Running   0          4h57m
+# | client-deployment-5dfb6bf966-pcjvz   1/1     Running   0          4h57m
+# | client-deployment-5dfb6bf966-vwfpj   1/1     Running   0          4h57m
+# | redis-deployment-778647c78-z8rg4     1/1     Running   0          8s
+# | server-deployment-5fdbfcfc99-7zhlr   1/1     Running   3          3h3m
+# | server-deployment-5fdbfcfc99-m94dh   1/1     Running   3          3h3m
+# | server-deployment-5fdbfcfc99-xqr7x   1/1     Running   3          3h3m
+# | worker-deployment-56f6bf5bb8-4vp2z   1/1     Running   2          177m
+# | $
+# | $ kubectl get deployments 
+# | NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+# | client-deployment   3/3     3            3           4h57m
+# | redis-deployment    1/1     1            1           15s
+# | server-deployment   3/3     3            3           3h3m
+# | worker-deployment   1/1     1            1           3h3m
+# | $
+# | $ kubectl get services
+# | NAME                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+# | client-cluster-ip-service   ClusterIP   10.107.236.37    <none>        3000/TCP   4h57m
+# | redis-cluster-ip-service    ClusterIP   10.111.199.17    <none>        6379/TCP   21s
+# | kubernetes                  ClusterIP   10.96.0.1        <none>        443/TCP    2d6h
+# | server-cluster-ip-service   ClusterIP   10.105.124.124   <none>        5000/TCP   3h3m
+# | $ 
+# | $
+# | 
 #
 #
 #
