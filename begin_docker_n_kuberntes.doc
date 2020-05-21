@@ -2983,6 +2983,86 @@
 # Udemy : https://www.udemy.com/course/docker-and-kubernetes-the-complete-guide/learn/lecture/11500808#overview
 #------------------------------------------------------------------------------------------------------------------
 # 
+# * ClusterIP
+# As mentioned in the earlier chapter ClusterIP will only expose the internal IP of the deployment which are currently running. 
+# Configuring a clusterIP will be useful for components in the kubernetes cluster to access each other. 
+# Suppose lets a a frontend pod within the cluster want to reachout to a backend pod then the only method by which it can reachout internally by using the ClusterIP.
+# In a nutshell ClusterIP will helps the pods to communicate each other
+#
+# Syntax : Below syntax tell how to create a CLusterIP service 
+#
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: <name of the ClusterIP Service>
+# spec:
+#   type: ClusterIP
+#   selector:
+#     <key> : <value>    ==> This will be the key value pair of the label for referring to Pod Deployment
+#   ports:
+#     - port: <port number for cluster IP access>
+#       targetPort: <port number to map from conatainer>
+#
+# NOTE : You will be able to see lot of example for ClusterIP at below examples between STEP 1-6
+#
+#
+# * Storage Options in Kubernetes 
+# When it comes to Kubernetes you will need to understand about mainly three terminologies such as volumes, persistant volume (PV), Persistant volume claim (PVC)
+# Lets take a detail look at each options and what they means.
+#
+# 1. Volume : Volumes are the ephermeral storage types available in kubernetes 
+#           : They are available within the Pod and available as long the Pod available 
+#           : Sorage gets destroyed as soon as the pods gets destoyed or recreated & data won't be available 
+#           : Good for storing temporary caches and not good for storing data
+#
+# 2. Persistant Volume (PV) : Persistant volumes are not tied to Pod and they reside outside the Pod 
+# 			    : They are available even after the pods getting destroyed or recreated 
+# 			    : Data will be stored permenantly and available even after the pod is destroyed
+# 			    : This is ideal for storing data and also to host databases
+#
+# 3. Persistant Volume Claim (PVC) : PVC is way for Pod to claim for its Peristant Volume (PV) dynamically 
+# 				   : When you are hosting a pod on service providers such as AWS, GCP or Azure you will need to make a claim for its required volume
+# 				   : For example AWS issues EBS as the persistant Volume and for a pod to request that it will need to make PVC claim for the required PV size
+# 				   : Then the service provider issues the PV for that pod according to the requested claim
+# 				   : There are mainly three access modes for PVC 
+# 				     - ReadWriteOnce : the volume can be mounted as read-write by a single node
+# 				     - ReadOnlyMany – the volume can be mounted read-only by many nodes
+# 				     - ReadWriteMany – the volume can be mounted as read-write by many nodes
+#
+# NOTE : for PVC syntax and example please refer to STEP 7
+# 
+# 4. Storage Claim : A StorageClass provides a way for administrators to describe the “classes” of storage they offer. 
+#                  : Different classes might map to quality-of-service levels, or to backup policies, or to arbitrary policies determined by the cluster administrators. 
+#                  : Kubernetes itself is unopinionated about what classes represent. This concept is sometimes called “profiles” in other storage systems.
+#                  : Each StorageClass contains the fields provisioner, parameters, and reclaimPolicy, which are used when a PersistentVolume belonging to the class needs to be dynamically provisioned.
+# 
+# NOTE : If need more details on the StorageClass then you can refer https://kubernetes.io/docs/concepts/storage/storage-classes/
+#
+# Syntax : Below is the syntax for StorageClaim
+#
+# apiversion: storage.k8s.io/v1
+# kind: StorageClass
+# metadata:
+#   name: <name of the storage claim>
+# provisioner: kubernetes.io/<provider-name>   =>   Example is "provisioner: kubernetes.io/aws-ebs"
+# parameters:
+#   type: <storage type>
+#   iopsPerGB: <number>
+#   fsType: <fs_type)
+#
+# Example : Below is an example for StorageClaim
+#
+# | apiVersion: storage.k8s.io/v1
+# | kind: StorageClass
+# | metadata:
+# |   name: slow
+# | provisioner: kubernetes.io/aws-ebs
+# | parameters:
+# |   type: io1
+# |   iopsPerGB: "10"
+# |   fsType: ext4
+#
+# * Converting the existing app into Kubernetes way
 # In this chapter we will try to move the complex app which we put together as part of the Elastic beanstalk into Kubernetes 
 # We ill take an approach to delete the existing deployment we have created and then we will create new configs using Service ClusterIP and will deploy that minikube initially 
 # Then we will take to the Kubernernetes production environment 
@@ -3279,10 +3359,255 @@
 # | $
 # | 
 #
+# STEP 6: Lets configure the postgresSQL deployment and service as well 
+#
+# | $ tree k8s/
+# | k8s/
+# | ├── client-clusterIP-service.yaml
+# | ├── client-deployment.yaml
+# | ├── postgres-clusterIP-service.yaml
+# | ├── postgres-deployment.yaml
+# | ├── redis-clusterIP-service.yaml
+# | ├── redis-deployment.yaml
+# | ├── server-clusterIP-service.yaml
+# | ├── server-deployment.yaml
+# | └── worker-deployment.yaml
+# | 
+# | 0 directories, 9 files
+# | $ more k8s/postgres-deployment.yaml 
+# | apiVersion: apps/v1
+# | kind: Deployment
+# | metadata:
+# |   name: postgres-deployment
+# | spec:
+# |   replicas: 1
+# |   selector:
+# |     matchLabels:
+# |       component: postgres
+# |   template:
+# |     metadata:
+# |       labels:
+# |         component: postgres
+# |     spec:
+# |       containers:
+# |         - name: postgres
+# |           image: postgres
+# |           ports:
+# |             - containerPort: 5432
+# | 
+# |     
+# | $ 
+# | $ more k8s/postgres-clusterIP-service.yaml 
+# | apiVersion: v1
+# | kind: Service
+# | metadata:
+# |   name: postgres-cluster-ip-service
+# | spec:
+# |   type: ClusterIP
+# |   selector:
+# |     component: postgres
+# |   ports:
+# |     - port: 5432
+# |       targetPort: 5432
+# | $ 
+# | $ kubectl apply -f k8s
+# | service/client-cluster-ip-service unchanged
+# | deployment.apps/client-deployment unchanged
+# | service/postgres-cluster-ip-service unchanged
+# | deployment.apps/postgres-deployment created
+# | service/redis-cluster-ip-service unchanged
+# | deployment.apps/redis-deployment unchanged
+# | service/server-cluster-ip-service unchanged
+# | deployment.apps/server-deployment unchanged
+# | deployment.apps/worker-deployment unchanged
+# | $ 
+# | $ 
+# | $ kubectl get deployments 
+# | NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+# | client-deployment     3/3     3            3           5h21m
+# | postgres-deployment   0/1     1            0           11s
+# | redis-deployment      1/1     1            1           24m
+# | server-deployment     3/3     3            3           3h27m
+# | worker-deployment     1/1     1            1           3h27m
+# | $ kubectl get pods
+# | NAME                                   READY   STATUS             RESTARTS   AGE
+# | client-deployment-5dfb6bf966-kchkt     1/1     Running            0          5h21m
+# | client-deployment-5dfb6bf966-pcjvz     1/1     Running            0          5h21m
+# | client-deployment-5dfb6bf966-vwfpj     1/1     Running            0          5h21m
+# | postgres-deployment-7b6ddcfdbc-lrpcm   0/1     CrashLoopBackOff   1          15s		==> Details of this error given below 
+# | redis-deployment-778647c78-z8rg4       1/1     Running            0          24m
+# | server-deployment-5fdbfcfc99-7zhlr     1/1     Running            3          3h27m
+# | server-deployment-5fdbfcfc99-m94dh     1/1     Running            3          3h27m
+# | server-deployment-5fdbfcfc99-xqr7x     1/1     Running            3          3h27m
+# | worker-deployment-56f6bf5bb8-4vp2z     1/1     Running            3          3h22m
+# | $ kubectl get pod^C
+# | $ kubectl logs postgres-deployment-7b6ddcfdbc-lrpcm						==> its crashing because of the environment vriables and it will be set later
+# | Error: Database is uninitialized and superuser password is not specified.
+# |        You must specify POSTGRES_PASSWORD to a non-empty value for the
+# |        superuser. For example, "-e POSTGRES_PASSWORD=password" on "docker run".
+# | 
+# |        You may also use "POSTGRES_HOST_AUTH_METHOD=trust" to allow all
+# |        connections without a password. This is *not* recommended.
+# | 
+# |        See PostgreSQL documentation about "trust":
+# |        https://www.postgresql.org/docs/current/auth-trust.html
+# | $ kubectl get services
+# | NAME                          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+# | client-cluster-ip-service     ClusterIP   10.107.236.37    <none>        3000/TCP   5h21m
+# | cluster-ip-service            ClusterIP   10.111.199.17    <none>        6379/TCP   24m
+# | kubernetes                    ClusterIP   10.96.0.1        <none>        443/TCP    2d6h
+# | postgres-cluster-ip-service   ClusterIP   10.110.58.79     <none>        5432/TCP   3m12s
+# | redis-cluster-ip-service      ClusterIP   10.103.246.108   <none>        6379/TCP   19m
+# | server-cluster-ip-service     ClusterIP   10.105.124.124   <none>        5000/TCP   3h28m
+# | $ 
+#
+# 
+#  STEP 7 : Configure PersistantVolumeClaim and update the postgressql deployment congiguration to access mount the same volume 
+#
+# | {bash}-$ tree k8s/
+# | k8s/
+# | ├── client-clusterIP-service.yaml
+# | ├── client-deployment.yaml
+# | ├── database-persistent-volume-claim.yaml		=> new file created
+# | ├── postgres-clusterIP-service.yaml
+# | ├── postgres-deployment.yaml
+# | ├── redis-clusterIP-service.yaml
+# | ├── redis-deployment.yaml
+# | ├── server-clusterIP-service.yaml
+# | ├── server-deployment.yaml
+# | └── worker-deployment.yaml
+# | 
+# | 0 directories, 10 files
 #
 #
+# | {bash}-$ more k8s/database-persistent-volume-claim.yaml 
+# | apiversion: v1
+# | kind: PersistentVolumeClaim
+# | metadata: 
+# |   name : database-persistent-volume-claim
+# | spec:
+# |   accessModes:
+# |     - ReadWriteOnce
+# |   resources:
+# |     requests:
+# |       storage: 2Gi
+# | {bash}-$ 
 #
 #
+# | {bash}-$ more k8s/postgres-deployment.yaml 
+# | apiVersion: apps/v1
+# | kind: Deployment
+# | metadata:
+# |   name: postgres-deployment
+# | spec:
+# |   replicas: 1
+# |   selector:
+# |     matchLabels:
+# |       component: postgres
+# |   template:
+# |     metadata:
+# |       labels:
+# |         component: postgres
+# |     spec:
+# |       volumes:							=> Defining the volume under spec:template 
+# |         - name: postgres-storage			
+# |           persistentVolumeClaim:
+# |             claimName: database-persistent-volume-claim		=> referring to the 'PersistentVolumeClaim' created
+# |       containers:
+# |         - name: postgres
+# |           image: postgres
+# |           ports:
+# |             - containerPort: 5432
+# |           volumeMounts:						=> Defining volumeMounts under the Container referring back to Volumes session for volume name 
+# |             - name: postgres-storage				=> Make sure the name you give the name as exatly same as the name mentioned in Volumes, then only it gets picked for mounting
+# |               mountPath: /var/lib/postgresql/data			=> Volume will get mounted at this path (make sure this directory exist in container)
+# |               subPath: postgres					=> This setting is specific to Postgres, for a generic setup we can ignore this 
+# | 
+# |     
+# | {bash}-$ 
+#
+#
+# | {bash}-$ kubectl apply -f k8s
+# | service/client-cluster-ip-service unchanged
+# | deployment.apps/client-deployment unchanged
+# | persistentvolumeclaim/database-persistent-volume-claim created
+# | service/postgres-cluster-ip-service unchanged
+# | deployment.apps/postgres-deployment configured
+# | service/redis-cluster-ip-service unchanged
+# | deployment.apps/redis-deployment unchanged
+# | service/server-cluster-ip-service unchanged
+# | deployment.apps/server-deployment unchanged
+# | deployment.apps/worker-deployment unchanged
+# | {bash}-$ 
+# | {bash}-$ 
+# | {bash}-$ kubectl get pods
+# | NAME                                   READY   STATUS             RESTARTS   AGE
+# | client-deployment-5dfb6bf966-kchkt     1/1     Running            0          7h57m
+# | client-deployment-5dfb6bf966-pcjvz     1/1     Running            0          7h57m
+# | client-deployment-5dfb6bf966-vwfpj     1/1     Running            0          7h57m
+# | postgres-deployment-5bd6cd4b4-j2pqg    0/1     Error              0          33s
+# | postgres-deployment-7b6ddcfdbc-lrpcm   0/1     CrashLoopBackOff   34         156m		==> Ignore this for now
+# | redis-deployment-778647c78-z8rg4       1/1     Running            0          3h
+# | server-deployment-5fdbfcfc99-7zhlr     1/1     Running            6          6h3m
+# | server-deployment-5fdbfcfc99-m94dh     1/1     Running            6          6h3m
+# | server-deployment-5fdbfcfc99-xqr7x     1/1     Running            6          6h3m
+# | worker-deployment-56f6bf5bb8-4vp2z     1/1     Running            5          5h58m
+# | {bash}-$
+# | {bash}-$ kubectl get PersistentVolumeClaim
+# | NAME                               STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+# | database-persistent-volume-claim   Bound    pvc-1ec10e26-32c4-4851-8af5-5a96973e68b6   2Gi        RWO            standard       2m11s
+# | {bash}-$ 
+# | {bash}-$ kubectl describe PersistentVolumeClaim
+# | Name:          database-persistent-volume-claim
+# | Namespace:     default
+# | StorageClass:  standard
+# | Status:        Bound
+# | Volume:        pvc-1ec10e26-32c4-4851-8af5-5a96973e68b6
+# | Labels:        <none>
+# | Annotations:   control-plane.alpha.kubernetes.io/leader:
+# |                  {"holderIdentity":"e87f68c3-998d-11ea-99d1-080027eff1fa","leaseDurationSeconds":15,"acquireTime":"2020-05-21T14:29:44Z","renewTime":"2020-...
+# |                pv.kubernetes.io/bind-completed: yes
+# |                pv.kubernetes.io/bound-by-controller: yes
+# |                volume.beta.kubernetes.io/storage-provisioner: k8s.io/minikube-hostpath
+# | Finalizers:    [kubernetes.io/pvc-protection]
+# | Capacity:      2Gi
+# | Access Modes:  RWO
+# | VolumeMode:    Filesystem
+# | Mounted By:    postgres-deployment-5bd6cd4b4-j2pqg
+# | Events:
+# |   Type    Reason                 Age                    From                                                           Message
+# |   ----    ------                 ----                   ----                                                           -------
+# |   Normal  ExternalProvisioning   2m24s (x3 over 2m24s)  persistentvolume-controller                                    waiting for a volume to be created, either by external provisioner "k8s.io/minikube-hostpath" or manually created by system administrator
+# |   Normal  Provisioning           2m24s                  k8s.io/minikube-hostpath e87f68c3-998d-11ea-99d1-080027eff1fa  External provisioner is provisioning volume for claim "default/database-persistent-volume-claim"
+# |   Normal  ProvisioningSucceeded  2m24s                  k8s.io/minikube-hostpath e87f68c3-998d-11ea-99d1-080027eff1fa  Successfully provisioned volume pvc-1ec10e26-32c4-4851-8af5-5a96973e68b6
+# | {bash}-$ 
+# | {bash}-$ kubectl get PersistentVolume
+# | NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                      STORAGECLASS   REASON   AGE
+# | pvc-1ec10e26-32c4-4851-8af5-5a96973e68b6   2Gi        RWO            Delete           Bound    default/database-persistent-volume-claim   standard                2m30s
+# | {bash}-$ 
+# | {bash}-$ kubectl describe PersistentVolume
+# | Name:            pvc-1ec10e26-32c4-4851-8af5-5a96973e68b6
+# | Labels:          <none>
+# | Annotations:     hostPathProvisionerIdentity: e87f688f-998d-11ea-99d1-080027eff1fa
+# |                  pv.kubernetes.io/provisioned-by: k8s.io/minikube-hostpath
+# | Finalizers:      [kubernetes.io/pv-protection]
+# | StorageClass:    standard
+# | Status:          Bound
+# | Claim:           default/database-persistent-volume-claim
+# | Reclaim Policy:  Delete
+# | Access Modes:    RWO
+# | VolumeMode:      Filesystem
+# | Capacity:        2Gi
+# | Node Affinity:   <none>
+# | Message:         
+# | Source:
+# |     Type:          HostPath (bare host directory volume)
+# |     Path:          /tmp/hostpath-provisioner/pvc-1ec10e26-32c4-4851-8af5-5a96973e68b6
+# |     HostPathType:  
+# | Events:            <none>
+# | {bash}-$ 
+# | 
+# | 
 #
 #
 #
