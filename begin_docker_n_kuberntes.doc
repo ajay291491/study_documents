@@ -3025,6 +3025,69 @@
 # Suppose lets a a frontend pod within the cluster want to reachout to a backend pod then the only method by which it can reachout internally by using the ClusterIP.
 # In a nutshell ClusterIP will helps the pods to communicate each other
 #
+# Example : Deploying using a cluster IP
+#
+# | $ tree k8s/					=> New config files created 
+# | k8s/
+# | ├── client-clusterIP-service.yaml
+# | └── client-deployment.yaml
+# | 
+# | 0 directories, 2 files
+#
+# | $ cat k8s/client-deployment.yaml 		=> Deployment config 
+# | apiVersion: apps/v1
+# | kind: Deployment 
+# | metadata:
+# |   name: client-deployment
+# | spec:
+# |   replicas: 3
+# |   selector:
+# |     matchLabels:
+# |       component: web
+# |   template:
+# |     metadata:
+# |       labels:
+# |         component: web
+# |     spec:
+# |       containers:
+# |         - name: client 
+# |           image: stephengrider/multi-client
+# |           ports:
+# |             - containerPort: 3000
+# | $
+#
+# | $ cat k8s/client-clusterIP-service.yaml		 => Service object file with ClusterIP
+# | apiVersion: v1
+# | kind: Service
+# | metadata:
+# |   name: client-cluster-ip-service
+# | spec:
+# |   type: ClusterIP					=> Defining the type of the service as ClusterIP
+# |   selector:
+# |     component: web
+# |   ports:
+# |     - port: 3000					=> ClusterPort which get exposed for other pods to access the Deployment pod 
+# |       targetPort: 3000				=> Port getting exposed from the container 
+# | 
+# | 
+# | $ kubectl apply -f k8s				=> applying both Deployment and Service under the K8s directory together 
+# | service/client-cluster-ip-service created
+# | deployment.apps/client-deployment created
+# | $ kubectl get deployments
+# | NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+# | client-deployment   2/3     3            2           10s
+# | $ kubectl get pods
+# | NAME                                 READY   STATUS    RESTARTS   AGE
+# | client-deployment-5dfb6bf966-kchkt   1/1     Running   0          14s
+# | client-deployment-5dfb6bf966-pcjvz   1/1     Running   0          14s
+# | client-deployment-5dfb6bf966-vwfpj   1/1     Running   0          14s
+# | $ kubectl get services
+# | NAME                        TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+# | client-cluster-ip-service   ClusterIP   10.107.236.37   <none>        3000/TCP   19s
+# | kubernetes                  ClusterIP   10.96.0.1       <none>        443/TCP    2d1h
+# | $ 
+# | 
+# | 
 #
 #
 #
