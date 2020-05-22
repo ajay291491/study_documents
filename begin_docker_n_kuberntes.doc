@@ -3035,7 +3035,7 @@
 #                  : Different classes might map to quality-of-service levels, or to backup policies, or to arbitrary policies determined by the cluster administrators. 
 #                  : Kubernetes itself is unopinionated about what classes represent. This concept is sometimes called “profiles” in other storage systems.
 #                  : Each StorageClass contains the fields provisioner, parameters, and reclaimPolicy, which are used when a PersistentVolume belonging to the class needs to be dynamically provisioned.
-# 
+#
 # NOTE : If need more details on the StorageClass then you can refer https://kubernetes.io/docs/concepts/storage/storage-classes/
 #
 # Syntax : Below is the syntax for StorageClaim
@@ -3061,6 +3061,93 @@
 # |   type: io1
 # |   iopsPerGB: "10"
 # |   fsType: ext4
+#
+#
+# * Environment Variables
+# As part of running containers there will be requirement to create variables during container runtime so that the underlying container application can access various resources in k8s cluster.
+# For example, in our complex app if server deployment container need to have access to other redis and postgres deployments then it will need to know the ClusterIP for those containers which created in runtime
+# Similarly when we design an application in kubernetes there will be lot of requirements to configure the environment variables. 
+#
+# Below is the syntax to define a variable under kubernetes container
+#
+# Syntax : 
+# 
+# apiVersion: v1
+# kind: Deployment
+# metadata:
+#   name: {name-of-the-deployment}
+# spec:
+#   replicas: {number-of-replicas}
+#   selector:
+#     matchLabels:
+#       {key} : {value}
+#   template:
+#     metadata:
+#       labels:
+#         {key}: {value}
+#     spec:
+#       containers:
+#         - name: {name-of-the-container}
+#           image: {image-name}
+#           ports:
+#             containerPort: {port-to-open}
+#           env:
+#             - name: {name-of-the-env-variable-1}
+#               value: {value-of-the-env-variable-1}
+#             - name: {name-of-the-env-variable-2}
+#               value: {value-of-the-env-variable-2}
+#     
+# On above syntax we have seen how we can define a env variable as name and value under a conatiner definition in the pod deployment. 
+# But there are mutiple ways you can access the value of the variable in an env
+#
+# . Define Directly : In this method you defining both name and value in the conatiner definition itself 
+#   env:
+#     name: GREETING
+#     value: "hello, how are you !!!"	 ==> Make sure these direct values you are enclosed with in the double quotes 
+#
+# . Access from other Serice configs : Lets say if you want to refer to a ClusterIP of another deployment so that the cotainer can communicate it with.
+#                                      In this case you refer to the name of the service of that deployment so that it can get that ClusterIP as variable 
+#   env:
+#     name: REDIS_HOST
+#     value: redis-cluster-ip-service    ==> This is exactly the name mentioned for the redis service which refers to redis deployment, make sure you do not use single or double qoutes here 
+#
+# Example : To see examples on this, please refer to the STEP 8
+#
+# * Accessing Secrets using variables 
+# Incase you have passwords which you want to pass as an environment variable you can still due to that using environment variables, but using a small workaround 
+# This will be a two step proces where you will need intially create secret in the kubernetes cluster and then you will need to refer that into the variable
+#
+# 1. Creating a secret for the pasword 
+#
+# Syntax : kubectl create secret {generic|tls|docker-registry} {name-of-the-secret} --from-literal {key}={value}  
+#
+# Example : kubectl create secret generic pgpassword --from-literal PGPASSWORD=PG*!23
+#
+# 2. Refer the secret you have just created under the deployment:spec:template:container as env
+#
+# Syntax : 
+#   env:
+#     - name: {name-of-the-env-variable}
+#       valueFrom: 
+#         secretKeyRef: 
+#           name: {name-of-the-secret-created}
+#           key: {key-provided-while-creating-secret}`
+#
+# Example: 
+#   env:
+#     - name: POSTGRES_PASSWORD
+#       valueFrom:
+#         secretKeyRef:
+#           name: pgpassword
+#           key: PGPASSWORD 
+#
+# NOTE : To see detailed examples please refer to STEP 8
+#
+#
+#
+#
+#
+#
 #
 # * Converting the existing app into Kubernetes way
 # In this chapter we will try to move the complex app which we put together as part of the Elastic beanstalk into Kubernetes 
@@ -3099,13 +3186,8 @@
 # | $ 
 #
 #
-# * ClusterIP
-# As mentioned in the earlier chapter ClusterIP will only expose the internal IP of the deployment which are currently running. 
-# Configuring a clusterIP will be useful for components in the kubernetes cluster to access each other. 
-# Suppose lets a a frontend pod within the cluster want to reachout to a backend pod then the only method by which it can reachout internally by using the ClusterIP.
-# In a nutshell ClusterIP will helps the pods to communicate each other
+# 							 **** From here we will demonstrate all Examples which exaplined above ***
 #
-# Example : Deploying using a cluster IP
 #
 # STEP 1: Deploy client application in minikube
 #
@@ -3609,8 +3691,194 @@
 # | 
 # | 
 #
+# STEP 8 : Configure Environment for worker-deploymet and environment & postgres secret for server-deployment and postgres-deployment 
+#
+# | {bash}-$ tree k8s/
+# | k8s/
+# | ├── client-clusterIP-service.yaml
+# | ├── client-deployment.yaml
+# | ├── database-persistent-volume-claim.yaml
+# | ├── postgres-clusterIP-service.yaml
+# | ├── postgres-deployment.yaml
+# | ├── redis-clusterIP-service.yaml
+# | ├── redis-deployment.yaml
+# | ├── server-clusterIP-service.yaml
+# | ├── server-deployment.yaml
+# | └── worker-deployment.yaml
+# | 
+# | 0 directories, 10 files
 #
 #
+# | {bash}-$ more k8s/worker-deployment.yaml 
+# | apiVersion: apps/v1
+# | kind: Deployment
+# | metadata:
+# |   name: worker-deployment
+# | spec:
+# |   replicas: 1
+# |   selector:
+# |     matchLabels:
+# |       component: worker
+# |   template:
+# |     metadata:
+# |       labels:
+# |         component: worker
+# |     spec:
+# |       containers:
+# |         - name: worker
+# |           image: stephengrider/multi-worker
+# |           env:
+# |             - name: REDIS_HOST			=> Configuring environments which referred inside the container
+# |               value: redis-cluster-ip-service	=> Value fetched from the redis service config 
+# |             - name: REDIS_PORT
+# |               value: "6379"				=> static value 
+# | {bash}-$
+#
+#
+# | {bash}-$ more k8s/server-deployment.yaml 
+# | apiVersion: apps/v1
+# | kind: Deployment
+# | metadata:
+# |   name: server-deployment
+# | spec:
+# |   replicas: 3
+# |   selector:
+# |     matchLabels:
+# |       component: server
+# |   template:
+# |     metadata:
+# |       labels:
+# |         component: server
+# |     spec:
+# |       containers:
+# |         - name: server
+# |           image: stephengrider/multi-server
+# |           ports:
+# |             - containerPort: 5000
+# |           env:
+# |             - name: REDIS_HOST
+# |               value: redis-cluster-ip-service
+# |             - name: REDIS_PORT
+# |               value: "6379"
+# |             - name: PGUSER
+# |               value: "postgres"
+# |             - name: PGHOST
+# |               value: postgres-cluster-ip-service
+# |             - name: PGPOPT
+# |               value: "5432"
+# |             - name: PGDATABASE
+# |               value: "postgres"
+# |             - name: PGPASSWORD			==> PGPASSWORD which gets referred inside the container getting value from secret created 
+# |               valueFrom:
+# |                 secretKeyRef:			
+# |                   name: pgpassword			==> secret crteaed 
+# |                   key: PGPASSWORD			==> key from the secret
+# | 
+# | {bash}-$ 
+#
+#
+# | {bash}-$ cat k8s/postgres-deployment.yaml 
+# | apiVersion: apps/v1
+# | kind: Deployment
+# | metadata:
+# |   name: postgres-deployment
+# | spec:
+# |   replicas: 1
+# |   selector:
+# |     matchLabels:
+# |       component: postgres
+# |   template:
+# |     metadata:
+# |       labels:
+# |         component: postgres
+# |     spec:
+# |       volumes:
+# |         - name: postgres-storage
+# |           persistentVolumeClaim:
+# |             claimName: database-persistent-volume-claim
+# |       containers:
+# |         - name: postgres
+# |           image: postgres
+# |           ports:
+# |             - containerPort: 5432
+# |           volumeMounts:
+# |             - name: postgres-storage
+# |               mountPath: /var/lib/postgresql/data
+# |               subPath: postgres
+# |           env:
+# |             - name: POSTGRES_PASSWORD 	==> PGPASSWORD which gets referred inside the container getting value from secret created
+# |               valueFrom:
+# |                 secretKeyRef:
+# |                   name: pgpassword		==> secret crteaed
+# |                   key: PGPASSWORD		==> key from the secret
+# | 
+# | 
+# | {bash}-$ 
+#
+#
+# | {bash}-$ kubectl create secret generic pgpassword --from-literal PGPASSWORD=postgres123		==> Creating the secret
+# | secret/pgpassword created
+# | {bash}-$ kubectl get secret pgpassword
+# | NAME         TYPE     DATA   AGE
+# | pgpassword   Opaque   1      16s
+# | {bash}-$ kubectl describe secret pgpassword
+# | Name:         pgpassword
+# | Namespace:    default
+# | Labels:       <none>
+# | Annotations:  <none>
+# | 
+# | Type:  Opaque
+# | 
+# | Data
+# | ====
+# | PGPASSWORD:  11 bytes		==> This env is referred in earlier config files
+# | {bash}-$
+#
+#
+#
+# | {bash}-$ kubectl apply -f k8s
+# | service/client-cluster-ip-service unchanged
+# | deployment.apps/client-deployment unchanged
+# | persistentvolumeclaim/database-persistent-volume-claim unchanged
+# | service/postgres-cluster-ip-service unchanged
+# | deployment.apps/postgres-deployment configured
+# | service/redis-cluster-ip-service unchanged
+# | deployment.apps/redis-deployment unchanged
+# | service/server-cluster-ip-service unchanged
+# | deployment.apps/server-deployment configured
+# | deployment.apps/worker-deployment configured
+# | {bash}-$ 
+# | 
+#
+#
+# | {bash}-$ kubectl get deployments 
+# | NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+# | client-deployment     3/3     3            3           24h
+# | postgres-deployment   1/1     1            1           19h
+# | redis-deployment      1/1     1            1           19h
+# | server-deployment     3/3     3            3           22h
+# | worker-deployment     1/1     1            1           22h
+# | {bash}-$ kubectl get pods
+# | NAME                                   READY   STATUS    RESTARTS   AGE
+# | client-deployment-5dfb6bf966-kchkt     1/1     Running   0          24h
+# | client-deployment-5dfb6bf966-pcjvz     1/1     Running   0          24h
+# | client-deployment-5dfb6bf966-vwfpj     1/1     Running   0          24h
+# | postgres-deployment-6fb8d99dc4-xglmv   1/1     Running   0          2m10s
+# | redis-deployment-778647c78-z8rg4       1/1     Running   0          19h
+# | server-deployment-8587b49759-4crx9     1/1     Running   0          4m17s
+# | server-deployment-8587b49759-b9dvv     1/1     Running   0          4m8s
+# | server-deployment-8587b49759-f275d     1/1     Running   0          4m13s
+# | worker-deployment-6585996f47-ncc97     1/1     Running   0          42m
+# | {bash}-$ kubectl get services
+# | NAME                          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+# | client-cluster-ip-service     ClusterIP   10.107.236.37    <none>        3000/TCP   24h
+# | cluster-ip-service            ClusterIP   10.111.199.17    <none>        6379/TCP   19h
+# | kubernetes                    ClusterIP   10.96.0.1        <none>        443/TCP    3d1h
+# | postgres-cluster-ip-service   ClusterIP   10.110.58.79     <none>        5432/TCP   19h		==> This env is referred in earlier config files
+# | redis-cluster-ip-service      ClusterIP   10.103.246.108   <none>        6379/TCP   19h		==> This env is referred in earlier config files
+# | server-cluster-ip-service     ClusterIP   10.105.124.124   <none>        5000/TCP   22h
+# | {bash}-$ 
+# | 
 #
 #
 #
