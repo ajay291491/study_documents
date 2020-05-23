@@ -3144,9 +3144,40 @@
 # NOTE : To see detailed examples please refer to STEP 8
 #
 #
+# * Ingress Controller 
+# To allow connection to any of the application running in the kubernetes cluster you will need to configure Ingres controller on them.
+# When you confgure ingress controller on the it actually managed by an nginx pod running as the ingress controller in the cluster. 
+# You can define the Ingress controller as an object in the YAML configuration file. 
 #
+# To Know more abount Kubernets, please refer below documentation 
+# https://www.nginx.com/blog/nginx-plus-ingress-controller-kubernetes-load-balancing/
+# https://www.joyfulbikeshedding.com/blog/2018-03-26-studying-the-kubernetes-ingress-system.html
 #
+# To define an ingress we will need to create an object as below 
 #
+# Syntax : 
+#
+# apiVersion: extensions/v1beta1
+# kind: Ingress
+# metadata:
+#   name: {name-of-the-ingress-service}
+#   annotations:
+#     kubernetes.io/ingress.class: nginx			=> defining Ingress as nginix Ingres 
+#     nginx.ingress.kubernetes.io/rewrite-target: /		=> defining default rewrite rule for ingress
+# spec:
+#   rules:
+#     - http:
+#         paths:
+#           - path: /									=> This will be path used in the main url
+#             backend:
+#               serviceName: {service-cluster-ip-configured-for-app-deployment_1}	=> this will call the curresponding cluster to map in below port for path requested 
+#               ServicePort: {Port-number-exposed-in-service_1}
+#	    - path: /api/
+#	      backend:
+#	        serviceName: {service-cluster-ip-configured-for-app-deployment_2}
+#	        ServicePort: {Port-number-exposed-in-service_2}
+#       
+# Example : To see detailed example, please STEP 9 
 #
 #
 # * Converting the existing app into Kubernetes way
@@ -3880,7 +3911,69 @@
 # | {bash}-$ 
 # | 
 #
+# STEp 9 : Configure an Ingress to access the client and server url from outside the cluter using IP. 
 #
+# | {bash}-$ tree k8s/
+# | k8s/
+# | ├── client-clusterIP-service.yaml
+# | ├── client-deployment.yaml
+# | ├── database-persistent-volume-claim.yaml
+# | ├── ingress-service.yaml
+# | ├── postgres-clusterIP-service.yaml
+# | ├── postgres-deployment.yaml
+# | ├── redis-clusterIP-service.yaml
+# | ├── redis-deployment.yaml
+# | ├── server-clusterIP-service.yaml
+# | ├── server-deployment.yaml
+# | └── worker-deployment.yaml
+# | 
+# | 0 directories, 11 files
+# | {bash}-$ more k8s/ingress-service.yaml 
+# | apiVersion: extensions/v1beta1
+# | kind: Ingress
+# | metadata:
+# |   name: ingress-service				=> name of the Ingress
+# |   annotations:
+# |     kunernetes.io/ingress.class: nginix		=> Using nginx Ingress
+# |     nginx.ingress.kubernetes.io/rewrite-target: /	=> rewrite engien rule for nginx
+# | spec:
+# |   rules:
+# |     - http:
+# |         paths:
+# |           - path: /					=> path where client-service-ip will be redirected with below Cluster service IP and Port
+# |             backend:
+# |               serviceName: client-cluster-ip-service
+# |               servicePort: 3000
+# |           - path: /api/				=> Path wheere server-cliuster-ip will be redirected with below service cluster IP service and Port 
+# |             backend:
+# |               serviceName: server-cluster-ip-service
+# |               servicePort: 5000
+# | {bash}-$ 
+# | {bash}-$ 
+# | {bash}-$ kubectl apply -f k8s
+# | service/client-cluster-ip-service unchanged
+# | deployment.apps/client-deployment unchanged
+# | persistentvolumeclaim/database-persistent-volume-claim unchanged
+# | ingress.extensions/ingress-service created
+# | service/postgres-cluster-ip-service unchanged
+# | deployment.apps/postgres-deployment unchanged
+# | service/redis-cluster-ip-service unchanged
+# | deployment.apps/redis-deployment unchanged
+# | service/server-cluster-ip-service unchanged
+# | deployment.apps/server-deployment unchanged
+# | deployment.apps/worker-deployment unchanged
+# | {bash}-$ 
+# | {bash}-$ minikube ip
+# | 192.168.99.100
+# | {bash}-$ curl -k http://192.168.99.100
+# | <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name="theme-color" content="#000000"><link rel="manifest" 
+href="/manifest.json"><link rel="shortcut icon" href="/favicon.ico"><title>React App</title><link href="/static/css/main.c17080f1.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run
+ this app.</noscript><div id="root"></div><script type="text/javascript" src="/static/js/main.a2449523.js"></script></body></html>{bash}-$ 
+# | {bash}-$ curl -k http://192.168.99.100/api/
+# | Hi
+# | {bash}-$ 
+# | {bash}-$ 
+# | 
 #
 #
 #
