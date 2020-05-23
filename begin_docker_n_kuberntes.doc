@@ -3181,6 +3181,9 @@
 #
 #
 # * Converting the existing app into Kubernetes way
+#
+# Whole Example code is available at https://github.com/ajay291491/Kubernetes/tree/master/demo-application/k8s
+#
 # In this chapter we will try to move the complex app which we put together as part of the Elastic beanstalk into Kubernetes 
 # We ill take an approach to delete the existing deployment we have created and then we will create new configs using Service ClusterIP and will deploy that minikube initially 
 # Then we will take to the Kubernernetes production environment 
