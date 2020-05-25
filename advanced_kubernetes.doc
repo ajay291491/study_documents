@@ -1,0 +1,73 @@
+#-------------------------------------------------------------------------------------------------------------------------
+# Chapter O1 - Kubernetes Core Concepts 
+#-------------------------------------------------------------------------------------------------------------------------
+#
+# * Kubernetes at higher level
+# Kubernetes is used to deploy and maintain the containers in a very effective and effecient manner, It has mainly few components such as master or contolr pland and worker node. 
+# Master and worker has again few components so that it can work.
+# 
+# * Master Node or Control Plane 
+# This is the place where all the control related activities on the cluster takes place, Master node take care of planning and deploying containers 
+# There are mainly few components in master node which helps to achieve the same 
+#
+# . ETCD
+# . Kube API Server
+# . Kube Scheduler
+# . Control manager 
+#
+# * Worker Node 
+# This is where all pods gets deployed and containarized application running on top of them.
+#
+# Kubelet : Engine runs from each worker node which takes the instructions from the Master node and take actions on worker node to deploy or change containers 
+# 	  : This also monitors the status of the containers in each node
+#
+# Kube Proxy : Communication between the Worker nodes are managed by the Kube Proxy service which makes sure the communication are establisehed for right level of policies 
+#
+# You can see all control components of the Kubernetes cluster are running in the "kube-system" name space and details can be found as below.
+#
+# | sathsang@sathsang-Predator-G3620:~$ kubectl get pods -n kube-system
+# | NAME                                        READY   STATUS      RESTARTS   AGE
+# | coredns-66bff467f8-rh7s8                    1/1     Running     2          6d17h
+# | coredns-66bff467f8-zmgbp                    1/1     Running     2          6d17h
+# | etcd-minikube                               1/1     Running     2          6d17h
+# | ingress-nginx-admission-create-jbq4p        0/1     Completed   0          2d16h
+# | ingress-nginx-admission-patch-j7nj7         0/1     Completed   2          2d16h
+# | ingress-nginx-controller-7bb4c67d67-qjlb4   1/1     Running     2          2d16h
+# | kube-apiserver-minikube                     1/1     Running     2          6d17h
+# | kube-controller-manager-minikube            1/1     Running     2          6d17h
+# | kube-proxy-l7g57                            1/1     Running     2          6d17h
+# | kube-scheduler-minikube                     1/1     Running     2          6d17h
+# | storage-provisioner                         1/1     Running     3          6d17h
+# | sathsang@sathsang-Predator-G3620:~$
+#
+# * ETCD
+# This is a key value pair (NOSQL) database which helps to maintain the state and information about the cluster
+# Whenver there is an action or change happen in the cluster as part of the process all info will get updated in the ETC cluster
+# When you run the kubectl GET commands all information are retrieved from the ETCD database
+#
+#
+# * Role of Kube API Server 
+# When you request a POD to get created then and send a instruction to Kubernetes cluster, below are the tasks which happens
+# . Kube API server authenticate the user and make sure the request is authorized 
+# . Then it validates the request
+# . Then its retrieve the data from ETCD database and see if this is an existing POD or component information is requested for
+# . If this is a GET request operations ends here and its a deployment request proceed further
+# . Then the Kube API server contacts the Kubelet in the worker node and instructs to deploy the pods 
+# . Once Kubelet updates the infromation about the actions are performed then it contacts ETCD databse to update the latest status of the pods 
+#
+# * Kube Scheduler 
+# Scheuler is responsible for placing the right controller on a node based on the resource requirements 
+# This also monitors for the node status taints are roles on them before placing a container on them
+# Scheduler always look for the resources such CPU and memory in each node and based on the resource availibity its ranks them
+# So when next time there is a requirement deploy a pod, then it finds the right node and pass the information to KUbe API server 
+# Need to be careful and aware that Kube Scheduler won't deploy the Pod and that is the job of Kublet running on the worker node, but scheduler send the info that where it need to get deployed
+#
+# * Control manager 
+# Control Manager will take care of the overall avalbilty and replication of the nodes, It has mainly two sub components 
+# Control manager polls the nodes every 5 seconds for a node status if there no heartbeat recieved from the node for 40 seconds then it disable the node and move pods to other worker nodes
+#  - Node Controller : Node controllers will make sure the status of the nodes 
+#  - Replication Controller : Make sure desired number of containers and pods are running across the worker nodes in a replication mode
+#
+#
+#
+#
