@@ -68,6 +68,9 @@
 #  - Node Controller : Node controllers will make sure the status of the nodes 
 #  - Replication Controller : Make sure desired number of containers and pods are running across the worker nodes in a replication mode
 #
-#
+# * Kubelet
+# Kubelet is responsible for registering the node in the Master and then also make sure to deploy the pods and containers
+# When Kubelet receive a request from Kube API Server, it pass the message to the underlying Container runtime such as docket or Rocket 
+# Then the underlying container runtime pull the image and runs the pods, then kubelet pass that info back to Kubeapi serever which gets registered in ETCD
 #
 #
