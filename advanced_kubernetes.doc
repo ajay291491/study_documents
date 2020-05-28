@@ -73,4 +73,29 @@
 # When Kubelet receive a request from Kube API Server, it pass the message to the underlying Container runtime such as docket or Rocket 
 # Then the underlying container runtime pull the image and runs the pods, then kubelet pass that info back to Kubeapi serever which gets registered in ETCD
 #
+# * Kube Proxy
+# Kube proxy runs on every node in the kubernetes cluster to satisfy the networking needs by the pods 
+# This helps inter pods communication by enabling the virtual networking services and these services stay in the memory.
+# Kube Proxy achieve this by using the IP tables rules 
+# 
+# * Pod 
+# Pod is smallest unit to run a container in kubernetes cluster, whenever we deploy a container it runs on a pod within worker node.
+# In most of the scenarios a pod to container will be a one to one relationship and when we scale up or down a new container gets created or destroyed. 
+# However if there helper containers or sidecars that can run along with the main container in the same pod, but this will be a very rare scenario.
+#
+# * Pod Definition YAML File 
+# A Pod definition has maoinly 4 objects and details given below. 
+#
+# apiVersion: {v1 | appsV1}
+# kind : 
+# metadata:
+#   name: {pod_name}
+#   labels: 
+#     {key} : {value}
+# spec:
+#   conatiners:
+#     - name: {name of the container}
+#       image: {location of the container image}
+#
+#
 #
