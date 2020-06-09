@@ -86,6 +86,7 @@
 # * Pod Definition YAML File 
 # A Pod definition has maoinly 4 objects and details given below. 
 #
+# ---
 # apiVersion: {v1 | appsV1}
 # kind : 
 # metadata:
@@ -96,6 +97,65 @@
 #   conatiners:
 #     - name: {name of the container}
 #       image: {location of the container image}
+# ---
+#
+# * Replication Controller 
+# Controllers are the brain behind kubernetes. Replication controller helps you to maintain replication of your pod across multiple nodes
+# This also helps you for scaling and load balancing of your pods across multiple worker nodes in the cluster. 
+# Even if you deploy a single pod object replication controller will help you to maintain the state of the pod if gets terminated.
+# To define a replication controller object and to deploy a pod using replication controller you need to follow below synatx 
+# 
+# ---
+# apiVersion: V1
+# kind: ReplicationController 
+# metadata:
+#   name:  {name of the replication controller}
+#   labels:
+#     key_1: value_1
+#     key_2: value_2
+# spec:
+#   template:
+#     metadata:
+#       name: {name of the pod}
+#       labels:
+#         key_1: value_1
+#         key_2: value_2
+#     spec:
+#       containers:
+#         - name: {name of the container}
+#           image: {location of the image}
+#
+# replicas: {number of replicas}
+# ---
+#
+# * RepliaSet
+# ReplicationSet is also similar to repliaction controller where ReplicationSet is the latest technology and ReplicaController is older
+# This also supports scaling, resillency, loadbalancing etc similar to replication controller 
+# This will also help you to maintain the state of the pod even if you are deploying only single pod in the cluster 
+# Below is the sample for deploying a ReplicaSet
+#
+# ---
+# apiVersion: v1
+# kind: ReplicaSet
+# metadata:
+#   name: {name of the replication set}
+#   labels:
+#     key_1: label_1
+#     key_2: label_2
+# spec:
+#   template:
+#     metadata:
+#       name: {name of the pod}
+#       labels:
+#         key_1: value_1
+#         key_2: value_2
+#     spec:
+#       containers:
+#         - name : {name of the container}
+#           image: {name of the image}
+# replicas : {number of replicas }
+# ---
 #
 #
+# * Difference between ReplicationController and ReplicationSet
 #
