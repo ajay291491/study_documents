@@ -128,6 +128,12 @@
 # replicas: {number of replicas}
 # ---
 #
+# To apply and see the contents of the Replication Controller follow below commands 
+#
+# | $ kubectl create -f {replicatio_controller_config}.yml
+# | $ kubectl get replicationcontroller
+# | $ kubectl get pods
+#
 # * RepliaSet
 # ReplicationSet is also similar to repliaction controller where ReplicationSet is the latest technology and ReplicaController is older
 # This also supports scaling, resillency, loadbalancing etc similar to replication controller 
@@ -135,7 +141,7 @@
 # Below is the sample for deploying a ReplicaSet
 #
 # ---
-# apiVersion: v1
+# apiVersion: apps/v1
 # kind: ReplicaSet
 # metadata:
 #   name: {name of the replication set}
@@ -153,9 +159,20 @@
 #       containers:
 #         - name : {name of the container}
 #           image: {name of the image}
-# replicas : {number of replicas }
+# replicas: {number of replicas }
+# selector:
+#   matchLabels:
+#     key_1 : value_1   => This can be any key value pair mentioned in the labels section of the pod
 # ---
 #
+# To apply and see the contents of the Replication Controller follow below commands 
+#
+# | $ kubectl create -f {replica_Set_config}.yml
+# | $ kubectl get replicaset
+# | $ kubectl get pods
+#
+# NOTE : Key difference between ReplicationController and ReplicaSet is the selector and the apiVersion. 
+#        ReplicaSet can also manage pods which is not part of the replicaset definition, that is why we need to use selector there 
 #
 # * Difference between ReplicationController and ReplicationSet
 #
