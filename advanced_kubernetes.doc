@@ -175,4 +175,78 @@
 #        ReplicaSet can also manage pods which is not part of the replicaset definition, that is why we need to use selector there 
 #
 # * Difference between ReplicationController and ReplicationSet
+# Key difference between ReplicationController and ReplicaSet is the selector and the apiVersion. 
+# ReplicaSet can also manage pods which is not part of the replicaset definition, that is why we need to use selector there 
+# ReplicaSet is the latest version compare to the replication controller
 #
+# * Examples of working with replicaset 
+#
+# STEP 1 : Creating a replicaset
+#
+# | master $ more replicaset-definition-2.yaml
+# | apiVersion: apps/v1
+# | kind: ReplicaSet
+# | metadata:
+# |   name: replicaset-2
+# | spec:
+# |   replicas: 2
+# |   selector:
+# |     matchLabels:
+# |       tier: frontend
+# |   template:
+# |     metadata:
+# |       labels:
+# |         tier: frontend
+# |     spec:
+# |       containers:
+# |       - name: nginx
+# |         image: nginx
+# | master $
+# | master $ kubectl create -f replicaset-definition-2.yaml
+# | replicaset.apps/replicaset-2 created
+# | master $
+# | master $ kubectl get replicaset
+# | NAME              DESIRED   CURRENT   READY   AGE
+# | replicaset-2      2         2         2       36s
+# | master $
+#
+# STEP 2 : Scaling up and down a ReplicaSet, Below used a 'kubectl scale' command we can also use 'kubectl edit' and then 'kubectl replace -f' command to update the same 
+#
+# | master $ kubectl get pods
+# | NAME                    READY   STATUS    RESTARTS   AGE
+# | new-replica-set-4srns   1/1     Running   0          27s
+# | new-replica-set-bvjbn   1/1     Running   0          6s
+# | new-replica-set-ks8wh   1/1     Running   0          41s
+# | new-replica-set-z47f5   1/1     Running   0          15s
+# | master $
+# |
+# | master $ kubectl scale --replicas=5 replicaset new-replica-set
+# | replicaset.apps/new-replica-set scaled
+# |
+# | master $ kubectl scale --replicas=2 replicaset new-replica-set
+# | replicaset.apps/new-replica-set scaled
+# | master $ kubectl get pods
+# | NAME                    READY   STATUS        RESTARTS   AGE
+# | new-replica-set-4srns   1/1     Running       0          5m29s
+# | new-replica-set-bvjbn   1/1     Terminating   0          5m8s
+# | new-replica-set-ff776   1/1     Terminating   0          59s
+# | new-replica-set-ks8wh   1/1     Running       0          5m43s
+# | new-replica-set-z47f5   1/1     Terminating   0          5m17s
+# | master $
+#
+# STEP 3 : How to edit the config of a running replicaset 
+#
+# | master $ kubectl edit replicaset new-replica-set
+# | replicaset.apps/new-replica-set edited
+# | master $
+#  
+# STEP 4 : How to delete a replicaset 
+#
+# | master $ kubectl delete replicaset replicaset-1
+# | replicaset.apps "replicaset-1" deleted
+# | master $
+#
+# 
+#
+~                    
+
