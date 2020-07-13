@@ -247,6 +247,32 @@
 # | master $
 #
 # 
+# * Deployments
 #
+# Deployment will use replicaset to deploy pods in kubernetes below is sample 
+#
+# | apiVersion: apps/v1
+# | kind: Deployment
+# | metadata:
+# |   name: ajay-deployment
+# | spec:
+# |   replicas: 3
+# |   selector:
+# |     matchLabels:
+# |       name: ajay-pod1
+# |   template:
+# |     metadata:
+# |       labels:
+# |         name: ajay-pod1
+# |     spec:
+# |       containers:
+# |        - name: ajay-pod1
+# |          image: httpd:2.4-alpine
+# |                               
+#
+#
+#
+#
+
 ~                    
 
