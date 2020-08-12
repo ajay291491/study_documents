@@ -1,0 +1,48 @@
+#-----------------------------------------------------------------------------------------------------------------------------------------------
+#	Chapter 01 : ETL 
+#-----------------------------------------------------------------------------------------------------------------------------------------------
+# 
+# * What is ETL 
+# ETL stands for Extract, Transform and Load , which are the three common steps of action which we need to perform when dealing with data.
+#
+# - Extract   : This is the proces of getting the data from the source, source might contain structured data such as csv or semi structured such as json
+# - Transform : This is the process of transform the data in an useful format which contains operations such as clearning, splitting, joining, sorting etc 
+# - Loading   : This is the process of storing data in a destination, this include storing data in s3, data warehoues, data lakes etc 
+#
+# * What are common challenges while dealing with data 
+# When we deal with the data there are few common challenges we might face such as 
+#
+# . Extracting the data from various sources 
+# . TRansforming them 
+# . Catching up with ongoing data changes such as format changes, some fields removed or added etc 
+# . Managing compute with scalable data requirements 
+# . Handling more complicated data structures 
+#
+#-----------------------------------------------------------------------------------------------------------------------------------------------
+#	Chapter 02 : Glue
+#-----------------------------------------------------------------------------------------------------------------------------------------------
+#
+# * What is AWS Glue 
+# Glue is a ETL product which introduced by AWS on 2017 and it offers wide vriety of integration with various AWS Services 
+# This also helps you keep up with few of the data tranformation challenges such as 
+#
+# . Glue is serverless so you do not need to pay when it is idle 
+# . It scales automatically according to the data requirements 
+# . It helps to perform tranformation on onging changes in data structures by auto discovery and catalogs 
+# . It also deals with complicated operations with fully managed spark clusters 
+# 
+# Glue has mainly few components 
+# - Glue Data Catalog 	: This is metadata store which defines tables and schemas, This can automatically created or suggested by glue according to data source in crawler
+# - Crawler 		: This helps to get the data into Glue from its source for further processing, data source defined in the crawler can be used by ETL jobs
+# - Glue Job		: This is the process of triggering tranformation job and sending output to a datastore, Job reads data from source usinng crawler.
+#
+# NOTE : To know more about Glue concepts please visit https://docs.aws.amazon.com/glue/latest/dg/components-key-concepts.html
+#
+#
+#
+#
+#
+#
+#
+#
+#
