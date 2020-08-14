@@ -38,9 +38,37 @@
 #
 # NOTE : To know more about Glue concepts please visit https://docs.aws.amazon.com/glue/latest/dg/components-key-concepts.html
 #
+#-----------------------------------------------------------------------------------------------------------------------------------------------
+#	Chapter 03 : Hadoop Ecosystem
+#-----------------------------------------------------------------------------------------------------------------------------------------------
+#
+# * What is Hadoop ecosystem
+# Hadoop is a big data processing framework which has various components which helps to get this job done. 
+# There are various components within hadoop framework and some details about it given below
+#
+# - HDFS : This is called hadoop distributed filesystem which will be spanned across various different commodity hardware system and it provides fault tolerence upon hardware failure as well.
+#        : To know more about hdfs, please check https://hadoop.apache.org/docs/r1.2.1/hdfs_design.html
+#
+# - YARN : This is called yet another resourse negotiator, which helps to allocate resources within the hadoop cluster.
+#        : To know more about YARN, please check https://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html
+#
+# - Map Reduce : This is a software framework which used by hadoop to process large set of data and it can be ran in cheaper commodity hardware as well. 
+#              : Map reduce uses a technique of creating map tasks and split data across multiple streams and process them faster and then uses reduce tasks to combine them. 
+#              : To know more about mapreduce, please check : https://hadoop.apache.org/docs/r1.2.1/mapred_tutorial.html
+#
+# - Spark : Spark is high performing data processing framework which does most of the processing in memory itself 
+#         : This is more ideal for streaming data processing since it provides greater performance 
+#
+# Note : Main difference between Mapreduce and Spark are below 
+#
+# - Spark uses in memory operation to process data and because of that it provide greater performance where map reduce uses HDFS which is a disk based solution which offer lower performance 
+# - Spark is expernsive where mapreduce is cheaper.
+# - Spark is good for algorithmatic operations where mapreduce is more ideal for batch processing   
 #
 #
-#
+# * Spark ML offering 
+# Spark offers few additional products for ML such as 'MLlib' and 'MAAbout' which helps to perform classification, recomendation and clustering 
+# It also offers couple of deep learning offering such as Mxnet and Tensor Flow
 #
 #
 #
