@@ -71,6 +71,21 @@
 # It also offers couple of deep learning offering such as Mxnet and Tensor Flow
 #
 #
+#-----------------------------------------------------------------------------------------------------------------------------------------------
+#	Chapter 04 : AWS SageMaker
+#-----------------------------------------------------------------------------------------------------------------------------------------------
+# 
+# * What is AWS SageMaker 
+# AWS SageMaker is a Machine learning platform which offered by AWS and it helps to reduce the complexity of trial and error methods when it comes to ML
+# AWS Sage Maker offers wide variety of built in algorithms to use along with that it also offers several builtin algorithms 
 #
-#
-#
+# * Types of Machine learning algorithms offered by Sagemaker 
+# . For answers that fit into descrete catagory                    - XGBoost or Linear Learner 
+# . For answers that are quantitative                              - XGBoost or Linear Learner
+# . For answers that are discrete recomendation                    - Factorization Machines
+# . For answers that are Identifying groups                        - K-Means
+# . Simplify and understand attributes of observation              - Principal COmponent Analysis (PCA)
+# . Classify Images                                                - Image Classification Algorithm
+# . Neural Machine Translation                                     - Sequance-toSequance Algorithm
+# . Determining topics in a et of documents                        - Latent Dirichlet Allocation (LDA)
+# . Determining Topics in a set of documents using Neural Networks - Neural Topics Model 
