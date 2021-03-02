@@ -1,0 +1,41 @@
+#-------------------------------------------------------------------------------------------
+#
+# Chapter 01 : Understanding Machine Learning Terminologies
+#
+#-------------------------------------------------------------------------------------------
+#
+# * What is Machine Learning
+# A subfield of computer science and artificial intelligence (AI) that focuses on the design of systems that can learn from and make decisions and 
+# predictions based on data. Machine learning enables computers to act and make data-driven decisions rather than being explicitly programmed to 
+# carry out a certain task. Machine Learning programs are also designed to learn and improve over time when exposed to new data. 
+# Machine learning has been at the center of many technological advancements in recent years such as self-driving cars, computer vision and speech recognition systems.
+#
+# * Supervised Learning
+# Where a program is “trained” on a pre-defined dataset. Based off its training data the program can make accurate decisions when given new data. 
+# Example: Using a training set of human tagged positive, negative and neutral tweets to train a sentiment analysis classifier.
+#
+# * Un Supervised Learning 
+# Where Program given dataset can automatically find pateterns and relationship in that dataset 
+# Example : Analyzing a data set of emails which group related email without prior knowledge of the data, this is also known as practicing or clustering
+#
+# * Classification
+# This is a sub catagory of supervised learning, classification is the process of taking some sort of input and assigning a label to it.
+# CLassification systems are normally used for when predictions are of descrete or yes or no type.
+# Example : Mapping a picture of someone to a male or female. 
+#
+# * Regression 
+# Regression is a method in machine learning which helps to predict the value of a continous predicting variable (Y) based on one or multiple variables (X).
+# Example : One of the example for regression is predicting house prices bassed on various dependant variables such as size, area, community etc 
+#
+# * Decission Tree 
+# This is a way of visually representing the decission making process with tree like graph by explaining the tree like process and consiquence.
+# Example : https://aylien.com/blog/10-machine-learning-terms-explained-in-simple-english
+#
+# * Deep Learning 
+# Deep learning refers to a catagory of machine learning algorithms that often uses artificial nueral networks or a network interconnected model which 
+# makes up a model. Nowadays deep learning techniques are very hot and and successful in solving image recognition problems due to their ability to 
+# pick up the best features. 
+# 
+# Reference : https://aylien.com/blog/10-machine-learning-terms-explained-in-simple-english 
+#
+#
