@@ -38,4 +38,38 @@
 # 
 # Reference : https://aylien.com/blog/10-machine-learning-terms-explained-in-simple-english 
 #
+#-------------------------------------------------------------------------------------------
 #
+# Chapter 02 : Model and Cost function
+#
+#-------------------------------------------------------------------------------------------
+#
+# * Notations
+# When you are dealing with machine learning You should know how you represent your data and how will you understand when they represent 
+# To start the discussion, below is a sample given 
+#
+# Input Data  |  Hypothesis |  Output Value 
+# --------------------------------------------
+#    1024     | {Algorithm} |     1 MB
+#    2048     | {Algorithm} |     2 MB
+#    4096     | {Algorithm} |     4 MB
+#
+# m 	: This represents the total number of examples, here its 3
+# x(i) 	: This represents the i'th Input data, lets assume x(2) then the value it represent is 2048
+# y(i)	: This represents the i'th output value, lets assume y(3) then the value it represent is 4 MB
+# h		: This represents the algorithem or function which takes the input data (x) and predict the output value (y)
+#
+# * Hypothesis 
+# Hypothesis is the function that is to be learnt by the learning algorithm by the training progress for making the predictions about the unseen data.
+# 
+# For example, for Linear Regression in One Variable or Univariate Linear Regression, the hypothesis, h is given by
+# hθ(x)=θ0 + θ1 x
+#
+# . hθ(x) is the hypothesis function, also denoted as h(x) sometimes 
+# . x  is the independent variable
+# . θ 0  and θ 1  are the parameters of the linear regression that need to be learn
+# 
+# Reference : https://machinelearningmedium.com/2017/08/10/model-representation-and-hypothesis/
+#
+#
+
