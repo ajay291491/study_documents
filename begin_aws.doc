@@ -269,6 +269,7 @@
 # When you create a S3 bucket it gets created as private and if you want to manage the permission on S3, it offers offers two levels of security 
 # - Bucket policy       : This manages the security at the bucket level 
 # - Access control list : This manages the security at the object level 
+# - IAM Roles           : You can also use IAM roles to manage (allow/ deny) api calls someone can make to a bucket
 #
 # * S3 Encryption
 # S3 offers two encryption methods 
