@@ -1397,16 +1397,24 @@
 # - Kenisis Streams consist of shards 
 # - Data producers will send the data to streams in kenisis 
 # - Retention is from 24 hours to 7 days 
-# - Shrads are kind of partition within the Stream which collective group similar data for streaming  	
+# - Shrads are kind of partition within the Stream which collective group similar data for streaming
+# - 1 MB/s or 1000 messages at write per shard 
+# - 2 MB/s or 5 API calls per second per shards across all consumers 	
 #
 # 2. Kenisis Firehose 
 # - Firehose doesn't allow persistant storage of data within 
 # - As soon as the data arrives you will need to do something with the data 
 # - Normally data from Kenisis firehose will be passed to S3 buckets and from there it will get transferred to destination such as splunk, ELK or Redshift
+# - Near real time with a 60 sec latency min
+# - auto scaling
+# - Supports Data conversion from CSV/JSON to Parquet / ORC
 #
 # 3. Kenisis Analytics 
 # - This can work with combination with stream or firehose to perform data analytics 
 # - This will be working inside the Streams and Firehose 
+#
+# 4. Kenisis Video streaming
+# - 
 #
 # * Congnito 
 # Congnito is a web identity federation service which provided by amazon which can be integrated with application 
