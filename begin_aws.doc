@@ -1405,13 +1405,23 @@
 # - Firehose doesn't allow persistant storage of data within 
 # - As soon as the data arrives you will need to do something with the data 
 # - Normally data from Kenisis firehose will be passed to S3 buckets and from there it will get transferred to destination such as splunk, ELK or Redshift
-# - Near real time with a 60 sec latency min
+# - Near real time with a 60 sec latency or by having a buffer interval of 60 seconds minimum.
 # - auto scaling
 # - Supports Data conversion from CSV/JSON to Parquet / ORC
 #
 # 3. Kenisis Analytics 
-# - This can work with combination with stream or firehose to perform data analytics 
+# - Kenisis Data analytics will allow you to quickly author SQL or Apache Flink code that contiously reads, process and stores data in near real time.
+# - This can be mainly used for 
+#   . Time Series Analytics 
+#   . Feed to real time dashboards 
+#   . Create real time metrics 
+# - You can also have a reference table, which can be used for joining your lookup input data with certain reference data keys
+# - This can work with combination with stream or firehose as an input data source to perform data analytics 
 # - This will be working inside the Streams and Firehose 
+# - Destination of the Kenisis analytics can be kenisis streams or firehose or a lambda function
+# - Using the firehose we can send the data to Amazon S3 or redshift as well
+# - Serverless and auto scaling
+# More details : https://docs.aws.amazon.com/kinesisanalytics/latest/dev/how-it-works.html
 #
 # 4. Kenisis Video streaming
 # - 
