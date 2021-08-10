@@ -1421,10 +1421,27 @@
 # - Destination of the Kenisis analytics can be kenisis streams or firehose or a lambda function
 # - Using the firehose we can send the data to Amazon S3 or redshift as well
 # - Serverless and auto scaling
+# - This also supports machine learning for some complex data analytics and couple of algorithms supported are 
+#   . RANDOM_CUT_FOREST : This is to detect the anomalies in the given data set
+#   . HOTSPOT   : This is to detect dense regions in your data 
 # More details : https://docs.aws.amazon.com/kinesisanalytics/latest/dev/how-it-works.html
 #
 # 4. Kenisis Video streaming
-# - 
+# - This is used for streaming videos from various devices such as security camera, smart phones, body camera, radar data, RTSP camera etc 
+# - This can store data from 1 hour upto 10 hours, this satisfy various security and regulatory requirement to store data over a period of time
+# - This also has video playback capability 
+# - One producer per video stream, which mean if we have 100 devices producing video then we will require 100 video streams 
+# - We can send this data to various consumers such as 
+#   . Sagemaker 
+#   . Your own custom mxnet or Tensorflow algorithms 
+#   . Amazon recognition Video service etc 
+#
+# * Kenisis Summary - For machine learning 
+# - Kinesis Data Stream   : This can be used for creating real time machine learning Applications
+# - Kenisis Data Firehose : Ingest massive data near-real time for machine learning applications
+# - Kenisis Data Analytics: This can be used for real time ETL, SQL or Flunk based apps to transform the data or can be used for ML algorithsm in real time such as random cut forest or hostspot
+# - Kenisis Video Stream  : Real time video stream to create ML applications 
+#
 #
 # * Congnito 
 # Congnito is a web identity federation service which provided by amazon which can be integrated with application 
@@ -1671,10 +1688,18 @@
 # - Various triggers available for lambda 
 #
 #
+#-------------------------------------------------------------------------------------------------------------------
+#		Chapter 10 - Data Engineering (Machine Learning Certification)
+#-------------------------------------------------------------------------------------------------------------------
 #
+# * Glue 
+# - AWS Glue is a managed ETL service that makes it simple and cost effective to catagorize your data, clean it, enrich it and move it reliably between various data stores and data streams. 
+# - AWS Glue consist of a central meta data repository called as AWS Glue catalog an ETL engine which automatically generate python and scala code for transformation and flexible scheduler.  
+# - AWS Glue is designed to work with Semi structured data 
+# - It introduces a component called dynamic frame which is similar to apache spark data frame which can be used for organizing data into rows and columns (like pandas data frame)
+# - AWS Glue is serverless
 #
-#
-#
+# More Details : https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html
 ~                                                                                                                                                                                                            
 ~                                                                                                                                                                                                            
 ~                           
