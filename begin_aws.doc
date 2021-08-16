@@ -1737,6 +1737,26 @@
 # 
 # For Exam take look at Dynamo DB, Elastic cache also in high level 
 #
+# * AWS Data Pipeline
+# AWS Data pipeline is a service which can be used to automate the movement and transformation of data.
+# Using Data pipeline you can define task and workflow which are depend on previous tasks, Here you define a paramter for your data transformation and data pipeline takes care of the execution. 
+# AWS Data pipeline contains mainly three components 
+#
+# - Pipeline definition : This specifies the business logic of your data management 
+# - Pipeline    	: Pipeline schedules and runs tasks by creating EC2 instances according to the definition provided. You can upload the pipeline definition to the pipeline and activate it. 
+# 			: If you are editing a pipeline, then you will need to activate the pipeline again to take the effect. 
+# 			: You can deactivate pipeline, modify a data source and then activate the pipeline again 
+# 			: Once the pipeline finished you can delete them. 
+# - Task Runner 	: This will poll the tasks and then perform the tasks 
+#
+# Using pipeline you can perform tasks such as 
+#
+# - Moving data from RDS to S3 
+# - Performing ETL on the given data etc 
+#
+# Unlike Glue which is serverless, here user will have more control on the resources since resources like EC2 and launched in the account as customer demands
+#
+# More Details : https://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/what-is-datapipeline.html
 #
 #
 #
