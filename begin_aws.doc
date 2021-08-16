@@ -1693,13 +1693,53 @@
 #-------------------------------------------------------------------------------------------------------------------
 #
 # * Glue 
-# - AWS Glue is a managed ETL service that makes it simple and cost effective to catagorize your data, clean it, enrich it and move it reliably between various data stores and data streams. 
-# - AWS Glue consist of a central meta data repository called as AWS Glue catalog an ETL engine which automatically generate python and scala code for transformation and flexible scheduler.  
-# - AWS Glue is designed to work with Semi structured data 
-# - It introduces a component called dynamic frame which is similar to apache spark data frame which can be used for organizing data into rows and columns (like pandas data frame)
-# - AWS Glue is serverless
+# AWS Glue is a managed ETL service that makes it simple and cost effective to catagorize your data, clean it, enrich it and move it reliably between various data stores and data streams. 
+# AWS Glue consist of a central meta data repository called as AWS Glue catalog an ETL engine which automatically generate python and scala code for transformation and flexible scheduler.  
+# AWS Glue is designed to work with Semi structured data 
+# It introduces a component called dynamic frame which is similar to apache spark data frame which can be used for organizing data into rows and columns (like pandas data frame)
+# AWS Glue is serverless
 #
 # More Details : https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html
+# 
+# * Glue Data catalog 
+#  - Glue Data catalog is the meta data store for all your tables
+#  - This provides automated schema inference and versioning 
+#  - This can integrate with Athena and Redshift specturum 
+#  - Glue Crawlers will help you to create data catalog
+#
+# * Glue Data catalog Crawlets
+#  - Crawler will help to go through your data for schemas and partitions
+#  - Works on Json, Parquet, CSV and relation data store 
+#  - Run the Crawler on a schedule or on demand 
+#  - You will require access to data store as well s3 buckets to access the data and tables
+#  - Glue Crawlers will support data partitioning and you will need to plan partition primary key primarily by time range or device
+#
+# * Glue ETL
+#  - This helps to transform, clean and enrich data before doing any analysis or ML training on them
+#  - Generate ETL code in python or scala and which also gives a provision to modify them 
+#  - You can also provide your own spark or pyspark scripts 
+#  - This is fully managed and cost effective and pay only for the resource consumed 
+#  - This is a server less spark platform 
+#  - Glue also provides a scheduler which can be used to schedule jobs
+#  - Glue 'Triggers' automated jobs based on 'events'
+# 
+# * Redshift
+# - Redshift is a Data warehousing or SQL Analytics service 
+# - OLAP : This used for online analytical processing 
+# - We can load data from S3 to redshift 
+# - Redshift spectrum can be used to query data directly in S3
+# - Redshift uses column node based indexing for data 
+#
+# * RDS, Aurora 
+# - These are relational database store, SQL 
+# - OLTP : This used for online transation processing 
+# - Must provision servers in adavance 
+# 
+# For Exam take look at Dynamo DB, Elastic cache also in high level 
+#
+#
+#
+#
 ~                                                                                                                                                                                                            
 ~                                                                                                                                                                                                            
 ~                           
