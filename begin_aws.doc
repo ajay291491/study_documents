@@ -1758,6 +1758,34 @@
 #
 # More Details : https://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/what-is-datapipeline.html
 #
+# * AWS Batch 
+# AWS batch is used for running batch jobs as Docker Images and it is not necessarily need to be ETL or any data tramsformation jobs, any compute job can be processed as batch 
+# - This is serverless and you do not need to manage any resource 
+# - You will need to pay only for the compute resource spin up in your account by Batch according to your bacth volume 
+# - You can schedule batch jobs based on cloud watch events 
+# - You can orchetrate batch jobs using AWS step functions 
+# - Batch is mainly good for any non ETL related work, for ETL you can look for Glue 
+#
+# * DMS - Database Migration Service 
+# - This is a database migration service which help you to migrate database from your on-prem DBs to AWS 
+# - This can either hogenious migration such as on-prem Oracle DB to AWS RDS oracle 
+# - This can also be used for on prem SQL DBs to AWS RDS aurora 
+# - This helps you to quickly and securely migrate database to AWS, it is resielient and self healing 
+# - Source DB will remain available during the migration process 
+#
+# * Step Function 
+# Step Functions are used for workflow orchestration with an easy visualization, error handling and retry mechanism outside the code 
+# - This provides the audit of the history of workflows 
+# - This has an ability to wait for arbitary amount of time to execute a task in workflow execution 
+# - This workflow can have a maximum execution time of a state is 1 year 
+# - For exam orchestration step function is the candidate for that 
+#
+#
+#-------------------------------------------------------------------------------------------------------------------
+#		Chapter 11 - Exploitary Data Analysis
+#-------------------------------------------------------------------------------------------------------------------
+#
+#
 #
 #
 ~                                                                                                                                                                                                            
