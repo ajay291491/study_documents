@@ -1784,6 +1784,27 @@
 #-------------------------------------------------------------------------------------------------------------------
 #		Chapter 11 - Exploitary Data Analysis
 #-------------------------------------------------------------------------------------------------------------------
+# With Data Engineering we learned how to get the data and transferred to a data store such as s3 or redshift etc to analyze the data. 
+# Exploitary data analysis will deal with analyzing and preparing the data which is needed for machine learning models to get trained. 
+# As part of the this chapter we will go through various techniques needed for this purpose 
+#
+# * Python 
+# Python is the default choice for machine learning currently, but the exam won't be testing us in pythion skills 
+# But at the same time we will need to learn more about few of the machines learning modules such as pandas, numpy, matplotlibs and also scikit-learn
+#
+# To learn more about Python, look at : https://github.com/ajay291491/study_documents/blob/master/begin_python.py
+#
+# * Pandas 
+# Pandas is used for handing csv files which are in rows and column format 
+# - DataFrame : Pandas load the datas into dataframe, which is nothing but gives us a way to access the data in rows and column format. 
+# - Series    : Series is a techniq used in pandas to access the data in rows which will convert the data from two dimension to single dimension 
+# - Pandas is very good to interoperate with numpy 
+#
+# To Learn more about Pandas, look at : https://github.com/ajay291491/study_documents/blob/master/pandas_tutorial.ipynb
+#
+# * Matplotlibs
+# Matplotlibs are used for visualizing the data which you are analyzing 
+# You can represent your data in various charts and graphs using matplotlibs 
 #
 #
 #
