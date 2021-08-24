@@ -1806,6 +1806,47 @@
 # Matplotlibs are used for visualizing the data which you are analyzing 
 # You can represent your data in various charts and graphs using matplotlibs 
 #
+# More Info : Please link for more details on available charts from matplotlibs 
+#           : https://matplotlib.org/stable/tutorials/introductory/sample_plots.html
+#
+# * Seaborn
+# Seaborn is an advanced version of the matplotlibs which provides graphs with much prettier and meaningful insights 
+# It also provides some additional options to work with the graphs.
+#
+# More Info : To know more about various graphs available with seaborn please below link 
+# 	    : https://seaborn.pydata.org/examples/index.html
+#
+# * numpy 
+# NumPy is the fundamental package for scientific computing in Python. 
+# It is a Python library that provides a multidimensional array object
+#
+# More Info : https://numpy.org/doc/stable/user/whatisnumpy.html
+#
+# * Preparing Data for Machine Learning in Jupyter Notebook
+#
+# * Scikit_learn
+# scikit_leran is a machine learning library used in python which helps to solves few key machine learning problems such as 
+# - Classification		: Classification is the problem of identifying which sets of categories and putting them in right buckets 
+# 				: Example : Classifying an email a spam or non-spam
+#
+# - Regression 			: Regression analysis is a set of statistical process of estimating the relationship between a dependant variable and one or more indipendant variable. 
+#				: Example : Finding the housing prices based on various market condition using age of the property, sqft and location
+#
+# - Clustering problems. 	: Cluster analysis or clustering is the task of grouping a set of objects in such a way that objects in the same group (called a cluster) are more similar (in some sense) to each other than to those in other groups (clusters). 
+# 				: It is a main task of exploratory data analysis, and a common technique for statistical data analysis, used in many fields, including pattern recognition, image analysis, information retrieval, bioinformatics, data compression, computer graphics and machine learning.
+#				: Example : Classifying network traffic 
+#
+# This is one of the most popular library in the machine learning world today which used for various different use cases. 
+# scikit_learn algorithm features such as 
+# - Support vector Machines 	: https://en.wikipedia.org/wiki/Support-vector_machine
+# - Random Forest		: https://en.wikipedia.org/wiki/Random_forest
+# - Gradient Boosting 		: https://en.wikipedia.org/wiki/Gradient_boosting
+# - k-means 			: https://en.wikipedia.org/wiki/K-means_clustering
+# - DBSCAN 			: https://en.wikipedia.org/wiki/DBSCAN
+#
+#
+#
+#
 #
 #
 #
