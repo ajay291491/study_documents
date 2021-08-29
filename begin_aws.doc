@@ -1845,7 +1845,47 @@
 # - DBSCAN 			: https://en.wikipedia.org/wiki/DBSCAN
 #
 #
+# * Data Types
+# When it comes to machine learning you will often deal with multiple types of data and details are below. 
 #
+# - Numerical Data 	: This represents some sort of the quantitaive meassurement such as heights of people, page load time, stock price etc 
+# 		   	: Numercial data is devided into two different catagories such as Discrete data and Continous data
+#
+#   . Discrete Data  	: Intiger based with out any flaoting point numbers, few example such as how car you have, how many house you own, how many plants in the garden 
+#   . Continous Data 	: This data has infinitive possible values which can even contacin floating point values, few example like hight of a person, how much rain fall on a day 
+#
+# - Categorical Data 	: This is the type of data which do not have any specific mathematical meaning 
+# 			: Few examples, Gender of people in a school, Place where people live in a state, Designation of employees in a company
+# 			: It can also have numbers, but they do not have any mathematical values, such as street number, pin code, country code etc 
+#
+# - Ordinal Data	: This is a mix of numerical and categorical data 
+# 			: Examples, star rating for a movie.
+#
+#
+# * Data Distribution
+# Distribution is a function which show the possible value for a variable and how often they occur.
+#
+# More Details : https://www.youtube.com/watch?v=UdAD2pOalmY
+#
+# - Normal Distribution : In this distribution values will be more centered around the mean and you will probability of a value to occur near mean will be higher 
+# 			  This can be either lower from or higher from mean, where as a as the value deviate from mean either higher or lower you will see the probability of values are less
+# 			  A standard bell curve or Guassian distribution is the way to represent the normal distrubution 
+# 			  Example : Average marks scored by the students in a school, lets say the mean is around 80% where few will be higher than and few will be lesser than 80%
+#
+#  More Details : https://www.investopedia.com/terms/n/normaldistribution.asp
+#
+#  NOTE : Only normal distribution deal with normal data, all below distributions are deal with the Disceret data 
+#
+# - Probability Mass Distribution	: Probability mass function is a function that gives the probability that a discrete random variable is exactly equal to some value
+#
+# - Poisson Distribution 		: Poisson distribution that expresses the probability of a given number of events occurring in a fixed interval of time or space if 
+# 					  these events occur with a known constant mean rate and independently of the time since the last event.
+# 					  The Poisson distribution can also be used for the number of events in other specified intervals such as distance, area or volume.
+#
+# - Binoli Distribution 		: True or False condition type distribution 
+#
+# - Bernoulli Distribution 		: Bernoulli distribution, is the discrete probability distribution of a random variable which takes the value 1 with probability and the value 0 with probability.
+#					: Less formally, it can be thought of as a model for the set of possible outcomes of any single experiment that asks a yes–no question. 
 #
 #
 #
