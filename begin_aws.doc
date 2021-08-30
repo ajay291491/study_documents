@@ -1888,6 +1888,61 @@
 #					: Less formally, it can be thought of as a model for the set of possible outcomes of any single experiment that asks a yes–no question. 
 #
 #
+# * Amazon Athena
+# Serverless way of querying the data within the S3 bucket, This is an interactive query service and no need to load data and it stays in S3.
+# This uses presto under the hood and supports many data formats CSV, JSON, ORC, Parquet, Avro
+# This supports unstructured, semi-structured and structured data, this can be mainly used for 
+# - Querying web logs 
+# - Querying and staging data before loading to redshift
+# - Analyze cloud trial, cloudfront, VPC, ELB etc logs in s3 
+# 
+# It offers various integration such as 
+# - Jupyter notebooks, Zeeplin, rStudio Notebooks 
+# - Integration with QuickSight 
+# - Integration via ODBC / JDBC with other visualization tools 
+#
+# NOTE : You can use the Glue Data catalog created using Crawlers as a meta data to query the actual data sits in the S3, this is a very polular integration
+#
+# Pricing : $5 Per TB scanned 
+# 	  : Successful or cancelled queries count, failed one don't
+# 	  : No Charge for DDL
+# 	  : By using column format ORC or Parquest format you can save upto 30-90% of the cost and gain better performance 
+# 	  : if you use Glue or S3 you will have additional cost
+#
+# Access Control : IAM, S3 Bucket Policy, ACLs, Cross account S3 access is also possible
+#
+# Encryption 	 : SSE-S3, SSE-KMS, CSE-KMS, TLS encrption in transit
+#
+# Where You should not consider Athena : ETL or visualization 
+#
+# * Amazon Quick Sight
+# Amazon Quick Sight is a fast and easy cloud powered 'buisness analytics' service which allows to build visualization, adhoc analysis and also quickly gets insights from data. 
+# This is a serverless service which offer integration with redshift, Athena, Aurora/RDS, EC2 hosted Databases, files on S3 or on prem data in CSV, TSV, XLS and common log format
+# This tool is mainly used for business analytics and visualization and and allows to perform minimal ETL. 
+#
+# - SPICE : This is a query accelaration techniqueue which used within Amazon quick sight which offers super fast, parallel and in-memory calculation engine 
+# 	  : It used columnar storage, in-memory machine code generation 
+# 	  : It accelerated interactive queries on large datasets  
+# 	  : Each user gets 10 GB of SPICE, after that it is chargable 
+# 	  : It is highly durable and scalable and scales upto hundreds of users 
+#
+# - ML Capabilities : Amazon quick sights provides three different ML capabilities, most of it is powred by random forest 
+# 		    : Anomaly Detection 
+# 		    : Forecasting
+# 		    : Auto-narratives 
+#
+# - Where you should not use Quick Sight : Not for ETL and large canned reports, but can be used for adhoce reporting 
+#
+# Access Control : IAM, email signup and Active Directory Integration wtih Quick Sight Enterprise Edition 
+#
+# Pricing  : See https://www.udemy.com/course/aws-machine-learning/learn/lecture/16561576#notes
+#
+# Visyalization : This offers various standard visualization techniqueu such as line, bar, pie, histogram, time series etc 
+#
+#
+# * EMR (Elastic Map reduce)
+#
+#
 #
 #
 ~                                                                                                                                                                                                            
