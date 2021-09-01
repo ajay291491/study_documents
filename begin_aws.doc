@@ -1941,6 +1941,76 @@
 #
 #
 # * EMR (Elastic Map reduce)
+# EMR is a managed hadoop framework on EC2 instances which includes Spark, HBase, Preseto, Flink, Hive & More, EMR offers several integration points within AWS
+# EMR also offers couple of notebooks such as EMR notebooks and zeeplin notebooks. 
+#
+# EMR mainly consist of three different component within the cluster 
+# - Master node : This is a single EC2 instance manage the cluster 
+# - Core node 	: Hosts HDFS data and run tasks, can be scaled up and down, but with some risk 
+# - Task node 	: Run tasks, does not host data, no loss of data while removing and good use of spot instance 
+#
+# There are mainly two types of EMR cluster 
+# - Persistant (Long running) cluster 	: In this case you can spin up the cluster and then submit the jobs to the cluster whenever you want 
+# 					: You will need to understand the underlying EC2 won't get terminated until you manually terminate the cluster 
+# 					: Reserved Instances will be good use for long running clusters 
+# 					: You can submit multiple steps from the console. 
+# - Transient (short lived) cluster 	: This cluster will spinup along with the job and then it runs the jobs, once the job is completed cluster will automatically gets terminated 
+#
+# Few things to note about 
+# . You can launch a cluster within public subnet or private subnet with a NAT in the VPC 
+# . You can use S3 instead of HDFS to input and output the data
+# . cloudwatch can be used to monitor the cluster performance 
+# . Cloudtrial will give us the details of all the call made from and to the cluster 
+# . IAM roles should be configured for the cluster as well the underlying EC2 instances to access resources such as S3 etc 
+# . AWS data pipeline can be configured to trigger EMR clusters as they transfer the data 
+#
+# Key things about Storage in EMR 
+# . HDFS is hosted on the EBS volumes with in the EC2 instances and it can go away when an instance is getting terminated, so you might need to load the data somewhere other target before you terminate the cluster 
+# . EMRFS is backed by S3, so you can EMRFS if you want your data to be persistant 
+#
+# Pricing : EMR charges per hour + the underlying EC2 costs 
+# 	  : You won't get charged if any nodes gets failed during the launch and you can start a new one instead 
+# 	  : Can add or remove nodes on the fly 
+# 	  : Can resize the running cluster core nodes 
+#
+# * Hadoop 
+# Hadoop is a framework which runs with mainly three components 
+#
+# MapReduce or Spark : Both are used for transformation of the data
+# YARN 		     : This is a resource negotioator within hadoop framework which is called Yet Another Resource Negotioator 
+# HDFS 		     : File system used by the hadoop framework 
+#
+#
+# * Spark - How it works 
+# Spark mainly has three components as part of its execution 
+#
+# - Spark Context   : This is driver program which sets the memory etc for the spark 
+# 		    : When we run any Spark application, a driver program starts, which has the main function and your SparkContext gets initiated here. The driver program then runs the operations inside the executors on worker node.
+# - Cluster manager : Which manages resources using YARN 
+# - Executor        : Which runs the task which sent by Spark conect 
+# 
+# Flow :  "Spark Context" --> "Cluster manager" --> "Executor"
+#
+# Note : To know more about pyspark refer - https://www.tutorialspoint.com/pyspark/pyspark_quick_guide.htm
+# 
+# Components of Spark are below 
+#
+# - RDDS 	    : RDD (Resilient Distributed Dataset) is the fundamental data structure of Apache Spark which are an immutable collection of objects which computes on the different node of the cluster. 
+# 		    : Each and every dataset in Spark RDD is logically partitioned across many servers so that they can be computed on different nodes of the cluster.
+# - Spark Streaming : This is used for analyzing data in streams, normally data will be send in mini batches for analyzing
+# 		    : With streaming data frame which initialized will be keep gowring as the new mini batch of streams gets added 
+# - Spark SQL       : Spark SQL is a Spark module for structured data processing. It provides a programming abstraction called DataFrames and can also act as a distributed SQL query engine
+# - MLLib           : This is machine learning library with the spark
+# - GraphX          : This produces graphs 
+#
+# * Spark MLLib 
+# MLlib is a machine learning library used by pyspark and its intended to provide the practical machine learning scalable and possible. 
+# At a high level MLLib privides tools such as. 
+# . ML Algotithms : Common learning algorithms such as classification, regression, clustering and collaborative filtering 
+# . featurization : feature extraction, transformation, dimensionality reduction and selection 
+# . Pipeline      : Tools for constructing, evaluating and tuning ML pipelines 
+# . Persistance   : Saving and load algorithms, models and pipelines 
+# . Utilities     : Linear algebra, statistics, data handling etc 
 #
 #
 #
