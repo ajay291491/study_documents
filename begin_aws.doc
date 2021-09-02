@@ -1973,6 +1973,8 @@
 # 	  : Can add or remove nodes on the fly 
 # 	  : Can resize the running cluster core nodes 
 #
+# Access Control : IAM, Kerberos, SSH 
+#
 # * Hadoop 
 # Hadoop is a framework which runs with mainly three components 
 #
@@ -1999,6 +2001,7 @@
 # 		    : Each and every dataset in Spark RDD is logically partitioned across many servers so that they can be computed on different nodes of the cluster.
 # - Spark Streaming : This is used for analyzing data in streams, normally data will be send in mini batches for analyzing
 # 		    : With streaming data frame which initialized will be keep gowring as the new mini batch of streams gets added 
+# 		    : You can Integrate Kenisis streaming with spark streaming
 # - Spark SQL       : Spark SQL is a Spark module for structured data processing. It provides a programming abstraction called DataFrames and can also act as a distributed SQL query engine
 # - MLLib           : This is machine learning library with the spark
 # - GraphX          : This produces graphs 
@@ -2011,6 +2014,44 @@
 # . Pipeline      : Tools for constructing, evaluating and tuning ML pipelines 
 # . Persistance   : Saving and load algorithms, models and pipelines 
 # . Utilities     : Linear algebra, statistics, data handling etc 
+#
+#
+# * Feature Engineering
+# Feature Engineering is the process of using domain knowledge on both data and data analysis technique to extract featres (chrectristics, properties and attributes) from raw data.
+# Feature is a property shared by independant units on which analysis or prediction is to be done. 
+# Features are used by predictive modles and influence results.
+# 
+# NOTE  : Too many feature can also be a problem since every feature is a new dimesion and you can'yt fit all in one model 
+# 	: This problem is called the "The curse of Dimensionality"
+#
+# * Outliers 
+# Outliers are the kind of values within a dataset which often tend to be outside the range of normal value for a variable. 
+# The value might be way beyond an expected range or sometime way lower. 
+# While you often deal with Outliers in data set you will need to either drop those values or find median range to replace those values, else the existance of these values can affect the model performance. 
+#
+# * Imputing Mising Data 
+# While dealing with the data often you will see multiple challenges and out of that one key challenge is missing. 
+# If there are missing data within your model then there are mutliple techniques to deal with that data 
+#
+# 1. Mean replacement : In this technique you can take the mean value for a specific column and replace the no value cells with that value, which will help to fit the data 
+# 	  Example     : If you are trying to work with a data set where Specific car model and its re-selling price over the year, for those missing values you can take the mean value from price column and replace it
+#
+# 2. Median replacement : If there are outlier values which more often in your data set which is kind of making your mean value wrong then you can median replacement where you will pick the value in the middle and replace them. 
+#
+# NOTE : Above methods are applicable only with the numerical data and cann't be used with Catagorical data 
+#
+# 3. Dropping Data  : If you have a wealth of lot of data in your dataset and you can drop some rows of the dataset which is incomplete, then you can drop and its a easier solution to have. 
+# 		    : For a smaller dataset if you are dropping data then it will have impact on the modle preceission and end up in some bias.
+#
+# NOTE : All above methods are not the best methods, but they still works. 
+#
+# * Imputing Missind Data - Using Machine Learning 
+# Similar to the methods we mentioned above you can also use few additional techniques 
+# 
+#
+#
+#
+#
 #
 #
 #
