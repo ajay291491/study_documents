@@ -2047,10 +2047,37 @@
 #
 # * Imputing Missind Data - Using Machine Learning 
 # Similar to the methods we mentioned above you can also use few additional techniques 
+#
+# 1. KNN (K Nearest Neighbours) : This is an algorithm which helps to find the nearest values in that column, this might give you a set of values where you are trying to replace but you can take a the mean or median to replace that value
+# 				: KNN is best fit for finding the numerical values in the missing data. 
+# 				: But there are also way to find catogorical missing data by using techniqueue called hamming distance 
+#
+# 2. Deep Learning 		: Use a machine learning model to predict the missing data in your dataset, this is a bit of a complex and you will require another model to handle this  task.
+#
+# 3. Regression 		: Finding linear and non-linear relationship between the missing feature and other features, Most advanced techniqueue, MICE
+#
+# * How to handle Unbalanced Data 
+# Often dealing wth data, you will see less data on some occassion, one of the example is if you trying to create a model to detect the druadulent transaction the samples of positive fraudelent trasation will be very less. 
+# On such occassion you use couple of techniques to gain more data 
+#
+# 1. Oversampling   : Using this we can duplicate the data from minority classes to show up more of that data 
+# 2. Underssmapling : Reduce the number of non positive case data, here non-fraudelent transaction data so that it won't bias the data 
+# 3. Use ML Models  : You can use Ml algorithm such as KNN or usig pre configured model to generate augmented data 
 # 
+# * Handling Outliers 
 #
 #
 #
+# * AWS Sagemaker ground Truth
+# Amazon Sagemaker ground truth is a relatively new service from Amazon which cane be used for data labelling service. 
+# Using Ground Truth we can label texts, images and videos etc 
+# Amazon ground Truth Creates its own model while you label the data, slowly as the model gets matured it only sents the models which are not sure about to humans. 
+# This can reduce the cost of labelling by 70%
+#
+# There are mainly three ways to use Ground Truth Labelling Service
+# - Using Amazon Mechanical Turk 
+# - Your own internal team 
+# - Professional labelling companies 
 #
 #
 #
