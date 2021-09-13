@@ -2079,6 +2079,75 @@
 # - Your own internal team 
 # - Professional labelling companies 
 #
+# * TF-IDF - Algorithm
+# Term frequency inverse document frequency algorithm or TF-IDF algorithms are used to understand how many time a word is appearing in the given document. 
+# TF-IDF algorithm is used normally in the search engines to understand how many times a word is appearing in a given document. 
+# The way its calculated is by 
+# . How many times a word appear in the document 
+# . And, inverse document freequency of that word across set of documents 
+#
+# This is mainly used for text analysis and NLP
+#
+# More Details : https://monkeylearn.com/blog/what-is-tf-idf/
+#
+# * N-Grams 
+# In natural lanuage processing n-grams is a continous sequence of 'n' items generated from a given sample text where item can be either charector or words and n can be any number like 1 ,2 3 etc.
+#
+# - One Gram (example below)
+# | >>> from nltk.util import ngrams
+# | >>> n=1
+# | >>> sentense = "hello I am Ajay, I love reading yogic books"
+# | >>> unigrams = ngrams(sentense.split(), n)
+# | >>> for item in unigrams:
+# | ...   print(item)
+# | ...
+# | ('hello',)
+# | ('I',)
+# | ('am',)
+# | ('Ajay,',)
+# | ('I',)
+# | ('love',)
+# | ('reading',)
+# | ('yogic',)
+# | ('books',)
+#
+# - Two Gram (exam below)
+#
+# | >>> n=2
+# | >>> unigrams = ngrams(sentense.split(), n)
+# | >>> for item in unigrams:
+# | ...   print(item)
+# | ...
+# | ('hello', 'I')
+# | ('I', 'am')
+# | ('am', 'Ajay,')
+# | ('Ajay,', 'I')
+# | ('I', 'love')
+# | ('love', 'reading')
+# | ('reading', 'yogic')
+# | ('yogic', 'books')
+#
+# - Three Grams
+#
+# | >>> n=3
+# | >>> unigrams = ngrams(sentense.split(), n)
+# | >>> for item in unigrams:
+# | ...   print(item)
+# | ...
+# | ('hello', 'I', 'am')
+# | ('I', 'am', 'Ajay,')
+# | ('am', 'Ajay,', 'I')
+# | ('Ajay,', 'I', 'love')
+# | ('I', 'love', 'reading')
+# | ('love', 'reading', 'yogic')
+# | ('reading', 'yogic', 'books')
+# | >>>
+#
+# Also referer n-grams : https://machinelearningknowledge.ai/generating-unigram-bigram-trigram-and-ngrams-in-nltk/
+#
+#
+#
+#
 #
 #
 #
