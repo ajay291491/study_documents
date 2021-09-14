@@ -2146,13 +2146,23 @@
 # Also referer n-grams : https://machinelearningknowledge.ai/generating-unigram-bigram-trigram-and-ngrams-in-nltk/
 #
 #
+# * Exam Question 
+# 1. What kind of Graph is best suited for visualizing outliers in your training data ?
+# . Boxer and Whisker Plot
+#
+# 2. What kind of ditribution would be relevant to flipping heads and tails on a coin ?
+# . Binomial Distribution
+#
+# 3. What Imputation technique for missing data would produce the best results ?
+# . MICE (Multiple Imputation by Chained Equations finds relationships between features and is one of the most advanced imputation methods available. Using machine learning techniques such as KNN and deep learning are also good approach)
+#
+#
+#-------------------------------------------------------------------------------------------------------------------
+#		Chapter 12 - Modelling
+#-------------------------------------------------------------------------------------------------------------------
 #
 #
 #
-#
-#
-#
-~                                                                                                                                                                                                            
 ~                                                                                                                                                                                                            
 ~                           
 
