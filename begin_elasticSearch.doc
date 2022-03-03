@@ -1,1 +1,20 @@
-# Elastic Search
+# ------------------------------------------------------------------------------------------------------------
+#  Chapter 01 : Elastic Search Basics
+# ------------------------------------------------------------------------------------------------------------
+# * What is Node & Cluster
+# Node is a single server within elastic search, elastic can scale upto 1000 nodes in a cluster. 
+# Cluster can be combination of single or multiple nodes to perform the indexing and search capabilities. 
+#
+# * What is Index or Indeces
+# Index is the collection of similar documents in elastic search. 
+# It is the process of linking the doc injected into a schema which can be used for search and extraction
+# Each Index contains a schema can have one or more shards and replicas, You can have any number of indeces in Cluster
+#
+# * What is Shard
+# Data in Elasticsearch is organized into indices. Each index is made up of one or more shards. 
+# Each shard is an instance of a Lucene index, which you can think of as a self-contained search engine that indexes and handles queries for a subset of the data in an Elasticsearch cluster.
+# Data you inject will be send to multiple shards in the node so that data can be withdraw in faster way since the processing is done across multiple nodes
+# 
+#
+#
+#
