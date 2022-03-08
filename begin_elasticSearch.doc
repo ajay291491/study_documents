@@ -126,6 +126,21 @@
 #
 # NOTE : You will require a JSON payload to be send for this 
 #
+# * How to use bulk API to upload documents 
+# You can use the the bulk API within the index to upload bulk documents. 
+# You will need to make sure the doc you are sending in a specific JSON format (NDJSON) and this is a requirement in elastic search. 
+# Also you will need to make sure you create a line of ' { "index": {}} ' before each document. 
+# NDJSON is a document type which is delimeted by new line instead of comma seperated values. 
 #
+# >  POST /aws_cloudwatch_logs/_doc/_bulk?pretty
+#
+# - Sample data format below 
+#
+# | { "index": {}}
+# | {"meta_account_number": "543940983862","meta_region": "us-east-1", "meta_eventSource": "cloudwatch", "meta_eventTime": "2022-03-04T11:22:31.702Z", "account_number": "543940983862", "logGroup": "/aws/lambda/stream-producer-cloudwatch-ajaya",	"logStream": "2022/03/02/[$LATEST]aadbb3d897304bd8aa3405ed23235436", "messages": {"id": "36711929261648957799800194416799398837059877191015268374","timestamp": 1646219843096, "message": "currently processing line number : 22"}}
+# | { "index": {}}
+# | {"meta_account_number": "543940983862",	"meta_region": "us-east-1",	"meta_eventSource": "cloudwatch",	"meta_eventTime": "2022-03-04T09:22:31.702Z",	"account_number": "543940983862",	"logGroup": "/aws/lambda/stream-producer-cloudwatch-ajaya",	"logStream": "2022/03/02/[$LATEST]aadbb3d897304bd8aa3405e453453",	"messages": {		"id": "36711929261648957799800194416799398837059877191015268374",		"timestamp": 1646219843096,		"message": "currently processing line number : 22"	}}
+# | { "index": {}}
+# | {"meta_account_number": "543940983862",	"meta_region": "us-east-1", "meta_eventSource": "cloudwatch", "meta_eventTime": "2022-03-04T10:22:31.702Z", "account_number": "543940983862", "logGroup": "/aws/lambda/stream-producer-cloudwatch-ajaya", "logStream": "2022/03/02/[$LATEST]aadbb3d897304bd8aa34098789", "messages": { "id": "36711929261648957799800194416799398837059877191015268374",		"timestamp": 1646219843096,	"message": "currently processing line number : 22"	}}
 #
 #
