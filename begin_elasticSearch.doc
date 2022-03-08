@@ -16,5 +16,116 @@
 # Data you inject will be send to multiple shards in the node so that data can be withdraw in faster way since the processing is done across multiple nodes
 # 
 #
+# * How to check nodes and health of ES cluster 
+# Below GET API Methods can be used for that 
+#
+# > GET /_cat/health?v&pretty		: This will tell us the health of the cluster
+#
+# | epoch      timestamp cluster                      status node.total node.data discovered_master shards pri relo init unassign pending_tasks max_task_wait_time active_shards_percent
+# | 1646381564 08:12:44  543940983862:onyx-es-sre-poc yellow          1         1              true     16  16    0    0       10             0                  -                 61.5%
+#
+# > GET /_cat/nodes?v&pretty		: This will help to see what nodes are in the cluster
+#
+# | ip            heap.percent ram.percent cpu load_1m load_5m load_15m node.role master name
+# | x.x.x.x           10          91   5    0.08    0.12     0.20 dimr      *      b25034f5f94d9e105020da36b2056775
+#
+# * How to check the Index details (_cat)
+# You can use the _cat method to retrieve the index details 
+#
+# > GET /_cat/indices?v			: This show the details about the indeces (Pri - Shards & Rep - Replicas)
+#
+# | health status index                                                                           uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+# | yellow open   aws_configlog_audit                                                             qK6Ag-IpRIOprqhpmUen8w   5   1    1398886            0      1.9gb          1.9gb
+# | green  open   .kibana_79182609_cognitouseast17ixsc4k2w8fbf0feb584f4ba683d48c7c37322db5_1      gBKdRH_-QomY-cgCTlOzJQ   1   0         35           15    172.9kb        172.9kb
+# | green  open   .kibana_499000343_arnawsiam543940983862rolecognitoonyxopensearchadminauthrole_1 brCsqbScQmqbwa0MmQZCRQ   1   0          1            0        5kb            5kb
+# | yellow open   aws_cloudwatch_logs                                                             fBXmYxGESk-CQR8SnnnmIg   5   1   40677503            0     78.5gb         78.5gb
+# | green  open   .opendistro-reports-definitions                                                 cAoo-2unQlipJPq7znCeyg   1   0          0            0       208b           208b
+# | green  open   .kibana_1                                                                       jtWQysmfR1-zYhnRWi0lpA   1   0         38            1     48.6kb         48.6kb
+# | green  open   .opendistro-reports-instances                                                   YPmgB2hSTsGIJHgsnOgY_Q   1   0          0            0       208b           208b
+# | green  open   .opendistro_security                                                            lYDILDllRiqGh_NKNq9p6A   1   0          9            2     55.9kb         55.9kb
+#
+# You can sort and get the details or thd field using keywork 's'
+#
+# > GET /_cat/indices?v&s=store.size:desc	: This will help to sort the result with size of the index
+#
+# | health status index                                                                           uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+# | yellow open   aws_cloudwatch_logs                                                             fBXmYxGESk-CQR8SnnnmIg   5   1   40677503            0     78.5gb         78.5gb
+# | yellow open   aws_configlog_audit                                                             qK6Ag-IpRIOprqhpmUen8w   5   1    1398886            0      1.9gb          1.9gb
+# | green  open   .kibana_79182609_cognitouseast17ixsc4k2w8fbf0feb584f4ba683d48c7c37322db5_1      gBKdRH_-QomY-cgCTlOzJQ   1   0         35           15    172.9kb        172.9kb
+# | green  open   .opendistro_security                                                            lYDILDllRiqGh_NKNq9p6A   1   0          9            2     55.9kb         55.9kb
+# | green  open   .kibana_1                                                                       jtWQysmfR1-zYhnRWi0lpA   1   0         38            1     48.6kb         48.6kb
+# | green  open   .kibana_499000343_arnawsiam543940983862rolecognitoonyxopensearchadminauthrole_1 brCsqbScQmqbwa0MmQZCRQ   1   0          1            0        5kb            5kb
+# | green  open   .opendistro-reports-definitions                                                 cAoo-2unQlipJPq7znCeyg   1   0          0            0       208b           208b
+# | green  open   .opendistro-reports-instances                                                   YPmgB2hSTsGIJHgsnOgY_Q   1   0          0            0       208b           208b
+#
+#
+# * How to retrieve a document from Index 
+# You can retrieve a document from index using below method 
+#
+# GET /<index_name>/<type>/<index_id>	: This will give the details about a specific doc in the index[]
+#
+# Example : GET /aws_cloudwatch_logs/_doc/GuB4Sn8BIrXwQnVj0B8_
+#
+# | {
+# |   "_index" : "aws_cloudwatch_logs",
+# |   "_type" : "_doc",
+# |   "_id" : "GuB4Sn8BIrXwQnVj0B8_",
+# |   "_version" : 1,
+# |   "_seq_no" : 7675937,
+# |   "_primary_term" : 3,
+# |   "found" : true,
+# |   "_source" : {
+# |     "meta_account_number" : "543940983862",
+# |     "meta_region" : "us-east-1",
+# |     "meta_eventSource" : "cloudwatch",
+# |     "meta_eventTime" : "2022-03-02T11:22:31.702Z",
+# |     "account_number" : "543940983862",
+# |     "logGroup" : "/aws/lambda/stream-producer-cloudwatch-ajaya",
+# |     "logStream" : "2022/03/02/[$LATEST]aadbb3d897304bd8aa3405ed4dc40e8e",
+# |     "messages" : {
+# |       "id" : "36711929261648957799800194416799398837059877191015268374",
+# |       "timestamp" : 1646219843096,
+# |       "message" : """currently processing line number : 22
+# | """
+# |     }
+# |   }
+# | }
+# | 
+#
+# * How to retrieve a specific details from document (_source)
+# Along with the method for retrieving the document you can add a '_source' statement for getting that 
+# 
+# Example : GET /aws_cloudwatch_logs/_doc/GuB4Sn8BIrXwQnVj0B8_?pretty&_source=messages.message
+#
+# | {
+# |   "_index" : "aws_cloudwatch_logs",
+# |   "_type" : "_doc",
+# |   "_id" : "GuB4Sn8BIrXwQnVj0B8_",
+# |   "_version" : 1,
+# |   "_seq_no" : 7675937,
+# |   "_primary_term" : 3,
+# |   "found" : true,
+# |   "_source" : {
+# |     "messages" : {
+# |       "message" : """currently processing line number : 22
+# | """
+# |     }
+# |   }
+# | }
+# | 
+# 
+# * How to Create an Index manually 
+# You can send a POST request with the index name to create a index 
+#
+# > POST /sample_index			: This is the command to create an Index
+#
+# * How to Update a document in a Index 
+# You can send a PUT request with the payload as JSON on the document 
+#
+# > PUT /sample_index/<doc_type>/<document_id> 
+#
+# NOTE : You will require a JSON payload to be send for this 
+#
+#
 #
 #
