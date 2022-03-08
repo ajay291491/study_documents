@@ -1,14 +1,17 @@
 # ------------------------------------------------------------------------------------------------------------
 #  Chapter 01 : Elastic Search Basics
 # ------------------------------------------------------------------------------------------------------------
+#
 # * What is Node & Cluster
 # Node is a single server within elastic search, elastic can scale upto 1000 nodes in a cluster. 
 # Cluster can be combination of single or multiple nodes to perform the indexing and search capabilities. 
+#
 #
 # * What is Index or Indeces
 # Index is the collection of similar documents in elastic search. 
 # It is the process of linking the doc injected into a schema which can be used for search and extraction
 # Each Index contains a schema can have one or more shards and replicas, You can have any number of indeces in Cluster
+#
 #
 # * What is Shard
 # Data in Elasticsearch is organized into indices. Each index is made up of one or more shards. 
@@ -16,7 +19,11 @@
 # Data you inject will be send to multiple shards in the node so that data can be withdraw in faster way since the processing is done across multiple nodes
 # 
 #
-# * How to check nodes and health of ES cluster 
+# ------------------------------------------------------------------------------------------------------------
+#  Chapter 02 : Undertanding Health 
+# ------------------------------------------------------------------------------------------------------------
+#
+# * How to check health of ES cluster 
 # Below GET API Methods can be used for that 
 #
 # > GET /_cat/health?v&pretty		: This will tell us the health of the cluster
@@ -27,37 +34,34 @@
 # . Key field to look at is status, it should be always Green
 #
 #
+# * How to check the nodes and details 
+# Below API methods can be used for checking the health of the node
+# Key fields to look at is cpu, load, ram etc 
+#
 # > GET /_cat/nodes?v&pretty		: This will help to see what nodes are in the cluster
 #
 # | ip            heap.percent ram.percent cpu load_1m load_5m load_15m node.role master name
 # | x.x.x.x           10          91   5    0.08    0.12     0.20 dimr      *      b25034f5f94d9e105020da36b2056775
 #
-# . Key fields to look at is cpu, load, ram etc 
 #
+# * How to check Indeces 
+# Below API method can be used for the same and look for the status and health.
+# Look at the Pri (shard) and rep (replica) count to see data is redudant, else warning should be issued
 #
 # > GET /_cat/indices?v
 #
 # | health status index                                                                           uuid                   pri rep docs.count docs.deleted store.size pri.store.size
 # | yellow open   aws_configlog_audit                                                             qK6Ag-IpRIOprqhpmUen8w   5   1    1398886            0      1.9gb          1.9gb
-# | green  open   .kibana_79182609_cognitouseast17ixsc4k2w8fbf0feb584f4ba683d48c7c37322db5_1      gBKdRH_-QomY-cgCTlOzJQ   1   0         35           15    172.9kb        172.9kb
-# | green  open   .opensearch-notebooks                                                           Xq-wQ30cRLCh6axmB6lodw   1   0          1            0      5.8kb          5.8kb
-# | green  open   .kibana_499000343_arnawsiam543940983862rolecognitoonyxopensearchadminauthrole_1 brCsqbScQmqbwa0MmQZCRQ   1   0          1            0        5kb            5kb
 # | yellow open   aws_cloudwatch_logs                                                             fBXmYxGESk-CQR8SnnnmIg   5   1   40677510            0     78.5gb         78.5gb
-# | green  open   .opendistro-reports-definitions                                                 cAoo-2unQlipJPq7znCeyg   1   0          0            0       208b           208b
-# | green  open   .kibana_-1825037245_cognitouseast17ixsc4k2w493933ffa28d48db842921adf255e01d_1   8-vemBe0T7ClRJCHK5BHeg   1   0          2            0     15.2kb         15.2kb
-# | green  open   .kibana_1                                                                       jtWQysmfR1-zYhnRWi0lpA   1   0         38            1     53.5kb         53.5kb
-# | green  open   .opendistro_security                                                            lYDILDllRiqGh_NKNq9p6A   1   0          9            4     84.6kb         84.6kb
-# | green  open   .opendistro-reports-instances                                                   YPmgB2hSTsGIJHgsnOgY_Q   1   0          0            0       208b           208b
 #
-# . Look at the Pri (shard) and rep (replica) count to see data is redudant, else warning should be issued
 #
+# * How to check Shards 
+# Below method can be used for checking shards and its health.
+# Make sure the shards are not in unassigned state 
 #
 # > GET /_cat/shards?v
 #
-#   index                                                                           shard prirep state         docs   store ip           node
-# | .opensearch-notebooks                                                           0     p      STARTED          1   5.8kb x.x.x.x 1e30f6f594e7ca1b8ed168b7e88f726a
-# | .kibana_79182609_cognitouseast17ixsc4k2w8fbf0feb584f4ba683d48c7c37322db5_1      0     p      STARTED         35 172.9kb x.x.x.x 1e30f6f594e7ca1b8ed168b7e88f726a
-# | .opendistro-reports-instances                                                   0     p      STARTED          0    208b x.x.x.x 1e30f6f594e7ca1b8ed168b7e88f726a
+# | index                                                                           shard prirep state         docs   store ip           node
 # | aws_configlog_audit                                                             3     p      STARTED     278757 398.8mb x.x.x.x 1e30f6f594e7ca1b8ed168b7e88f726a
 # | aws_configlog_audit                                                             3     r      UNASSIGNED                              
 # | aws_configlog_audit                                                             1     p      STARTED     279473 395.8mb x.x.x.x 1e30f6f594e7ca1b8ed168b7e88f726a
@@ -65,8 +69,9 @@
 # | aws_configlog_audit                                                             2     p      STARTED     279816 398.2mb x.x.x.x 1e30f6f594e7ca1b8ed168b7e88f726a
 # | aws_configlog_audit                                                             2     r      UNASSIGNED                              
 #
-# . Make sure the shards count is more than one else warning should be issued 
-# 
+# ------------------------------------------------------------------------------------------------------------
+#  Chapter 03 : Fetching information in Elastic Search 
+# ------------------------------------------------------------------------------------------------------------
 #
 # * How to check the Index details (_cat)
 # You can use the _cat method to retrieve the index details 
@@ -153,6 +158,11 @@
 # | }
 # | 
 # 
+#
+# ------------------------------------------------------------------------------------------------------------
+#  Chapter 04 : Ingesting data into ElasticSearch
+# ------------------------------------------------------------------------------------------------------------
+#
 # * How to Create an Index manually 
 # You can send a POST request with the index name to create a index 
 #
@@ -164,6 +174,7 @@
 # > PUT /sample_index/<doc_type>/<document_id> 
 #
 # NOTE : You will require a JSON payload to be send for this 
+#
 #
 # * How to use bulk API to upload documents 
 # You can use the the bulk API within the index to upload bulk documents. 
