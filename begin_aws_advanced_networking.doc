@@ -1,0 +1,18 @@
+#----------------------------------------------------------------------------------------------------
+#                                   CHAPTER 01 - Exam Tips 
+#-----------------------------------------------------------------------------------------------------
+# * AWS VPC Limits 
+# AWS VPC limits are an important question for exam and below are the key topics 
+# - VPC per account       : 5
+# - Subnet per VPC        : 200
+# - Elastic IP per region : 5
+# - NACL limit per VPC    : 200
+# - Rules per NACL        : 20
+# - SG per ENI            : 5
+#
+# You can read complete list of limitation on below link 
+#
+# Reference : https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html
+#
+# 
+

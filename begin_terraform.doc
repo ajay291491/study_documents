@@ -21,9 +21,11 @@
 # * Key Terraform commands on High Level
 #
 # $ terraform console 	=> This will open a terraform interactive console 
+# $ terraform validate  => This command will help to validate the syntax for terraform code 
 # $ terraform init 	=> This will help to download all the modules from Providers such as aws 
 # $ terraform plan 	=> This will show based on .tf file what config will be applied 
-# $ Terraform apply 	=> This apply the manifest as written in the .tf file 
+# $ terraform apply 	=> This apply the manifest as written in the .tf file 
+# $ terraform destroy 	=> This command will destroy all infra which is part of the terraform 
 #
 #---------------------------------------------------------------------------------------------------------------------
 #	Chapter 02 - Terraform Variables
@@ -39,11 +41,12 @@
 # Syntax : 
 #
 # variable "my_varibales" {
-# 	type = "variable_type"
-# 	default = "some default value"
+#     type = "variable_type"
+#     default = "some default value"
 # }
 #
 # Example : Below example shows about Terraform sample string variable 
+#
 # | [root@minikube01 config]# cat main.tf
 # | variable "myvar" {
 # |   type = "string"
@@ -96,11 +99,11 @@
 # syntax : 
 #
 # variable "my_variable" {
-# 	type = map(string)
-# 	default = {
+# 	  type = map(string)
+# 	  default = {
 # 		key_1 = value_1
 # 		key_2 = value_2
-# 	}
+# 	  }
 # }
 #
 # Example : Below example shows how to define a variable 
@@ -110,8 +113,8 @@
 # |     type = map(string)
 # |     default = {
 # |             jan = "winter"
-# |                 may = "summer"
-# |                 jul = "mansoon"
+#               may = "summer"
+# |             jul = "mansoon"
 # |     }
 # | }
 # | [root@minikube01 config]# terraform console
@@ -553,4 +556,3 @@
 # | 
 # | 
 # | 
-****  Document above example Pending *****#

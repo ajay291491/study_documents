@@ -3,24 +3,23 @@
 #-------------------------------------------------------------------------------------------------------------------------
 #
 # * Kubernetes at higher level
-# Kubernetes is used to deploy and maintain the containers in a very effective and effecient manner, It has mainly few components such as master or contolr pland and worker node. 
+# Kubernetes is used to deploy and maintain the containers in a very effective and effecient manner, It has mainly few components such as master or contolr plane and worker node. 
 # Master and worker has again few components so that it can work.
 # 
 # * Master Node or Control Plane 
 # This is the place where all the control related activities on the cluster takes place, Master node take care of planning and deploying containers 
 # There are mainly few components in master node which helps to achieve the same 
 #
-# . ETCD
-# . Kube API Server
-# . Kube Scheduler
-# . Control manager 
+# . ETCD		: etcd is highly available key value pair store used as a kubernetes backing store. 
+# . Kube API Server     : This is HTTP endpoint exposed from kubernetes which enables its users to manage and manupulate the state of objects in kube such as pods, namespace, configmaps and events 
+# . Kube Scheduler	: Kube scheduler helps to schedule a newly created pod into any of the nodes based on the 2 step process called filtering and scoring 
+# . Control manager     : Control loop watches the current state of the cluster and trying make changes via API server to get that into the desired state
 #
 # * Worker Node 
 # This is where all pods gets deployed and containarized application running on top of them.
 #
-# Kubelet : Engine runs from each worker node which takes the instructions from the Master node and take actions on worker node to deploy or change containers 
-# 	  : This also monitors the status of the containers in each node
-#
+# Kubelet    : Engine runs from each worker node which takes the instructions from the Master node and take actions on worker node to deploy or change containers 
+# 	     : This also monitors the status of the containers in each node
 # Kube Proxy : Communication between the Worker nodes are managed by the Kube Proxy service which makes sure the communication are establisehed for right level of policies 
 #
 # You can see all control components of the Kubernetes cluster are running in the "kube-system" name space and details can be found as below.
