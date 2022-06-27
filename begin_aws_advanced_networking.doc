@@ -15,4 +15,42 @@
 # Reference : https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html
 #
 # 
-
+#----------------------------------------------------------------------------------------------------
+#                                   CHAPTER 02 - Routing and Subnets
+#-----------------------------------------------------------------------------------------------------
+# * Routing 
+# When you create a VPC and subnets inside that VPC there will be a default route created as "local". That route is expected to make sure the traffic flow is allowed with in all the subnets within the VPC. 
+# This route is something pre-configured by AWS and customer do not have much role to manage it unless they need to know how it is working. 
+# When you create a subnet there will be few reserved IP address which you should never be used, for example when you  create a subnet 10.0.1.0/24 subnet with in a VPC with CIDR 10.0.0.0/16, below will be reserved address for subnet. 
+#
+# > 10.0.1.0   - This will be the subnet ID
+# > 10.0.1.1   - This will the gateway address of the subnet 
+# > 10.0.1.2   - This will be the address of the local DNS server within subnet 
+# > 10.0.1.3   - This will be the IP address aws kept for its future use 
+# > 10.0.1.255 - This will be the broadcast ID 
+#
+# Suppose lets say we have 10.0.1.0/24 (Private Subnet 1) and 10.0.2.0/24 (Private Subnet 2) subnets, then these two subnets will be able to communicate each other using the gateway address 10.0.1.1 and 10.0.2.1 via local route 
+#
+# > 10.0.1.1   <->  Local route table <-> 10.0.2.1 
+#
+# This route table is created by default and AWS manages it. 
+#
+# Refer : https://aws.amazon.com/vpc/faqs/#IP_Addressing
+#
+# * Internet Gateway 
+# Internet gateways or IGW are standing to provide subnet access from your VPC, the way it works as below. 
+# When a instance from subnet which has route to IGW for 0.0.0.0/0, it sends a traffic to IGW, then IGW does perform a source NAT to replace the IP address of the instance with a Public IP and then route the traffic to internet. 
+# Simlarly when a traffic comes to that instance from internet, IGW picks that request based on the Public IP and it maps its address to the private IP of the instance and send that traffic to the instance. 
+# For a subnet to route its traffic to internet there are couple of steps need to be done. 
+#
+# 1. Create an Internet gateway 
+# 2. Create a route table and add a route for 0.0.0.0/0 to IGW as an additional route table entry on top of local 
+# 3. Associate that route table with a subnet 
+#
+#
+#
+#
+#
+#
+#
+#
