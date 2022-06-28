@@ -37,6 +37,7 @@
 #
 # Refer : https://aws.amazon.com/vpc/faqs/#IP_Addressing
 #
+#
 # * Internet Gateway 
 # Internet gateways or IGW are standing to provide subnet access from your VPC, the way it works as below. 
 # When a instance from subnet which has route to IGW for 0.0.0.0/0, it sends a traffic to IGW, then IGW does perform a source NAT to replace the IP address of the instance with a Public IP and then route the traffic to internet. 
@@ -48,9 +49,31 @@
 # 3. Associate that route table with a subnet 
 #
 #
+# * VPC Limitations 
+# - You can extend the size of number of IPV4 IPs in the VPC by adding a new CIDR to VPC. 
+# - You won't be able to modify the existing CIDR, but you can delete it 
+# - You can add only one IPV6 CIDR to the VPC an second one is not permitted 
+# - Single subnet can have only one route table and all required routes for that subnet needs to be mention in that route table. 
+#
+# 
+#----------------------------------------------------------------------------------------------------
+#                                   CHAPTER 03 - EC2 networking Advanced Concepts
+#-----------------------------------------------------------------------------------------------------
+#
+# * Public Subnet
+# Public subnet is any subnet which provides connectivity to the internet, to create a public subnet below is the process. 
+#
+# 1. Create a subnet from available CIDR in the VPC ( You can make the name as PublicSubnet01)
+# 2. Then Create IGW and associate that with your VPC 
+# 3. Then associate a route for a subnet to route its traffic from 0.0.0.0/0 to IGW
+# 4. This will now become a Public subnet which has capability to connect to internet
 #
 #
-#
-#
-#
+# * How EC2 instance are able to connect via internet gateway ?
+# For an EC2 connect to internet, it will require Public SUbnet and process to create Public subnet explained above 
+# Once you Create an EC2 in the public subnet, then it will mark auto-assign Public IP as enabled, which means that EC2 will get assigned with a Public IP when it is running. 
+# While the EC2 is restrted or shutdown, that IP might get re-assigned. 
+# You won't be able to locate that Public IP within the Operatiing system or there won't be any ENI with that address in the EC2. 
+# EC2 gets this IP by a 1:1 NAT mapping between IGW and the IP address of the EC2 instance and this IP remains as a mapped IP in IGW. 
+# When EC2 is stopped or terminated, IGW will release the externally accessible IP for that instance
 #
