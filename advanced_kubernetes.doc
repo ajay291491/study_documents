@@ -274,14 +274,27 @@
 #                            i                 Kubernetes commands cheat sheet
 # ----------------------------------------------------------------------------------------------------------------------------------
 # 
-# $ kubectl get pods					    - This command will help to get the details of the pods in default namespace 
-# $ kubectl get pods --namespace my-namespace		    - This command will help to get the details of the pods in specific namespace 
-# $ kubectl get pods --namespace my-namespace -o yaml       - This command will help to get the details of the pods in an yaml format
-# $ kubectl get pods --all-namespaces                       - This command will help to get the details of all pods running in the cluster 
-# $ kubectl get pods --all-namespaces -o wide               - This command will help to get the details of all pods running including the node where its running 
-# $ kuebctl describe pods pod_name --namespace my_namespace - This command will help to describe the pods 
-# $ kubectl create deployment nginx --image=nginx	    - This command will help to create a nginx deployment using image nginx
-# $ 
+# $ kubectl get pods					    		- This command will help to get the details of the pods in default namespace 
+# $ kubectl get pods --namespace my-namespace		    		- This command will help to get the details of the pods in specific namespace 
+# $ kubectl get pods --namespace my-namespace -o yaml       		- This command will help to get the details of the pods in an yaml format
+# $ kubectl get pods --all-namespaces                       		- This command will help to get the details of all pods running in the cluster 
+# $ kubectl get pods --all-namespaces -o wide               		- This command will help to get the details of all pods running including the node where its running 
+#
+# $ kuebctl describe pods pod_name --namespace my_namespace 		- This command will help to describe the pods 
+#
+# $ kubectl create deployment nginx --image=nginx	    		- This command will help to create a nginx deployment using image nginx
+#
+# $ kubectl logs calico-kube -n calico-system               		- This command will help to get logs from a pod 
+# $ kubectl logs calico-kube -n calico-system --since=1h    		- This command will help to get logs for past 1 hour 
+# $ kubectl logs logs --label                               		- This command will help to get the logs based on a label in metadata
+# $ kubectl logs --all-containers                           		- Thus command will help to get logs from all containers 
+#
+# $ kubectl get events -n calico-system			    		- This command will help to get the details of events in a specific namespace 
+# $ kubectl get events -n calico-system --field-selector type=Warning   - This command will help to filter the events based on a column type
+# $ kubectl get events -n calico-system --field-selector reason=FailedCreate - This command will help to filter the events based on a column reason
+#
+# $ kubectl top pod							- This command will help to get the 'top' output for a pod (make sure kube metrics api server is running)
+# $ kubectl top node							- This command will help to get the 'top' output for a node (make sure the kube metrics api serve is running)
 #
 
 ~                    
