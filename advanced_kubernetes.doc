@@ -270,7 +270,18 @@
 # |                               
 #
 #
-#
+# ----------------------------------------------------------------------------------------------------------------------------------
+#                            i                 Kubernetes commands cheat sheet
+# ----------------------------------------------------------------------------------------------------------------------------------
+# 
+# $ kubectl get pods					    - This command will help to get the details of the pods in default namespace 
+# $ kubectl get pods --namespace my-namespace		    - This command will help to get the details of the pods in specific namespace 
+# $ kubectl get pods --namespace my-namespace -o yaml       - This command will help to get the details of the pods in an yaml format
+# $ kubectl get pods --all-namespaces                       - This command will help to get the details of all pods running in the cluster 
+# $ kubectl get pods --all-namespaces -o wide               - This command will help to get the details of all pods running including the node where its running 
+# $ kuebctl describe pods pod_name --namespace my_namespace - This command will help to describe the pods 
+# $ kubectl create deployment nginx --image=nginx	    - This command will help to create a nginx deployment using image nginx
+# $ 
 #
 
 ~                    
