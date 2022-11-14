@@ -57,7 +57,7 @@
 # * Kube Scheduler 
 # Scheuler is responsible for placing the right controller on a node based on the resource requirements 
 # This also monitors for the node status taints are roles on them before placing a container on them
-# Scheduler always look for the resources such CPU and memory in each node and based on the resource availibity its ranks them
+# Scheduler always look for the resources such CPU and memory in each node and based on the resource availibity and it ranks them according to the availability 
 # So when next time there is a requirement deploy a pod, then it finds the right node and pass the information to KUbe API server 
 # Need to be careful and aware that Kube Scheduler won't deploy the Pod and that is the job of Kublet running on the worker node, but scheduler send the info that where it need to get deployed
 #
@@ -73,7 +73,7 @@
 # Then the underlying container runtime pull the image and runs the pods, then kubelet pass that info back to Kubeapi serever which gets registered in ETCD
 #
 # * Kube Proxy
-# Kube proxy runs on every node in the kubernetes cluster to satisfy the networking needs by the pods 
+# Kube proxy runs on every node in the kubernetes cluster as a daemonset to satisfy the networking needs by the pods 
 # This helps inter pods communication by enabling the virtual networking services and these services stay in the memory.
 # Kube Proxy achieve this by using the IP tables rules 
 # 
@@ -83,7 +83,7 @@
 # However if there helper containers or sidecars that can run along with the main container in the same pod, but this will be a very rare scenario.
 #
 # * Pod Definition YAML File 
-# A Pod definition has maoinly 4 objects and details given below. 
+# A Pod definition has mainly 4 objects and details given below. 
 #
 # ---
 # apiVersion: {v1 | appsV1}
