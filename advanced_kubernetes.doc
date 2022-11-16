@@ -105,7 +105,7 @@
 # To define a replication controller object and to deploy a pod using replication controller you need to follow below synatx 
 # 
 # ---
-# apiVersion: V1
+# apiVersion: v1
 # kind: ReplicationController 
 # metadata:
 #   name:  {name of the replication controller}
@@ -295,6 +295,8 @@
 #
 # $ kubectl top pod							- This command will help to get the 'top' output for a pod (make sure kube metrics api server is running)
 # $ kubectl top node							- This command will help to get the 'top' output for a node (make sure the kube metrics api serve is running)
+# 
+# $ kubectl edit deployments nginx					- This command will help to edit the details on deployments 
 #
 
 ~                    
