@@ -1,0 +1,74 @@
+#-------------------------------------------------------------------------------------------------------------
+#                          Chapter 01 - Describe Cloud Computing 
+#-------------------------------------------------------------------------------------------------------------
+#
+# * What is Cloud Computing 
+# Cloud computing is the delivery of services including compute, storage, database, networking, software, analytics and intelligence over the internet. 
+# This makes the resource and compute availbility faster and you are paying only for what you use. 
+# This way you will need to look into only your application and business problem to solve and cloud provider will look after arranging the resources and compute power needed for their customer. 
+#
+# * Different types of infrastructure hosting models 
+# Below are the types infrastructure hosting services available and responsilbity is mentioned below 
+#
+# - On-Prem : In this model customer takes heavy lifting of managing everything required for an application to be run by hilself.
+#   Customer Responsibility : Datacenter, hardware or servers, operating system, networking, storage, network security,i application, user authentication & Governance, information & data 
+#
+# - IAAS    : A virtualized computing environment devliverd by provider which can have serevsr, network and software 
+#   Cloud provider : Datacenter, hardware or servers, storage, networking
+#   Customer       : Operating system, application, network security, user authentication and Governance, information & data
+#
+# - PAAS    : A computing platform whic contains operating system and all other underlying services to host an application by a provider. 
+#   Cloud Provider : Datacenter, hardware or servers, storage, networking, operating system
+#   Customer       : Application, network security, user authtication & Goverannce, information & data
+#
+# - SAAS    : An application delivered over the internet by a provider. 
+#   Cloud Provider : Datacenter, hardware or servers, storage, networking, network security, operating system, application 
+#   Customer       : User Authentication and Governance, information and data 
+#
+# * Different types of cloud
+# There are mainly three types of cloud services available 
+#
+# - Private Cloud : This is the service offered over internet or private network which is not open for general public. 
+# - Public Cloud  : This is the service offered over the internet whis is publically accessible for anyone who want to purchase them. 
+# - Hybrid Cloud  : A cloud that combines public and private cloud together by technology and also allows data and application to be shared between them.
+#
+# * Cloud pricing 
+# Cloud pricing can vary based on different things such as 
+# - Operational Cost 
+# - Storage Cost 
+# - backup Cost 
+# - network (input and output)
+# - logs & monitor
+# - many other facts 
+#
+# * Total Cost of Ownership (TCO)
+# TCO is the total cost of running the service which includes the cost of purchase of servers, software, service to operate cost such as data center, utility bill and employee salary 
+#
+# * How to reduce cost in Cloud 
+# - autoscaling 
+# 
+#
+#-------------------------------------------------------------------------------------------------------------
+#                          Chapter 02 - Azure Architectural Components
+#-------------------------------------------------------------------------------------------------------------
+#
+# * Regions  & Availability zones
+# Region is a group of data centers deployed in multiple avilability zones within a single geographical location. 
+# Azure offers more than 60 region world wide and it is the largest cloud provider by most number of regions 
+# Each region will have a minimum 3 AZs inter connected with high performance network with round trip less than 2ms. 
+#
+# More Details : https://learn.microsoft.com/en-us/azure/reliability/availability-zones-overview
+#
+# * Region pair & Cross region replication
+# To recover customer data and service from multiple AZ or a wider region outage Azure provides a cross region replication architecture. 
+# Some services use cross region replication by default using the advantage of services like Azure geo-redudant storage ()GRS) etc. 
+# But some services do not have the cross region replication model available, in that case customer must build services to enable cross region replication. 
+# To enable cross region replication azure uses regional replication pairs, please go through below link to understand more about the cross region replication and region pais 
+#
+# Reference : https://learn.microsoft.com/en-us/azure/reliability/cross-region-replication-azure
+#
+# * Sovereign Regions 
+# Certain regions are dedicated to specific soverign entities. Although all regions are azure, these soverign regions are isolated from other azure regions. 
+# These regions are not necessarily managed by Microsoft, they may be restricted to certain customers. 
+#
+# Example - China, US Goverment 
