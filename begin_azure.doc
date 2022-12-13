@@ -72,3 +72,61 @@
 # These regions are not necessarily managed by Microsoft, they may be restricted to certain customers. 
 #
 # Example - China, US Goverment 
+#
+# * Resources 
+# Any virtual machines, storage, network, database or any other component helps to host your service running is a resource in azure 
+#
+#
+# * Resource Groups
+# Resource Groups are logical collection of resources which are similar in nature, You can have resources from multiple regions to be part of the same resource group. 
+# For data privacy reasons data for the resource group has to be in specific region. 
+# You have have virtual machine, storage, network, lb and data base etc as part of the same resource group 
+#
+# * Subscription 
+# subscription logically associate user accounts with the resources that they create. 
+# Each subscription has limits or quotas on the amount of resources that it can create and use. 
+# Organizations can use subscriptions to manage costs and the resources that are created by users, teams, and projects.
+# Subscriptions the way to manage billing, you can have one subscription or more than one based on your requirement for your company. 
+# All resources consumed by a subscription will be billed by the owner of the subscription. 
+# For example you can create subscription by environments like dev, test and prod or create with respect to teams, line of business or according to clients 
+#
+# Reference : https://learn.microsoft.com/en-us/training/modules/create-an-azure-account/4-multiple-subscriptions
+#
+# * Management Group 
+# Azure management groups are a way to organize subscriptions, it helps you to organize subscriptions and apply controls and governance on them. 
+# All subscriptions under the management group will inherit the controls applied to the management group. 
+# You can also have nested management groups under one another to have controls applied in various levels 
+#
+# Reference : https://azure.microsoft.com/en-gb/blog/azure-management-groups-now-in-general-availability/
+#
+# * Azure Management level and Heirarchy 
+#
+#              	   	          Management Group
+#                       	        |
+#    	         Subscription 1         |         Subscription 2
+#            -----------------------------------------------
+#                    |					|
+#          |------------------|                |--------------------|
+#    Resource group 1    Resource Group 2     RG1                  RG2
+#	     |
+#    |--------------|	     	
+# Resourcesi 1   Resource 2 
+#
+# To know more about how to organize azure resources, refer : https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-setup-guide/organize-resources
+#
+#
+#-------------------------------------------------------------------------------------------------------------
+#                          Chapter 03 - Azure Compute, Network & Storage
+#-------------------------------------------------------------------------------------------------------------
+#
+# * Compute Services in Azure and their AWS similar service 
+#
+# - Virtual machines 		(EC2)
+# - VM scale Sets    		(Auto Scaling)
+# - App Services     		(Bean stalk)
+# - Azure Container Instances 	(ECS)
+# - Azure Kubernetes Services 	(EKS)
+# - Windows Virtual Desktop  
+#
+#
+#
