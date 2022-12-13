@@ -122,11 +122,38 @@
 # * Compute Services in Azure and their AWS similar service 
 #
 # - Virtual machines 		(EC2)
-# - VM scale Sets    		(Auto Scaling)
-# - App Services     		(Bean stalk)
-# - Azure Container Instances 	(ECS)
+# - VM scale Sets    		(Auto Scaling) 		: Supports upto 100 VM by default and can be increased upto 1000 VMs
+# - App Services     		(Elastic Bean stalk)    : PaaS
+# - Azure Container Instances 	(fargate)			: 
 # - Azure Kubernetes Services 	(EKS)
 # - Windows Virtual Desktop  
+# - Azure Functions             (lambda)
+#
+# Refer : https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-decision-tree
+#
+#
+# * Network Service 
+#
+# - Virual Network(VNet)	(VPC)
+# - Subnet			(Subnet)
+# - VPN gateway 		(VPN Gateway)
+# - Vnet Peering 		(VPC Peering)
+# - Express Route 		(Direct Connect)
+# - DNS Service 		(Route 53)
+# - Load Balancer               
+# - Application gateway 
+# - Content Delivery Network 
+# - Azure Front Door Service 
+#  
+#  Refer : https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview
+#
+# * Network Security Services 
+# 
+# - DDos Protection
+# - Azure Firewall 
+# - Network Security group
+# - Private Link
+#
 #
 #
 #
