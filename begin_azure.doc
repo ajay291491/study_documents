@@ -259,5 +259,27 @@
 # | TotalBytesTransferred: 465774
 # | Final Job Status: Completed
 #
+#-------------------------------------------------------------------------------------------------------------
+#                          Chapter 05 - Migration Services 
+#-------------------------------------------------------------------------------------------------------------
+# 
+# * Azure Migrate 
+# A service intended to plan, architect and migrate services from on prem to azure cloud environment 
 #
+# * Azure File Sync 
+# Service which can be used to keep sync between your storage account and on prem file server 
+# This helps to keep new files also in sync with storage account, this uuses SMB protocol 
+#
+# * Azure Data Box 
+# A migration service which helps to migrate terrabyrtes size of data into azure storage account 
+#
+# Data Box 	 : 100 TB
+# data Box Disk  : 8 TB
+# Data Box heavy : 1 PB
+#
+#
+#-------------------------------------------------------------------------------------------------------------
+#                          Chapter 06 - Identity, Access and Security 
+#-------------------------------------------------------------------------------------------------------------
+# 
 #
