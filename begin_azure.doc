@@ -137,7 +137,7 @@
 # - Virual Network(VNet)	(VPC)
 # - Subnet			(Subnet)
 # - VPN gateway 		(VPN Gateway)
-# - Vnet Peering 		(VPC Peering)
+# - Vnet Peering 		(VPC Peering)		: Helps to connect Vnet to communicate each other, if you are trying to connect between VNet from one region to other region it will cost high
 # - Express Route 		(Direct Connect)
 # - DNS Service 		(Route 53)
 # - Load Balancer               
@@ -154,6 +154,110 @@
 # - Network Security group
 # - Private Link
 #
+# * Public and Private endpoints
+# Azure provides both Public endpoint and private endpoint options. 
+# 
+# Public endpoints gives mainly three options 
+# - Allow access from everywhere in network 
+# - Allow access from specific Vnet 
+# - Disable Public Access and use Private endpoint 
+#
+# Private endpoints are created to securely enable a connection between one endpoint to another endpoints, so that resources can communicate each other in a 1:1 routing. 
+# A private endpoint is a network interface that uses a private IP address from your virtual network. 
+# This network interface connects you privately and securely to a service that's powered by Azure Private Link. 
+# By enabling a private endpoint, you're bringing the service into your virtual network.
+#
+# Refer : https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview
+#
+#
+#-------------------------------------------------------------------------------------------------------------
+#                          Chapter 04 - Azure Storage  
+#-------------------------------------------------------------------------------------------------------------
+# 
+# Azure has several storage options, starting from object storage BLOB to NAS and SAN, please find the details below. 
+#
+# * Azure Storage Accounts
+# Storage accounts has mainly 4 options 
+# - Azure Blobs container : This is the object storage like S3 in AWS which accessible via HTTP / HTTPS across the globe
+# - Azure Files 	  : used for managed fils shares using SMB / NFS protocol / Azure Files REST API which is accessible from across the world.
+# - Queue Storage : This is the Queue service like aws SQS used for passing anynchrouns message between azure services. 
+# - Table Storage : Table storage is part of the Azure Cosmos DB which is available for hosting No SQL database use cases
+#
+# * Other Storage Types
+# - Disk Storage  : This is block storage which can be used to store data in a VM which do not need to be accessed central from multiple services 
+# - Azure Netapp  : Azure netapp files is used for high performance storage requirements where NAS can be used 
+# - Azure Elastic SAN 	 : This is used for large scale data requirement which required high intenisty IO operation with the cloud HA and reliability. 
+#
+# * Storage authorization options 
+#
+# Azure provided below aithorization services to access the storage accounts 
+#
+# - Azure active directory (Azure AD) integration for blobs, queues and table data. 
+# - Azure AD authorization over SMB for Azure files 
+# - Authorization with Shared Key 
+# - Authorization using shared access signature (SAS)
+# - Active Dirctory domain servies with Azure netApp Files 
+#
+# Also it offers below encryption options 
+#
+# - Encyption at rest 
+# You can use either microsoft managed keys (MMK) customer managed keys (CMK)
+#
+# * Storage Access Tiers 
+#
+# - Hot   : For those data accessed on daily basis, it has moderate cost for both read and write 
+# - Cool  : For those data which are accessed very less, but writes regularly, This incur high charge for retrival and lesss charge for storing
+# - Archive : This is where you can more data permenantly for long term retention and those data which you won't be accessing freequently and not needed them on immediate basis 
+#
+# Performance Tiers
+#
+# - Standard  : Normal IOPS
+# - Premium   : Higher IOPS 
+#
+# * Replication 
+#
+# - LRS : Locally available storage replication within DC, cheapest option which suitable for low cost apps 
+# - GRS : Geo Redudant storage, Intermediate option wit failover capabilities with a second region, recomend for backup scenarios 
+# - ZRS : Zone redudant storage, Intermediate option suitable for HA scenarios 
+# - GZRS : GEO and Zone redudant storage, Suitable for optimal data protection, suitable for critical data options 
+#
+# Location : primary region replication or cross region replication 
+#
+# Refer : https://learn.microsoft.com/en-us/azure/storage/common/storage-introduction
+#
+# * azopy 
+#
+# azopy is the deafult option for copying data between storage accounts, you can generate a SAS token and then use the url based on the SAS token to copy the data 
+#
+# Syntax : azcopy copy {blob_container_Source_file_SAS_url} {Destination_blob_container_SAS_url}
+#
+# NOTE : make sure yoyu create the SAS token for each set
+#
+# Example : 
+#
+# | azcopy copy 'https://sathsangblob.blob.core.windows.net/my-first-bucket-in-a2XXX02022-12-06%20at%2021.46.48.jpeg?sp=xxxxxxx 'https://sathsang02.blob.core.windows.net/destination-copy?sp=xxxxx'
+# | INFO: Scanning...
+# | INFO: azcopy: A newer version 10.16.2 is available to download
+# | 
+# | INFO: Failed to create one or more destination container(s). Your transfers may still succeed if the container already exists.
+# | INFO: Any empty folders will not be processed, because source and/or destination doesn't have full folder support
+# | 
+# | Job 82c603a9-8eb9-4f44-6057-b984a822e06a has started
+# | Log file is located at: /home/ajayaghosh/.azcopy/82c603a9-8eb9-4f44-6057-b984a822e06a.log
+# | 
+# | 100.0 %, 1 Done, 0 Failed, 0 Pending, 0 Skipped, 1 Total, 2-sec Throughput (Mb/s): 1.8615
+# | 
+# | 
+# | Job 82c603a9-8eb9-4f44-6057-b984a822e06a summary
+# | Elapsed Time (Minutes): 0.0334
+# | Number of File Transfers: 1
+# | Number of Folder Property Transfers: 0
+# | Total Number of Transfers: 1
+# | Number of Transfers Completed: 1
+# | Number of Transfers Failed: 0
+# | Number of Transfers Skipped: 0
+# | TotalBytesTransferred: 465774
+# | Final Job Status: Completed
 #
 #
 #
