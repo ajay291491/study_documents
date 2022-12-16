@@ -281,5 +281,154 @@
 #-------------------------------------------------------------------------------------------------------------
 #                          Chapter 06 - Identity, Access and Security 
 #-------------------------------------------------------------------------------------------------------------
+#
+# * What is identity 
+# It can be a person, application or device trying to communicate over a network. 
+# They notmally exchange password, keys etc to authnticate 
 # 
+# * Azure AD
+# An identity as a service provided by Microsoft which helps to enable authtication.
+# It offers support for below authitication methods 
+# - SAML
+# - OpenID
+# - WS Federation 
+#
+# Below are few benifits of using Azure AD 
+#
+# - Security and wealth of bug fix already to protect against hackers 
+# - Developer do not need to worry about the autheication and authorization
+# - Centralized admisnitration for all application in your environment 
+# - SSO for accessing all services and application hosted and updated with Azure AD
+# - Integration with other Azure azure services such as storage account, database etc 
+#
+# * Difference between Authentication & Authorization 
+#
+# Authentication : Process of user proving who he is by providing user ID and password to login
+# Authorization  : Process of granting access to that user based on his group membership and access levels 
+# 
+# * Conditional Access 
+# Conditional access helps you to authenticate users based on their perimter such as office building, region, IP etc and also helps to track anamalies wih athengtication patterns 
+# This allows to locl down access with additional checks such as sms, ms authicator app etc to verify the identity if the conditions do not meet for the user
+#
+# * Multi Factor Authentication 
+# Below are few of the multi factor authenticaiton which you have 
+#
+# - SMS 
+# - Email
+# - MS authenticator App
+# - Phone Call 
+#
+# * Password less authentication 
+# There are few options Azure AD provides for multi factor authntication such as 
+#
+# - Finger print from specific registered device 
+# - Facial recognition from specific registered device 
+# - Some number exchage with MS auth app 
+#
+# * Role Based authentication 
+# This is the microsoft preferred mode of authentication 
+# Below are the default roles available in Azure AD, you can also create your own custom roles 
+#
+# - Reader
+# - Contributor
+# - Owner 
+#
+# * Zero Trust Methodology 
+#
+# - Verify Explicitly 
+# - Least Privilaged
+# - Assume there is breach and design accordingly
+# - JIT - Just in time access, access granted only when they request access 
+# - JEA - Just Enough access
+# - Device - Ensure devices are running with the latest pathes and security fixes 
+# - Monitoring - Detect and block events, hacks etc 
+#
+# * Defender for Cloud
+# Helps to protect your services from all security related threats. 
+# - This continously learn and assess your resources against the latest security postures being reported 
+# - It also provides recomendation and takes actions to protect resources against those postures 
+# - Can also helps to alert on the security incidents 
+#
+# There is a charge for each resources you want to protect, this can also use to protect resources in Google cloud and AWS
+#
+#
+#-------------------------------------------------------------------------------------------------------------
+#                          Chapter 07 - Cost Management in Azure 
+#-------------------------------------------------------------------------------------------------------------
+#
+# * Free Services available in Azure 
+# 
+# - VNet
+# - Load balancer Basic 
+# - Azure AD basic 
+# - Network Security Groups 
+# - Subnets 
+# - Free toer web apps 
+#
+# * Payment options 
+#
+# - Functions 	: 1 Million execution free, after 0.20 per million execution 
+# - Storage   	: Per GB
+# - Outband bandwdith : based on transmission of packets 
+# - APIs 	: bsaed on the calls 
+# - VM          : Per Second in running state, reserved instances, spot instances 
+# - bandwidth   : free until 5 GB, beyond that gets charged 
+# - Zone        : There are higher charges for zones outside US and West Europe 
+#
+# * Pricing Calcultor 
+# https://azure.microsoft.com/en-gb/pricing/calculator/
+#
+# * Total Cost of Ownership
+# This helps to calulate the cost of total of the application running with respect to all cost such as 
+#
+# - DataCenter 
+# - Utility 
+# - Cooling
+# - Engineer cost 
+# - Compute Cost 
+# - Storage Cost 
+# - Database Cost 
+# - maintenance cost etc 
+#
+# * Azure Cost management 
+# This is similar to AWS cost explorer which helps to get details the cost we spent and related alerts, grphs, reports, notification over email, prediction etc 
+#
+# * Resource Tags 
+# Addin tags to each resources will help to generate billing reports from cost management based on tags
+# By defining right billing tags we can make sure which team uses these tags
+#
+#
+#-------------------------------------------------------------------------------------------------------------
+#                          Chapter 08 - Azure Governance & Compliance 
+#-------------------------------------------------------------------------------------------------------------
+#
+# This is way ofr defining rules and policies around how you want your organization look like in cloud and tracking and make sure cloud resources, access and users are in compline to those rules 
+# Tools used for those are 
+#
+# - Azure BluePrints  		: Azure Subscription templates with roles and policies with rules get applied to subscription
+# - Azure Policy      		: This helps to define rules across all of your azure resource, there are several policies which are in built available 
+# - Resource Locks 		: Marking a resource as read only and cannot modify or delete, just like locking a VM from not stop or start and keep it running 
+# - Service Trust Portal 	: This is a portal of centralized repository which has all the policy and details azure follows 
+#
+#
+#-------------------------------------------------------------------------------------------------------------
+#                          Chapter 09 - Azure management Tools for Deployments
+#-------------------------------------------------------------------------------------------------------------
+#
+# - Azure Portal       : UI interface to interact with the azure resources 
+# - PowerShell & Bash  : command line tools to interact with azure, its called cloud shell 
+# - Azure Arc 	       : This helps to biuld an inventry of on prem infrastructure in Azure UI, you will need to follow a process to register on prem servers into azure arc
+# - ARM Template       : These are templates used to pre-configure resources and deploy them from template instantly rather than going through whole config again, IaaC
+#
+#
+#-------------------------------------------------------------------------------------------------------------
+#                          Chapter 09 - Azure Monitoring
+#-------------------------------------------------------------------------------------------------------------
+#
+# Azure Advisor 	: Similar like trusted advisor which helps to give recomendation on capacity, over provisioning, security flaws 
+# Azure Service health  : Simialr like AWS Health helps to underdtand regional stability and issues with servoces 
+# Diagnostic Settings   : This wil help to enable diagnostic logs from a resource to Azure monitor which can be queried using Azure KQL query language 
+# Alerts                : This will help to get alerts from all available resources 
+# Activity logs 	: This helps to enable activity logs from azure resources like cloud trail
+#
 #
