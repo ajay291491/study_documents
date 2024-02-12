@@ -353,6 +353,41 @@
 #
 #
 #-------------------------------------------------------------------------------------------------------------
+#                          Chapter 06-01 - Role Based Access AAControl (RBAC)
+#-------------------------------------------------------------------------------------------------------------
+# 
+# Role based access control can be used to assign permission to Users, Groups, Applications 
+#
+# The scope of the role assignment can be Subscription, Resource group, Single resource 
+#
+# * Security Principal in Azure 
+# - User 			: Single user in azure AD 
+# - Group 		: Multiple users are assigned to a group, roles assigned to a user will impact all users 
+# - Service Principal 	: A service principal is security ID for application or services
+# - Managed Identity 	: This helps to avoid credentaials and allows to authenticate with client and object ID 
+#
+# Roles 
+# - Owner 		: Has full control and can grant access to resources 
+# - Contributer 	: Can create or manage all resources, can't grant access 
+# - Reader 		: Can view existing resources 
+# - User access Admin 	: Can only manage users 
+#
+# Note : There are lot more built in role in Azure which can be referenced below. 
+# - https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles
+#
+# Deny Assignments 
+# - Blocks users from performing spcific actions even if a role assignment allows it
+# - Created and managed in azure to protect resources 
+# - Can only be created using Azure Blue Prints or manged apps 
+#
+#
+#
+#
+#
+#
+#
+#
+#-------------------------------------------------------------------------------------------------------------
 #                          Chapter 07 - Cost Management in Azure 
 #-------------------------------------------------------------------------------------------------------------
 #
@@ -430,5 +465,54 @@
 # Diagnostic Settings   : This wil help to enable diagnostic logs from a resource to Azure monitor which can be queried using Azure KQL query language 
 # Alerts                : This will help to get alerts from all available resources 
 # Activity logs 	: This helps to enable activity logs from azure resources like cloud trail
+#
+#
+#-------------------------------------------------------------------------------------------------------------
+#                          Chapter 10 - Azure Log Analytics
+#-------------------------------------------------------------------------------------------------------------
+# 
+# Azure log analytics helps to bring data from various different data sources and index them and available for quries and other downstram usage in Azure 
+# Log analytics workspace can collect logs from azure vm and other data sources and send them to workspace and indexed document 
+# Azure log analytics can collect logs not only from azure, it can collect from external sources with aganet installed to send the logs 
+#
+# * How to create log analytic workspace 
+# - Go to Azure Portal 
+# - Search 'Log Analytical workspace'
+# - Click 'Create' Option
+# - Update name, subscription and resource group
+# - Submit 
+#
+#-------------------------------------------------------------------------------------------------------------
+#                          Chapter 11 - Azure Serverless
+#-------------------------------------------------------------------------------------------------------------
+#
+# * Azure Functions
+# These are single purpose code that perform a single task, when you plan function it should start and finish quickly
+# It supports below languages 
+# . C#
+# . F#
+# . Node.js
+# . Java
+# . PHP
+# . Bash
+# . Python
+# . Or Anything executable
+# 
+# * Azure Function Triggers
+# Triggers are those which can trigger an azure function anytime on demand with a signal, below are most common triggers 
+#
+# . Schedule 
+# . HTTP
+# . Events from Event hub
+# . Storage Events (Blob, Queues)
+# . Queue and Topic from Service Bus
+# . NoSQL DB from Cosmos DB
+# . Microsoft Graph Events 
+#
+#
+#
+#
+#
+#
 #
 #
